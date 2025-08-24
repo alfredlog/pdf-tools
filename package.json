@@ -1,0 +1,26 @@
+{
+  "name": "pdf",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "docx-pdf": "^0.0.1",
+    "express": "^5.1.0",
+    "libreoffice-convert": "^1.6.1",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10",
+    "pdf-lib": "^1.17.1",
+    "pdf-poppler": "^0.2.1",
+    "pdf2pic": "^3.2.0",
+    "pptxgenjs": "^4.0.1",
+    "sharp": "^0.34.3"
+  },
+  "keywords": [],
+  "description": ""
+}
