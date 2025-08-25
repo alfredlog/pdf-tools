@@ -107,7 +107,7 @@ app.post("/pdf-to-docx", uploadd.single("file"), (req, res) => {
   libre.convert(pdfBuffer, ".docx", undefined, (err, done) => {
     if (err) {
       console.error("Konvertierungsfehler:", err);
-      return res.status(500).send("Konvertierung fehlgeschlagen");
+      return res.status(500).send(err);
     }
 
     // Download erzwingen
