@@ -8,7 +8,7 @@ const cors = require("cors");
 const { exec } = require("child_process")
 const libre = require("libreoffice-convert");
 const convertDocx = require("docx-pdf");
-process.env.LIBREOFFICE_PATH = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
+//process.env.LIBREOFFICE_PATH = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
 
 
 const UPLOAD_DIR = "uploads";
@@ -99,7 +99,8 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 
 
 // PDF → DOCX
-app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
+const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+app.post("/pdf-to-docx", uploadd.single("pdf"), (req, res) => {
   const pdfBuffer = req.file.buffer;
 
   // PDF → DOCX konvertieren
