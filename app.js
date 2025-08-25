@@ -10,7 +10,7 @@ const libre = require("libreoffice-convert");
 const convertDocx = require("docx-pdf");
 process.env.LIBREOFFICE_PATH = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
 
-app.use(express.static(path.join(__dirname, 'public')));
+
 const UPLOAD_DIR = "uploads";
 const CONVERTED_DIR = "converted";
 
@@ -24,6 +24,7 @@ const CONVERTED_DIR = "converted";
 const app = express();
 app.use(cors())
 const port = 3005;
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Speicher für hochgeladene PDFs
 const upload = multer({ dest: "uploads/" });
