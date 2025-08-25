@@ -39,6 +39,9 @@ function compressPDF(inputPath, outputPath, quality = "/ebook") {
     });
   });
 }
+app.get("/", (req, res)=>{
+  res.send("Hallo welt")
+})
 
 // API-Route
 app.post("/compress", upload.single("file"), async (req, res) => {
