@@ -102,41 +102,53 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 //const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 const TMP_DIR = path.join(__dirname, "tmp");
 if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR);
-app.post("/pdf-to-docx", upload.single("file"), async (req, res) => {
+app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).send("Keine Datei hochgeladen.");
 
   const pdfPath = req.file.path;
   const docxPath = pdfPath.replace(/\.pdf$/i, ".docx");
 
-  // LibreOffice CLI aufrufen
   exec(
     `libreoffice --headless --convert-to docx "${pdfPath}" --outdir "${TMP_DIR}"`,
     (err, stdout, stderr) => {
-      // PDF immer löschen
-      fs.unlink(pdfPath, () => {});
+      fs.unlink(pdfPath, () => {}); // PDF löschen
 
       if (err) {
         console.error("LibreOffice Fehler:", stderr || err);
         return res.status(500).send("Konvertierung fehlgeschlagen");
       }
 
-      // DOCX an Client senden
-      fs.readFile(docxPath, (readErr, data) => {
-        // DOCX löschen
-        fs.unlink(docxPath, () => {});
+      // Warten, bis DOCX existiert
+      const waitForFile = (file, timeout = 5000) => {
+        const start = Date.now();
+        return new Promise((resolve, reject) => {
+          const check = () => {
+            if (fs.existsSync(file)) return resolve();
+            if (Date.now() - start > timeout) return reject("DOCX-Datei nicht gefunden");
+            setTimeout(check, 100);
+          };
+          check();
+        });
+      };
 
-        if (readErr) {
-          console.error("Fehler beim Lesen der DOCX-Datei:", readErr);
-          return res.status(500).send("Datei konnte nicht gelesen werden" + readErr);
-        }
+      waitForFile(docxPath)
+        .then(() => {
+          fs.readFile(docxPath, (readErr, data) => {
+            fs.unlink(docxPath, () => {}); // DOCX löschen
+            if (readErr) return res.status(500).send("DOCX konnte nicht gelesen werden");
 
-        res.setHeader(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        );
-        res.setHeader("Content-Disposition", "attachment; filename=output.docx");
-        res.end(data);
-      });
+            res.setHeader(
+              "Content-Type",
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            );
+            res.setHeader("Content-Disposition", "attachment; filename=output.docx");
+            res.end(data);
+          });
+        })
+        .catch(e => {
+          console.error(e);
+          res.status(500).send("DOCX wurde nicht erzeugt");
+        });
     }
   );
 })
