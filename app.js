@@ -100,32 +100,23 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 
 // PDF → DOCX
 //const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
-const TMP_DIR = path.join(__dirname, "tmp");
-if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR);
+const { execFile } = require("child_process");
+
 app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).send("Keine Datei hochgeladen.");
 
   const pdfPath = req.file.path;
   const fileBaseName = path.parse(req.file.originalname).name;
-  const docxPath = path.join(TMP_DIR, fileBaseName + ".docx");
+  const docxPath = path.join("converted", fileBaseName + ".docx");
 
-  // LibreOffice CLI aufrufen
-  exec(`libreoffice --headless --convert-to docx "${pdfPath}" --outdir "${TMP_DIR}"`, (err, stdout, stderr) => {
-
+  execFile("python3", ["convert_pdf2docx.py", pdfPath, docxPath], (err, stdout, stderr) => {
     if (err) {
-      console.error("LibreOffice Fehler:", stderr || err);
+      console.error("PDF2DOCX Fehler:", stderr || err);
       fs.unlink(pdfPath, () => {});
-      return res.status(500).send("Konvertierung fehlgeschlagen" + err);
-    }
-
-    // Prüfen, ob die DOCX existiert
-    if (!fs.existsSync(docxPath)) {
-      fs.unlink(pdfPath, () => {});
-      return res.status(500).send("DOCX wurde nicht erzeugt" + err);
+      return res.status(500).send("Konvertierung fehlgeschlagen");
     }
 
     res.download(docxPath, fileBaseName + ".docx", (err) => {
-      // Aufräumen
       fs.unlink(pdfPath, () => {});
       fs.unlink(docxPath, () => {});
     });
