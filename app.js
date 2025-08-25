@@ -101,10 +101,12 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 // PDF → DOCX
 //const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
+  process.env.TMPDIR = path.join(__dirname, "tmp");
+  if (!fs.existsSync(process.env.TMPDIR)) fs.mkdirSync(process.env.TMPDIR);
   const filePath = req.file.path;
 
   const pdfBuffer = fs.readFileSync(filePath);
-  process.env.TMPDIR = "/tmp"; // oder ein eigener Ordner
+
   // PDF → DOCX konvertieren
   libre.convert(pdfBuffer, ".docx", undefined, (err, done) => {
     fs.unlink(filePath, unlinkErr => {
@@ -113,7 +115,7 @@ app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
 
     if (err) {
       console.error("Konvertierungsfehler:", err);
-      return res.status(500).send("Konvertierung fehlgeschlagen");
+      return res.status(500).send("Konvertierung fehlgeschlagen" + err);
     }
 
     // Download erzwingen
