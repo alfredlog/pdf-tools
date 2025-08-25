@@ -100,21 +100,25 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 
 // PDF → DOCX
 app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
-  app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
-  const input = fs.readFileSync(req.file.path);
-  const outputPath = path.join("converted", safeName(req.file.originalname, ".pdf"));
+  const pdfBuffer = req.file.buffer;
 
-  libre.convert(input, ".pdf", undefined, (err, done) => {
-    if (err) return res.status(500).send("Konvertierungsfehler");
+  // PDF → DOCX konvertieren
+  libre.convert(pdfBuffer, ".docx", undefined, (err, done) => {
+    if (err) {
+      console.error("Konvertierungsfehler:", err);
+      return res.status(500).send("Konvertierung fehlgeschlagen");
+    }
 
-    fs.writeFileSync(outputPath, done);
-    res.download(outputPath, () => {
-      fs.unlinkSync(req.file.path);
-      fs.unlinkSync(outputPath);
-    });
-  });
+    // Download erzwingen
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    );
+    res.setHeader("Content-Disposition", "attachment; filename=output.docx");
+    res.end(done); // sendet direkt den DOCX-Buffer an den Browser
+  })
 });
-});
+
 
 //Merge
 
