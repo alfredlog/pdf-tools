@@ -10,6 +10,7 @@ const libre = require("libreoffice-convert");
 const convertDocx = require("docx-pdf");
 process.env.LIBREOFFICE_PATH = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
 
+app.use(express.static(path.join(__dirname, 'public')));
 const UPLOAD_DIR = "uploads";
 const CONVERTED_DIR = "converted";
 
@@ -39,9 +40,6 @@ function compressPDF(inputPath, outputPath, quality = "/ebook") {
     });
   });
 }
-app.get("/", (req, res)=>{
-  res.send("Hallo welt")
-})
 
 // API-Route
 app.post("/compress", upload.single("file"), async (req, res) => {
