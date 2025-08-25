@@ -102,7 +102,7 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 app.post("/pdf-to-docx", uploadd.single("file"), (req, res) => {
   const pdfBuffer = req.file.buffer;
-
+  process.env.TMPDIR = "/tmp"; // oder ein eigener Ordner
   // PDF → DOCX konvertieren
   libre.convert(pdfBuffer, ".docx", undefined, (err, done) => {
     if (err) {
