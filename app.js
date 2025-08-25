@@ -127,7 +127,7 @@ app.post("/pdf-to-docx", upload.single("file"), async (req, res) => {
 
         if (readErr) {
           console.error("Fehler beim Lesen der DOCX-Datei:", readErr);
-          return res.status(500).send("Datei konnte nicht gelesen werden");
+          return res.status(500).send("Datei konnte nicht gelesen werden" + readErr);
         }
 
         res.setHeader(
