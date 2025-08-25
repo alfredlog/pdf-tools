@@ -100,31 +100,20 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 
 // PDF → DOCX
 app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
+  app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
   const input = fs.readFileSync(req.file.path);
-  const tmpPath = path.join("converted", safeName(req.file.originalname, ".odt"));
-  const outputPath = path.join("converted", safeName(req.file.originalname, ".docx"));
+  const outputPath = path.join("converted", safeName(req.file.originalname, ".pdf"));
 
-  // 1. PDF → ODT
-  libre.convert(input, ".odt", undefined, (err, odtDone) => {
-    if (err){
-      console.log(err)
-      return res.status(500).send("Fehler bei PDF → ODT");
-    } 
+  libre.convert(input, ".pdf", undefined, (err, done) => {
+    if (err) return res.status(500).send("Konvertierungsfehler");
 
-    fs.writeFileSync(tmpPath, odtDone);
-    // 2. ODT → DOCX
-    const odtBuffer = fs.readFileSync(tmpPath);
-    libre.convert(odtBuffer, ".docx", undefined, (err, docxDone) => {
-      if (err) return res.status(500).send("Fehler bei ODT → DOCX");
-
-      fs.writeFileSync(outputPath, docxDone);
-      res.download(outputPath, () => {
-        fs.unlinkSync(req.file.path);
-        fs.unlinkSync(tmpPath);
-        fs.unlinkSync(outputPath);
-      });
+    fs.writeFileSync(outputPath, done);
+    res.download(outputPath, () => {
+      fs.unlinkSync(req.file.path);
+      fs.unlinkSync(outputPath);
     });
   });
+});
 });
 
 //Merge
