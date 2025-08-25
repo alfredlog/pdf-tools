@@ -100,7 +100,7 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 
 // PDF → DOCX
 const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
-app.post("/pdf-to-docx", uploadd.single("pdf"), (req, res) => {
+app.post("/pdf-to-docx", uploadd.single("fille"), (req, res) => {
   const pdfBuffer = req.file.buffer;
 
   // PDF → DOCX konvertieren
