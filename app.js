@@ -113,7 +113,7 @@ app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
     if (err) {
       console.error("PDF2DOCX Fehler:", stderr || err);
       fs.unlink(pdfPath, () => {});
-      return res.status(500).send("Konvertierung fehlgeschlagen");
+      return res.status(500).send("Konvertierung fehlgeschlagen" + err);
     }
 
     res.download(docxPath, fileBaseName + ".docx", (err) => {
