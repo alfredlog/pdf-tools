@@ -102,44 +102,35 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 //const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 const TMP_DIR = path.join(__dirname, "tmp");
 if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR);
-app.post("/pdf-to-docx", upload.single("file"), async (req, res) => {
+app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
   if (!req.file) return res.status(400).send("Keine Datei hochgeladen.");
 
   const pdfPath = req.file.path;
-  const docxPath = pdfPath.replace(/\.pdf$/i, ".docx");
+  const fileBaseName = path.parse(req.file.originalname).name;
+  const docxPath = path.join(TMP_DIR, fileBaseName + ".docx");
 
   // LibreOffice CLI aufrufen
-  exec(
-    `libreoffice --headless --convert-to docx "${pdfPath}" --outdir "${TMP_DIR}"`,
-    (err, stdout, stderr) => {
-      // PDF immer löschen
+  exec(`libreoffice --headless --convert-to docx "${pdfPath}" --outdir "${TMP_DIR}"`, (err, stdout, stderr) => {
+
+    if (err) {
+      console.error("LibreOffice Fehler:", stderr || err);
       fs.unlink(pdfPath, () => {});
-
-      if (err) {
-        console.error("LibreOffice Fehler:", stderr || err);
-        return res.status(500).send("Konvertierung fehlgeschlagen");
-      }
-
-      // DOCX an Client senden
-      fs.readFile(docxPath, (readErr, data) => {
-        // DOCX löschen
-        fs.unlink(docxPath, () => {});
-
-        if (readErr) {
-          console.error("Fehler beim Lesen der DOCX-Datei:", readErr);
-          return res.status(500).send("Datei konnte nicht gelesen werden" + readErr);
-        }
-
-        res.setHeader(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        );
-        res.setHeader("Content-Disposition", "attachment; filename=output.docx");
-        res.end(data);
-      });
+      return res.status(500).send("Konvertierung fehlgeschlagen" + err);
     }
-  );
-})
+
+    // Prüfen, ob die DOCX existiert
+    if (!fs.existsSync(docxPath)) {
+      fs.unlink(pdfPath, () => {});
+      return res.status(500).send("DOCX wurde nicht erzeugt" + err);
+    }
+
+    res.download(docxPath, fileBaseName + ".docx", (err) => {
+      // Aufräumen
+      fs.unlink(pdfPath, () => {});
+      fs.unlink(docxPath, () => {});
+    });
+  });
+});
 
 
 //Merge
