@@ -102,7 +102,7 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 //const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
 const TMP_DIR = path.join(__dirname, "tmp");
 if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR);
-app.post("/pdf-to-docx", upload.single("pdf"), async (req, res) => {
+app.post("/pdf-to-docx", upload.single("file"), async (req, res) => {
   if (!req.file) return res.status(400).send("Keine Datei hochgeladen.");
 
   const pdfPath = req.file.path;
