@@ -147,7 +147,7 @@ app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
         })
         .catch(e => {
           console.error(e);
-          res.status(500).send("DOCX wurde nicht erzeugt");
+          res.status(500).send("DOCX wurde nicht erzeugt" + e);
         });
     }
   );
