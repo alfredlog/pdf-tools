@@ -100,33 +100,46 @@ app.post("/docx-to-pdf", upload.single("file"), (req, res) => {
 
 // PDF → DOCX
 //const uploadd = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
-app.post("/pdf-to-docx", upload.single("file"), (req, res) => {
-  process.env.TMPDIR = path.join(__dirname, "tmp");
-  if (!fs.existsSync(process.env.TMPDIR)) fs.mkdirSync(process.env.TMPDIR);
-  const filePath = req.file.path;
+const TMP_DIR = path.join(__dirname, "tmp");
+if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR);
+app.post("/pdf-to-docx", upload.single("pdf"), async (req, res) => {
+  if (!req.file) return res.status(400).send("Keine Datei hochgeladen.");
 
-  const pdfBuffer = fs.readFileSync(filePath);
+  const pdfPath = req.file.path;
+  const docxPath = pdfPath.replace(/\.pdf$/i, ".docx");
 
-  // PDF → DOCX konvertieren
-  libre.convert(pdfBuffer, ".docx", undefined, (err, done) => {
-    fs.unlink(filePath, unlinkErr => {
-      if (unlinkErr) console.error("Fehler beim Löschen der Datei:", unlinkErr);
-    });
+  // LibreOffice CLI aufrufen
+  exec(
+    `libreoffice --headless --convert-to docx "${pdfPath}" --outdir "${TMP_DIR}"`,
+    (err, stdout, stderr) => {
+      // PDF immer löschen
+      fs.unlink(pdfPath, () => {});
 
-    if (err) {
-      console.error("Konvertierungsfehler:", err);
-      return res.status(500).send("Konvertierung fehlgeschlagen" + err);
+      if (err) {
+        console.error("LibreOffice Fehler:", stderr || err);
+        return res.status(500).send("Konvertierung fehlgeschlagen");
+      }
+
+      // DOCX an Client senden
+      fs.readFile(docxPath, (readErr, data) => {
+        // DOCX löschen
+        fs.unlink(docxPath, () => {});
+
+        if (readErr) {
+          console.error("Fehler beim Lesen der DOCX-Datei:", readErr);
+          return res.status(500).send("Datei konnte nicht gelesen werden");
+        }
+
+        res.setHeader(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        );
+        res.setHeader("Content-Disposition", "attachment; filename=output.docx");
+        res.end(data);
+      });
     }
-
-    // Download erzwingen
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    );
-    res.setHeader("Content-Disposition", "attachment; filename=output.docx");
-    res.end(done); // sendet direkt den DOCX-Buffer an den Browser
-  })
-});
+  );
+})
 
 
 //Merge
