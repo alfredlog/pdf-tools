@@ -5,7 +5,7 @@ const { PDFDocument } = require("pdf-lib");
 const sharp = require("sharp");
 const path = require("path");
 const cors = require("cors");
-const { exec } = require("child_process")
+const { exec } = require("child_process");
 const libre = require("libreoffice-convert");
 const convertDocx = require("docx-pdf");
 //process.env.LIBREOFFICE_PATH = "/Applications/LibreOffice.app/Contents/MacOS/soffice";
@@ -141,7 +141,7 @@ function mergePDFs(inputPaths, outputPath) {
   });
 }
 
-app.post("/merge-compress", upload.array("pdfs"), async (req, res) => {
+app.post("/merge-compress", upload.array("file"), async (req, res) => {
   try {
     const files = req.files;
     if (!files || files.length === 0) return res.status(400).send("Keine PDFs hochgeladen");
@@ -162,12 +162,13 @@ app.post("/merge-compress", upload.array("pdfs"), async (req, res) => {
     res.status(500).send("Fehler beim Mergen oder Komprimieren");
   }
 })
-app.post("/merge", upload.array("pdfs"), async (req, res) => {
+app.post("/merge", upload.array("file"), async (req, res) => {
   try {
     const files = req.files;
     if (!files || files.length === 0) return res.status(400).send("Keine PDFs hochgeladen");
 
     const mergedFile = path.join("uploads", "merged.pdf");
+    const compressedFile = path.join("uploads", "compressed-merged.pdf");
 
     await mergePDFs(files.map(f => f.path), mergedFile);
     await compressPDF(mergedFile, compressedFile, "/ebook");
