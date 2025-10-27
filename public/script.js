@@ -1,4 +1,4 @@
-// ===== Menü Toggle für Mobile =====
+
 document.addEventListener("DOMContentLoaded", () => {
   const toggle = document.querySelector(".menu-toggle");
   const nav = document.querySelector("header nav");
@@ -6,15 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
     toggle.addEventListener("click", () => nav.classList.toggle("open"));
   }
 
-  // Jahr im Footer automatisch setzen
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });
 
-// ===== Globale Dateilisten (für jedes Formular separat) =====
 const fileLists = new WeakMap();
 
-// ===== Dateien anzeigen und hinzufügen =====
+
 function showFiles(input) {
   const form = input.closest("form");
   const list = form.querySelector(".file-list");
@@ -22,7 +20,7 @@ function showFiles(input) {
 
   if (!isMultiple) list.innerHTML = "";
 
-  // Falls noch keine Liste existiert → neue Map anlegen
+ 
   if (!fileLists.has(form)) fileLists.set(form, []);
   const files = fileLists.get(form);
 
@@ -60,7 +58,7 @@ function showFiles(input) {
   makeSortable(list, form);
 }
 
-// ===== Drag & Drop Sortierung =====
+
 function makeSortable(list, form) {
   let draggedItem = null;
 
