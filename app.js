@@ -23,7 +23,7 @@ const CONVERTED_DIR = "converted";
 
 const app = express();
 app.use(cors())
-const port = 80;
+const port = 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Speicher für hochgeladene PDFs
