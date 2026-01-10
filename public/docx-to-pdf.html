@@ -45,7 +45,7 @@
     <form class="card">
       <div class="dropzone">
         <span class="title">Dateien hier ablegen oder klicken</span>
-        <input type="file" name="file" accept=".docx" multiple onchange="showFiles(this)">
+        <input type="file" name="file" accept=".docx" onchange="showFiles(this)">
       </div>
       <ul class="file-list"></ul>
       <button class="btn primary" type="submit">In PDF umwandeln</button>
@@ -59,7 +59,7 @@
       </details>
       <details>
         <summary>Kann ich mehrere Dateien hochladen?</summary>
-        <p>Ja, beim Zusammenfügen können mehrere PDFs gleichzeitig hochgeladen werden.</p>
+        <p>nein,nur beim Zusammenfügen können mehrere PDFs gleichzeitig hochgeladen werden.</p>
       </details>
       <details>
         <summary>Unterstützte Dateiformate?</summary>
