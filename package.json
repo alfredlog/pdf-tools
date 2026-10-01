@@ -1,26 +1,39 @@
 {
-  "name": "pdf",
-  "version": "1.0.0",
+  "name": "pdf-libre",
+  "version": "2.0.0",
+  "description": "PDF Libre – kostenlose PDF-Werkzeuge online: komprimieren, zusammenfügen, teilen, umwandeln, schützen.",
   "main": "app.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "node app.js",
+    "dev": "nodemon --ignore public/ --ignore site/ app.js",
+    "build": "node scripts/build.js",
+    "check": "node scripts/check-setup.js"
   },
-  "author": "",
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Alfred Mushagalusa Munganga",
   "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.5",
-    "docx-pdf": "^0.0.1",
+    "@fontsource/bricolage-grotesque": "^5.2.0",
+    "@fontsource/source-sans-3": "^5.2.0",
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.0",
+    "dotenv": "^17.4.2",
     "express": "^5.1.0",
-    "libreoffice-convert": "^1.6.1",
+    "express-rate-limit": "^8.0.0",
+    "fabric": "^5.3.0",
+    "jszip": "^3.10.1",
     "multer": "^2.0.2",
-    "nodemon": "^3.1.10",
+    "nodemailer": "^7.0.13",
     "pdf-lib": "^1.17.1",
-    "pdf-poppler": "^0.2.1",
-    "pdf2pic": "^3.2.0",
-    "pptxgenjs": "^4.0.1",
-    "sharp": "^0.34.3"
+    "pdfjs-dist": "3.11.174",
+    "pg": "^8.23.0",
+    "sortablejs": "^1.15.6",
+    "stripe": "^22.6.2"
   },
-  "keywords": [],
-  "description": ""
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
 }
