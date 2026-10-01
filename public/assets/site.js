@@ -31,13 +31,29 @@
     });
   }
 
-  // „Datenschutzeinstellungen“: öffnet den Google-Cookie-Banner erneut
+  // „Datenschutzeinstellungen“: öffnet den Google-Cookie-Banner (Google CMP) erneut.
+  // Ist der Banner nicht geladen (noch nicht in AdSense veröffentlicht, Werbeblocker …),
+  // geht es zur Erklärung in der Datenschutzerklärung.
   document.querySelectorAll("[data-consent-settings]").forEach((a) =>
     a.addEventListener("click", (e) => {
       e.preventDefault();
+      const fc = window.googlefc;
+      if (fc && typeof fc.showRevocationMessage === "function") {
+        fc.showRevocationMessage();
+        return;
+      }
+      let opened = false;
       window.googlefc = window.googlefc || {};
       window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
-      window.googlefc.callbackQueue.push(() => window.googlefc.showRevocationMessage && window.googlefc.showRevocationMessage());
+      window.googlefc.callbackQueue.push(() => {
+        if (typeof window.googlefc.showRevocationMessage === "function") {
+          opened = true;
+          window.googlefc.showRevocationMessage();
+        }
+      });
+      setTimeout(() => {
+        if (!opened) location.href = "/Datenschutz.html#einwilligung";
+      }, 1200);
     })
   );
 
