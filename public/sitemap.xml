@@ -1,26 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
     <loc>https://pdf-libre.de/</loc>
+    <lastmod>2026-09-30</lastmod>
     <priority>1.0</priority>
   </url>
-
-  <url>
-    <loc>https://pdf-libre.de/compress.html</loc>
-    <priority>0.8</priority>
-  </url>
-
   <url>
     <loc>https://pdf-libre.de/merge.html</loc>
-    <priority>0.8</priority>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
   </url>
-
+  <url>
+    <loc>https://pdf-libre.de/split.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/remove-pages.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/extract-pages.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/organize.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/rotate.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/compress.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/merge-compress.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/docx-to-pdf.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/ppt-to-pdf.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/excel-to-pdf.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/jpg-to-pdf.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
   <url>
     <loc>https://pdf-libre.de/pdf-to-docx.html</loc>
-    <priority>0.8</priority>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
   </url>
-
-
+  <url>
+    <loc>https://pdf-libre.de/pdf-to-jpg.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/edit.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/create.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/page-numbers.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/watermark.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/protect.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/unlock.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/preise.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/impressum.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/agb.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://pdf-libre.de/Datenschutz.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <priority>0.2</priority>
+  </url>
 </urlset>
-
