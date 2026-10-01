@@ -204,7 +204,9 @@ function gsMerge(inputs, output) {
 // ---------------------------------------------------------------------------
 const app = express();
 app.disable("x-powered-by");
-if (process.env.TRUST_PROXY) app.set("trust proxy", Number(process.env.TRUST_PROXY) || 1);
+// Hinter einem Reverse Proxy (Caddy, nginx) die echte Besucher-IP verwenden.
+// Ohne TRUST_PROXY wird nur ein Proxy auf demselben Server (127.0.0.1) vertraut – das ist immer sicher.
+app.set("trust proxy", process.env.TRUST_PROXY ? Number(process.env.TRUST_PROXY) || 1 : "loopback");
 app.use(compression());
 
 // Stripe-Webhook braucht den unveränderten Rohtext – deshalb ganz vorne
