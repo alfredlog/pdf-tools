@@ -35,7 +35,16 @@ function safeReturnPath(p) {
 }
 
 async function ensureCustomer(user) {
-  if (user.stripe_customer_id) return user.stripe_customer_id;
+  if (user.stripe_customer_id) {
+    // Gespeicherte Kunden-ID prüfen: Nach einem Wechsel des Stripe-Kontos oder von Test auf Live
+    // gibt es sie dort nicht mehr – dann einen neuen Kunden anlegen.
+    try {
+      const existing = await stripe.customers.retrieve(user.stripe_customer_id);
+      if (!existing.deleted) return existing.id;
+    } catch (err) {
+      if (err.code !== "resource_missing") throw err;
+    }
+  }
   const customer = await stripe.customers.create({ email: user.email, metadata: { user_id: String(user.id) } });
   await db.query("UPDATE users SET stripe_customer_id = $1 WHERE id = $2", [customer.id, user.id]);
   return customer.id;
