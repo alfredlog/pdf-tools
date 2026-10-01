@@ -5,7 +5,7 @@
 const nodemailer = require("nodemailer");
 
 const transport = process.env.SMTP_URL ? nodemailer.createTransport(process.env.SMTP_URL) : null;
-const FROM = process.env.MAIL_FROM || "PDF Libre <noreply@pdf-libre.de>";
+const FROM = process.env.MAIL_FROM || "PDF Libre <support@pdf-libre.de>";
 
 async function send({ to, subject, text }) {
   if (!transport) {
