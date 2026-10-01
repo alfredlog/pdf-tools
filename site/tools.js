@@ -755,7 +755,7 @@ const tools = [
   {
     slug: "edit",
     name: "PDF bearbeiten",
-    short: "Text ändern, hinzufügen oder löschen, Bilder und Formen einfügen.",
+    short: "Text ändern, hinzufügen oder löschen, Bilder und Formen einfügen. 14 Tage gratis testen.",
     cat: "edit",
     badge: "PDF",
     glyph: "edit",
@@ -799,7 +799,7 @@ const tools = [
   {
     slug: "create",
     name: "PDF erstellen",
-    short: "Eigene PDF von Grund auf gestalten – mit Text, Bildern und Formen.",
+    short: "Eigene PDF von Grund auf gestalten – mit Text, Bildern und Formen. 14 Tage gratis testen.",
     cat: "edit",
     badge: "PDF",
     glyph: "create",

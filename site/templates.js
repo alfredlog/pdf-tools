@@ -136,6 +136,7 @@ function header(activeSlug) {
         .map((s) => `<a href="${url(s)}"${s === activeSlug ? ' aria-current="page"' : ""}>${esc(bySlug[s].name)}</a>`)
         .join("\n      ")}
     </nav>
+    <a href="/preise.html" class="nav__pricing">Preise</a>
     <a href="/anmelden.html" class="nav__account" data-account>Anmelden</a>
     <button class="nav__burger" type="button" aria-expanded="false" aria-controls="mega" aria-label="Menü öffnen">${ICON.menu}</button>
   </div>
@@ -153,7 +154,7 @@ function footer() {
     <div class="site-footer__grid">
       <div class="site-footer__about">
         <a href="/" class="brand brand--footer">${ICON.logo}<span>PDF Libre</span></a>
-        <p>Kostenlose PDF-Werkzeuge ohne Anmeldung. Viele Werkzeuge laufen direkt in deinem Browser, hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <p>${tools.filter((t) => !t.pro).length} kostenlose PDF-Werkzeuge ohne Anmeldung, dazu PDF Libre Pro zum Bearbeiten und Erstellen von PDFs. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
       </div>
       ${categories
         .map(
@@ -204,7 +205,10 @@ function toolCard(t) {
 
 function homePage() {
   const faq = [
-    ["Ist PDF Libre wirklich kostenlos?", "Ja. Alle Werkzeuge sind kostenlos und ohne Anmeldung nutzbar. Die Seite finanziert sich über Werbung – in deine Dateien wird nie etwas eingefügt."],
+    [
+      "Ist PDF Libre kostenlos?",
+      `Fast alles: ${tools.filter((t) => !t.pro).length} Werkzeuge wie Zusammenfügen, Komprimieren und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur „PDF bearbeiten“ und „PDF erstellen“ gehören zu PDF Libre Pro: ${config.pricing.trialDays} Tage kostenlos testen, danach ${config.pricing.pro} im Monat oder ${config.pricing.daypass} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.`,
+    ],
     ["Was passiert mit meinen Dateien?", "Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."],
     ["Brauche ich ein Programm oder eine App?", "Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."],
     ["Wie groß dürfen meine Dateien sein?", "Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt."],
@@ -230,7 +234,7 @@ function homePage() {
   const body = `<section class="home-hero">
   <div class="wrap">
     <h1>Jedes PDF-Werkzeug, das du im Alltag brauchst.</h1>
-    <p class="home-hero__lead">Zusammenfügen, verkleinern, umwandeln, teilen und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen.</p>
+    <p class="home-hero__lead">Zusammenfügen, verkleinern, umwandeln, teilen und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen. Text in PDFs ändern kannst du mit <a href="/preise.html">PDF Libre Pro</a>.</p>
     <ul class="facts">
       <li>${ICON.device}<span><strong>${tools.filter((t) => t.ui.mode === "client").length} Werkzeuge</strong> laufen komplett in deinem Browser</span></li>
       <li>${ICON.shield}<span><strong>Automatisch gelöscht</strong> nach der Verarbeitung</span></li>
@@ -249,6 +253,18 @@ function homePage() {
   </ul>
 </section>
 
+<section class="wrap pro-band" aria-labelledby="pro-title">
+  <div class="pro-band__text">
+    <p class="pro-band__tag">PDF Libre Pro</p>
+    <h2 id="pro-title">Text in PDFs ändern, Inhalte endgültig löschen, eigene PDFs gestalten.</h2>
+    <p>Der PDF-Editor gehört zu Pro: ${config.pricing.trialDays} Tage kostenlos testen, ohne Zahlungsdaten. Danach ${config.pricing.pro} im Monat (monatlich kündbar) oder ${config.pricing.daypass} für einen Tagespass. Alle anderen Werkzeuge bleiben kostenlos.</p>
+  </div>
+  <div class="pro-band__actions">
+    <a class="btn btn--primary btn--lg" href="/edit.html">PDF-Editor ausprobieren</a>
+    <a class="btn btn--link" href="/preise.html">Preise ansehen</a>
+  </div>
+</section>
+
 <section class="wrap why">
   <h2>Warum PDF Libre?</h2>
   <div class="why__grid">
@@ -258,7 +274,7 @@ function homePage() {
     </div>
     <div>
       <h3>Ohne Konto, ohne Limits pro Tag</h3>
-      <p>Kein Registrieren, keine E-Mail-Adresse, keine Tageskontingente. Seite öffnen, Datei auswählen, fertig.</p>
+      <p>Für die kostenlosen Werkzeuge brauchst du weder Konto noch E-Mail-Adresse, und es gibt keine Tageskontingente. Seite öffnen, Datei auswählen, fertig. Ein Konto brauchst du nur für Pro.</p>
     </div>
     <div>
       <h3>Saubere Ergebnisse</h3>
@@ -275,7 +291,7 @@ function homePage() {
   return page({
     title: "PDF Libre – Kostenlose PDF-Tools online | Ohne Anmeldung",
     description:
-      "Kostenlose PDF-Werkzeuge: PDF zusammenfügen, komprimieren, teilen, in Word umwandeln, drehen, schützen und mehr. Ohne Anmeldung, ohne Wasserzeichen.",
+      "Kostenlose PDF-Werkzeuge: PDF zusammenfügen, komprimieren, teilen, in Word umwandeln, drehen, schützen und mehr – ohne Anmeldung. Dazu PDF-Editor mit Pro.",
     slug: "",
     body,
     jsonLd,
@@ -587,7 +603,7 @@ function editorWorkspace(t) {
         <p class="drop__or">oder PDF hierher ziehen</p>
         <p class="drop__hint">Oder <button type="button" class="btn--inline" data-ed-blank>mit einer leeren Seite beginnen</button></p>
       </div>
-      <p class="privacy">${ICON.device}<span><strong>Kostenlos ausprobieren:</strong> Bearbeiten geht ohne Konto. Zum Herunterladen: ${P.trialDays} Tage gratis testen.</span></p>
+      <p class="privacy">${ICON.device}<span><strong>Pro-Werkzeug:</strong> Bearbeiten geht ohne Konto. Zum Herunterladen brauchst du ein Konto: ${P.trialDays} Tage gratis, danach ${P.pro}/Monat oder ${P.daypass} Tagespass. <a href="/preise.html">Preise</a></span></p>
     </div>
 
     <div class="stage stage--editor"${blank ? "" : " hidden"}>
@@ -894,8 +910,9 @@ function impressum() {
 
 function datenschutz() {
   const ga = config.analyticsId
-    ? `<h2>Einwilligung (Cookie-Banner)</h2>
-  <p>Google Analytics und Google AdSense werden erst aktiv, wenn du im Cookie-Banner zustimmst. Deine Auswahl kannst du jederzeit über „Datenschutzeinstellungen“ unten auf jeder Seite ändern. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG).</p>
+    ? `<h2 id="einwilligung">Einwilligung (Cookie-Banner)</h2>
+  <p>Google Analytics und Google AdSense werden erst aktiv, wenn du im Cookie-Banner zustimmst. Ohne Zustimmung setzen sie keine Cookies. Deine Auswahl kannst du jederzeit über „Datenschutzeinstellungen“ unten auf jeder Seite ändern. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG).</p>
+  <p>Öffnet sich beim Klick auf „Datenschutzeinstellungen“ kein Fenster, blockiert dein Browser oder ein Werbeblocker den Cookie-Banner. Dann werden auch keine Analyse- oder Werbe-Cookies gesetzt. Bereits gespeicherte Cookies kannst du jederzeit in den Einstellungen deines Browsers löschen.</p>
   <h2>Google Analytics</h2>
   <p>Diese Website nutzt Google Analytics 4 der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, um die Nutzung der Website statistisch auszuwerten. Dabei werden Cookies gesetzt und Nutzungsdaten (z. B. aufgerufene Seiten, ungefährer Standort, Gerätetyp) an Google übermittelt. IP-Adressen werden gekürzt. Weitere Informationen: <a href="https://policies.google.com/privacy" rel="noopener">Datenschutzerklärung von Google</a>.</p>`
     : "";
