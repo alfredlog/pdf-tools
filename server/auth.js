@@ -46,6 +46,23 @@ function setSessionCookie(res, token, maxAgeSec) {
   res.append("Set-Cookie", hint.join("; "));
 }
 
+/**
+ * Lesbares Cookie pl_noads=1 für Nutzer mit Pro, Tagespass oder Testphase:
+ * Die Seiten laden AdSense dann gar nicht erst. Es enthält keine Geheimnisse,
+ * der Zugang selbst wird weiterhin nur auf dem Server geprüft.
+ */
+function setAdsCookie(res, user) {
+  const a = accessOf(user);
+  let maxAge = 0;
+  if (a.active) {
+    const until = a.until ? new Date(a.until).getTime() - Date.now() : 0;
+    maxAge = until > 0 ? Math.min(Math.floor(until / 1000), SESSION_DAYS * 86400) : SESSION_DAYS * 86400;
+  }
+  const parts = [`pl_noads=${maxAge ? 1 : ""}`, "Path=/", "SameSite=Lax", `Max-Age=${maxAge}`];
+  if (secureCookie) parts.push("Secure");
+  res.append("Set-Cookie", parts.join("; "));
+}
+
 async function createSession(res, userId) {
   const token = crypto.randomBytes(32).toString("base64url");
   await db.query("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + $3::interval)", [
@@ -130,7 +147,10 @@ function router() {
     message: { error: "Zu viele Versuche. Bitte warte 15 Minuten." },
   });
 
-  r.get("/me", (req, res) => res.json({ enabled: db.enabled, user: publicUser(req.user) }));
+  r.get("/me", (req, res) => {
+    setAdsCookie(res, req.user);
+    res.json({ enabled: db.enabled, user: publicUser(req.user) });
+  });
 
   r.post(
     "/register",
@@ -156,6 +176,7 @@ function router() {
         throw e;
       }
       await createSession(res, user.id);
+      setAdsCookie(res, user);
       res.status(201).json({ user: publicUser(user) });
     })
   );
@@ -173,6 +194,7 @@ function router() {
       const ok = await bcrypt.compare(password, user ? user.password_hash : DUMMY_HASH);
       if (!user || !ok) throw new ApiError("E-Mail-Adresse oder Passwort ist falsch.", 401);
       await createSession(res, user.id);
+      setAdsCookie(res, user);
       res.json({ user: publicUser(user) });
     })
   );
@@ -183,6 +205,7 @@ function router() {
       const token = readCookie(req, COOKIE);
       if (token && db.enabled) await db.query("DELETE FROM sessions WHERE token_hash = $1", [sha256(token)]);
       setSessionCookie(res, "", 0);
+      setAdsCookie(res, null);
       res.json({ ok: true });
     })
   );
