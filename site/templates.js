@@ -60,7 +60,7 @@ const ICON = {
 // ---------------------------------------------------------------------------
 // Kopf, Kopfzeile, Fußzeile
 // ---------------------------------------------------------------------------
-function trackingScripts() {
+function trackingScripts(ads = true) {
   if (!config.analyticsId && !config.adsenseClient) return "";
   // Consent Mode v2: Alles ist verboten, bis der Besucher im Cookie-Banner (Google CMP) zustimmt
   let s = `
@@ -74,13 +74,18 @@ function trackingScripts() {
   }
   if (config.adsenseClient) {
     s += `
-  <meta name="google-adsense-account" content="${config.adsenseClient}">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${config.adsenseClient}" crossorigin="anonymous"></script>`;
+  <meta name="google-adsense-account" content="${config.adsenseClient}">`;
+    // Werbung nur auf Inhaltsseiten und nicht für Nutzer mit Pro, Tagespass oder Testphase
+    // (der Server setzt dafür das Cookie pl_noads=1, siehe server/auth.js)
+    if (ads) {
+      s += `
+  <script>if(!/(?:^|;\\s*)pl_noads=1/.test(document.cookie)){var a=document.createElement("script");a.async=true;a.crossOrigin="anonymous";a.src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${config.adsenseClient}";document.head.appendChild(a);}</script>`;
+    }
   }
   return s;
 }
 
-function head({ title, description, slug, jsonLd = [], noindex = false, extraHead = "" }) {
+function head({ title, description, slug, jsonLd = [], noindex = false, extraHead = "", ads = true }) {
   const canonical = absUrl(slug);
   return `<!doctype html>
 <html lang="de">
@@ -107,7 +112,7 @@ function head({ title, description, slug, jsonLd = [], noindex = false, extraHea
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/style.css?v=${BUILD_ID}">
-${jsonLd.map((j) => `  <script type="application/ld+json">${JSON.stringify(j)}</script>`).join("\n")}${trackingScripts()}${extraHead}
+${jsonLd.map((j) => `  <script type="application/ld+json">${JSON.stringify(j)}</script>`).join("\n")}${trackingScripts(ads)}${extraHead}
 </head>`;
 }
 
@@ -177,8 +182,8 @@ function footer() {
 </footer>`;
 }
 
-function page({ title, description, slug, body, jsonLd, activeSlug, noindex, scripts = "" }) {
-  return `${head({ title, description, slug, jsonLd, noindex })}
+function page({ title, description, slug, body, jsonLd, activeSlug, noindex, scripts = "", ads = true }) {
+  return `${head({ title, description, slug, jsonLd, noindex, ads })}
 <body>
 ${header(activeSlug)}
 <main id="inhalt">
@@ -543,7 +548,7 @@ function toolPage(t) {
     const scripts = ["/vendor/pdf.min.js", "/vendor/fabric.min.js", `/assets/account.js?v=${BUILD_ID}`, `/assets/editor.js?v=${BUILD_ID}`]
       .map((s) => `\n<script src="${s}" defer></script>`)
       .join("");
-    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts });
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts, ads: false });
   }
   const needsPdfJs = t.ui.preview === "pages";
   const needsPdfLib = t.ui.mode === "client";
@@ -744,6 +749,7 @@ function pricingPage() {
     title: "Preise – PDF Libre Pro | PDF bearbeiten & erstellen",
     description: `PDF Libre Pro: PDF bearbeiten und erstellen. ${P.trialDays} Tage kostenlos testen, danach ${P.pro} im Monat oder Tagespass für ${P.daypass}. Alle anderen Werkzeuge bleiben gratis.`,
     slug: "preise",
+    ads: false,
     jsonLd: [faqLd(faq)],
     body: `<div class="tool-head wrap">
   <h1>Einfache Preise</h1>
@@ -784,6 +790,7 @@ function loginPage() {
     title: "Anmelden | PDF Libre",
     description: "Bei PDF Libre anmelden oder kostenlos registrieren.",
     slug: "anmelden",
+    ads: false,
     noindex: true,
     scripts: accountScripts(),
     body: `<section class="wrap narrow" data-page="login">
@@ -799,6 +806,7 @@ function accountPage() {
     title: "Mein Konto | PDF Libre",
     description: "Dein PDF Libre Konto.",
     slug: "konto",
+    ads: false,
     noindex: true,
     scripts: accountScripts(),
     body: `<section class="wrap narrow" data-page="account">
@@ -828,6 +836,7 @@ function forgotPage() {
     title: "Passwort vergessen | PDF Libre",
     description: "Passwort für dein PDF Libre Konto zurücksetzen.",
     slug: "passwort-vergessen",
+    ads: false,
     noindex: true,
     scripts: accountScripts(),
     body: `<section class="wrap narrow" data-page="forgot">
@@ -961,6 +970,7 @@ function notFound() {
     title: "Seite nicht gefunden | PDF Libre",
     description: "Diese Seite gibt es nicht.",
     slug: "404",
+    ads: false,
     noindex: true,
     body: `<section class="wrap notfound">
   <h1>Diese Seite gibt es nicht.</h1>
