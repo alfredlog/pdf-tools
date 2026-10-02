@@ -74,6 +74,7 @@ function trackingScripts() {
   }
   if (config.adsenseClient) {
     s += `
+  <meta name="google-adsense-account" content="${config.adsenseClient}">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${config.adsenseClient}" crossorigin="anonymous"></script>`;
   }
   return s;
