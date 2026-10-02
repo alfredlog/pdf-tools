@@ -222,6 +222,15 @@ app.use((req, res, next) => {
 // /index.html → / (eine URL pro Seite ist besser für Google)
 app.get("/index.html", (req, res) => res.redirect(301, "/"));
 
+// /compress.html/ → /compress.html (Google hat alte Links mit Schrägstrich am Ende gefunden)
+app.use((req, res, next) => {
+  if ((req.method === "GET" || req.method === "HEAD") && /\.html\/+$/.test(req.path)) {
+    const q = req.originalUrl.indexOf("?");
+    return res.redirect(301, req.path.replace(/\/+$/, "") + (q >= 0 ? req.originalUrl.slice(q) : ""));
+  }
+  next();
+});
+
 app.use(
   express.static(path.join(__dirname, "public"), {
     extensions: ["html"],
