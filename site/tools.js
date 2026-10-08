@@ -795,6 +795,14 @@ const tools = [
       ["Werden meine Dateien gespeichert?", "Nein. Beim Herunterladen wird die PDF verschlüsselt an den Server geschickt, verarbeitet und direkt danach gelöscht."],
     ],
     related: ["create", "watermark", "page-numbers", "protect"],
+    // Texte, wenn die Bezahlung ausgeschaltet ist (PAYMENTS_ENABLED=false)
+    free: {
+      short: "Text ändern, hinzufügen oder löschen, Bilder und Formen einfügen. Kostenlos.",
+      description:
+        "PDF kostenlos online bearbeiten: vorhandenen Text ändern, neuen Text, Bilder, Formen und Unterschriften einfügen, Inhalte endgültig löschen. Ohne Anmeldung.",
+      steps: { 3: ["Herunterladen", "Klicke auf „Herunterladen“ – deine bearbeitete PDF wird sofort gespeichert. Kostenlos und ohne Konto."] },
+      faq: { 0: ["Was kostet der PDF-Editor?", "Nichts. Der PDF-Editor ist kostenlos und ohne Anmeldung nutzbar – ohne Wasserzeichen."] },
+    },
   },
   {
     slug: "create",
@@ -830,6 +838,13 @@ const tools = [
       ["Was kostet das?", "14 Tage kostenlos, danach 4,99 € im Monat oder 2,99 € für einen Tagespass."],
     ],
     related: ["edit", "jpg-to-pdf", "merge", "page-numbers"],
+    free: {
+      short: "Eigene PDF von Grund auf gestalten – mit Text, Bildern und Formen. Kostenlos.",
+      description:
+        "Neue PDF kostenlos online erstellen: leere Seiten in A4, A5 oder US Letter mit Text, Bildern, Formen und Zeichnungen gestalten. Ohne Anmeldung.",
+      steps: { 3: ["Herunterladen", "Klicke auf „Herunterladen“ – kostenlos und ohne Konto."] },
+      faq: { 2: ["Was kostet das?", "Nichts. PDF erstellen ist kostenlos und ohne Anmeldung nutzbar."] },
+    },
   },
   {
     slug: "page-numbers",
