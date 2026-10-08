@@ -8,6 +8,7 @@ const bcrypt = require("bcryptjs");
 const { rateLimit } = require("express-rate-limit");
 const db = require("./db");
 const mail = require("./mail");
+const payments = require("./payments");
 
 const COOKIE = "pl_session";
 const SESSION_DAYS = 30;
@@ -124,6 +125,8 @@ function requireUser(req, res, next) {
 }
 
 function requireAccess(req, res, next) {
+  // Bezahlung ausgeschaltet: alles kostenlos, kein Konto nötig
+  if (!payments.enabled) return next();
   if (!req.user) return next(new ApiError("Bitte melde dich an, um die Datei herunterzuladen.", 401, "login"));
   if (!accessOf(req.user).active) return next(new ApiError("Deine Testphase ist abgelaufen. Wähle einen Tarif, um weiterzumachen.", 402, "payment"));
   next();

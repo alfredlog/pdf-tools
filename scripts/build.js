@@ -14,11 +14,11 @@ const ROOT = path.join(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
 const NM = path.join(ROOT, "node_modules");
 
-function write(rel, content) {
-  const file = path.join(PUBLIC, rel);
+function write(rel, content, base = PUBLIC) {
+  const file = path.join(base, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content);
-  console.log("  ✓", rel);
+  console.log("  ✓", path.relative(PUBLIC, file));
 }
 
 function copy(from, toRel) {
@@ -56,27 +56,45 @@ write("passwort-vergessen.html", T.forgotPage());
 
 console.log("SEO:");
 const today = new Date().toISOString().slice(0, 10);
-const urls = [
-  { loc: T.absUrl(""), priority: "1.0" },
-  ...T.tools.map((t) => ({ loc: T.absUrl(t.slug), priority: "0.9" })),
-  { loc: T.absUrl("preise"), priority: "0.6" },
-  { loc: T.absUrl("impressum"), priority: "0.2" },
-  { loc: T.absUrl("agb"), priority: "0.2" },
-  { loc: T.absUrl("Datenschutz"), priority: "0.2" },
-];
-write(
-  "sitemap.xml",
-  `<?xml version="1.0" encoding="UTF-8"?>
+function sitemap(free, base) {
+  const urls = [
+    { loc: T.absUrl(""), priority: "1.0" },
+    ...T.tools.map((t) => ({ loc: T.absUrl(t.slug), priority: "0.9" })),
+    ...(free ? [] : [{ loc: T.absUrl("preise"), priority: "0.6" }]),
+    { loc: T.absUrl("impressum"), priority: "0.2" },
+    ...(free ? [] : [{ loc: T.absUrl("agb"), priority: "0.2" }]),
+    { loc: T.absUrl("Datenschutz"), priority: "0.2" },
+  ];
+  write(
+    "sitemap.xml",
+    `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>${u.priority}</priority>\n  </url>`).join("\n")}
 </urlset>
-`
-);
+`,
+    base
+  );
+}
+sitemap(false, PUBLIC);
 // sw.js: Der alte Push-Werbe-Service-Worker meldet sich bei Besuchern, die ihn noch haben, selbst ab
 write("sw.js", `self.addEventListener("install", () => self.skipWaiting());\nself.addEventListener("activate", () => self.registration.unregister());\n`);
 // ads.txt: Pflicht für AdSense
 write("ads.txt", config.adsenseClient ? `google.com, ${config.adsenseClient.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n` : "");
 write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
+
+// Kostenlose Fassung (PAYMENTS_ENABLED=false): nur die Seiten, die sich unterscheiden.
+// Der Server liefert sie vor den Pro-Seiten aus; alles andere kommt weiter aus /public.
+console.log("Kostenlose Fassung (public/_free):");
+const FREE = path.join(PUBLIC, "_free");
+fs.rmSync(FREE, { recursive: true, force: true });
+T.setFreeMode();
+write("index.html", T.homePage(), FREE);
+for (const tool of T.tools) write(`${tool.slug}.html`, T.toolPage(tool), FREE);
+write("impressum.html", T.impressum(), FREE);
+write("Datenschutz.html", T.datenschutz(), FREE);
+write("404.html", T.notFound(), FREE);
+write("passwort-vergessen.html", T.forgotPage(), FREE);
+sitemap(true, FREE);
 
 console.log("Bibliotheken:");
 copy("pdf-lib/dist/pdf-lib.min.js", "vendor/pdf-lib.min.js");

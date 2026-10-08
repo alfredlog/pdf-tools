@@ -8,6 +8,7 @@ const path = require("path");
 const fsp = require("fs/promises");
 const crypto = require("crypto");
 const { requireAccess, requireDb, ApiError } = require("./auth");
+const payments = require("./payments");
 
 module.exports = function editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_MB }) {
   const r = express.Router();
@@ -32,7 +33,10 @@ module.exports = function editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_
     { name: "images", maxCount: 40 },
   ]);
 
-  r.post("/export", requireDb, requireAccess, jobDir, (req, res, next) =>
+  // Mit Bezahlung: Konto + Zugang prüfen. Ohne: kostenlos für alle, auch ohne Datenbank.
+  const access = payments.enabled ? [requireDb, requireAccess] : [];
+
+  r.post("/export", ...access, jobDir, (req, res, next) =>
     upload(req, res, async (err) => {
       try {
         if (err) {

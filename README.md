@@ -29,6 +29,17 @@ npm start                 # → http://localhost:3000
 
 Ohne `DATABASE_URL` laufen alle kostenlosen Werkzeuge trotzdem – nur Konten und der Editor-Download sind dann aus.
 
+## Bezahlung an/aus
+
+In der `.env`:
+
+```bash
+PAYMENTS_ENABLED=false   # alles kostenlos (Standard)
+PAYMENTS_ENABLED=true    # PDF-Editor kostenpflichtig (Pro + Tagespass)
+```
+
+Danach den Server neu starten. `npm run build` erzeugt beide Fassungen der Seiten: die Pro-Seiten in `public/` und die kostenlosen in `public/_free/` – der Server wählt je nach Schalter.
+
 ## Pro einrichten (Konten + Stripe)
 
 **Datenbank:** Die Tabellen legt der Server beim Start selbst an. Lokal reicht `docker compose up -d`. Für den Livebetrieb eignet sich jede PostgreSQL-Datenbank (z. B. Neon, Supabase, Render); dann `DATABASE_SSL=true`.
@@ -73,6 +84,7 @@ public/              fertige Website (wird vom Server ausgeliefert)
 
 | Variable | Standard | Bedeutung |
 |---|---|---|
+| `PAYMENTS_ENABLED` | `false` | `false` = **alles kostenlos**, kein Konto nötig, keine Preisseite. `true` = PDF-Editor nur mit Pro/Tagespass (Stripe). Nach Änderung Server neu starten. |
 | `PORT` | 3000 | Port |
 | `MAX_FILE_MB` | 50 | max. Größe pro Datei |
 | `RATE_LIMIT` | 60 | Anfragen pro IP in 10 Minuten |

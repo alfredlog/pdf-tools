@@ -7,7 +7,7 @@
  *   Ghostscript  → komprimieren, zusammenfügen, schützen, entsperren
  *   LibreOffice  → Word / PowerPoint / Excel → PDF
  *   Python + pdf2docx → PDF → Word
- *   Python + PyMuPDF  → PDF-Editor (Pro, mit Konto)
+ *   Python + PyMuPDF  → PDF-Editor (kostenlos oder Pro – siehe PAYMENTS_ENABLED)
  */
 require("dotenv").config({ quiet: true });
 const express = require("express");
@@ -23,6 +23,7 @@ const { execFile } = require("child_process");
 const db = require("./server/db");
 const auth = require("./server/auth");
 const billing = require("./server/billing");
+const payments = require("./server/payments");
 const editorRouter = require("./server/editor");
 
 // ---------------------------------------------------------------------------
@@ -231,6 +232,19 @@ app.use((req, res, next) => {
   next();
 });
 
+// Ohne Bezahlung: Preisseite gibt es nicht, und die kostenlose Fassung der Seiten
+// (public/_free, erzeugt mit `npm run build`) hat Vorrang vor den Pro-Seiten.
+const FREE_DIR = path.join(__dirname, "public", "_free");
+app.use((req, res, next) => {
+  if (/^\/_free(\/|$)/.test(req.path)) return res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
+  next();
+});
+if (!payments.enabled) {
+  app.get(["/preise", "/preise.html"], (req, res) => res.redirect(302, "/"));
+  if (!fs.existsSync(FREE_DIR)) console.warn("public/_free fehlt – bitte `npm run build` ausführen.");
+  app.use(express.static(FREE_DIR, { extensions: ["html"], index: "index.html" }));
+}
+
 app.use(
   express.static(path.join(__dirname, "public"), {
     extensions: ["html"],
@@ -427,7 +441,7 @@ app.get("/api/health", async (req, res) => {
     check(PYTHON, ["-c", "import pdf2docx"]),
   ]);
   const pymupdf = await check(PYTHON, ["-c", "import pymupdf"]);
-  res.json({ ok: true, ghostscript, libreoffice, pdf2docx, pymupdf, database: db.enabled, stripe: billing.enabled });
+  res.json({ ok: true, ghostscript, libreoffice, pdf2docx, pymupdf, database: db.enabled, stripe: billing.enabled, payments: payments.enabled });
 });
 
 app.use("/api/auth", auth.router());
@@ -460,7 +474,8 @@ app.use((err, req, res, next) => {
 
 // 404
 app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
+  const free404 = path.join(FREE_DIR, "404.html");
+  res.status(404).sendFile(!payments.enabled && fs.existsSync(free404) ? free404 : path.join(__dirname, "public", "404.html"));
 });
 
 // Liegengebliebene Dateien (z. B. nach Absturz) regelmäßig aufräumen
@@ -491,5 +506,6 @@ db.init()
   .then(() => app.listen(PORT, () => {
   console.log(`PDF Libre läuft auf http://localhost:${PORT}`);
   console.log(`Prüfe die installierten Programme: http://localhost:${PORT}/api/health`);
+  console.log(`Bezahlung: ${payments.enabled ? "an (PDF-Editor mit Pro)" : "aus – alle Werkzeuge kostenlos"}`);
   console.log(`Konten: ${db.enabled ? "an" : "aus (DATABASE_URL fehlt)"} · Stripe: ${billing.enabled ? "an" : "aus (STRIPE_* fehlt)"}`);
 }));

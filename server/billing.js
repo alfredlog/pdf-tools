@@ -7,6 +7,7 @@
 const express = require("express");
 const Stripe = require("stripe");
 const db = require("./db");
+const payments = require("./payments");
 const { requireUser, requireDb, publicUser, ApiError, appUrl } = require("./auth");
 
 const PASS_HOURS = Number(process.env.DAYPASS_HOURS) || 24;
@@ -24,6 +25,11 @@ const stripe = enabled
   : null;
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
+function requirePayments(req, res, next) {
+  if (!payments.enabled) return next(new ApiError("Alle Werkzeuge sind gerade kostenlos – eine Zahlung ist nicht nötig.", 410));
+  next();
+}
 
 function requireStripe(req, res, next) {
   if (!enabled) return next(new ApiError("Zahlungen sind auf diesem Server noch nicht eingerichtet.", 503));
@@ -90,11 +96,12 @@ function router() {
   const r = express.Router();
   r.use(express.json({ limit: "10kb" }));
 
-  r.get("/config", (req, res) => res.json({ enabled }));
+  r.get("/config", (req, res) => res.json({ enabled: enabled && payments.enabled }));
 
   // Weiterleitung zu Stripe Checkout
   r.post(
     "/checkout",
+    requirePayments,
     requireDb,
     requireStripe,
     requireUser,
