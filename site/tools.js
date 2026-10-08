@@ -448,11 +448,11 @@ const tools = [
     cat: "to-pdf",
     badge: "DOC",
     glyph: "word",
-    title: "Word in PDF umwandeln – DOCX zu PDF kostenlos | PDF Libre",
+    title: "DOCX in PDF umwandeln – Word zu PDF, kostenlos online | PDF Libre",
     description:
-      "Word in PDF umwandeln: DOC, DOCX, ODT und RTF online in PDF konvertieren – Layout, Schriften und Bilder bleiben erhalten. Kostenlos, ohne Anmeldung.",
-    h1: "Word in PDF umwandeln",
-    lead: "Wandle Word-Dokumente in PDFs um, die auf jedem Gerät gleich aussehen – ideal für Bewerbungen, Rechnungen und Verträge.",
+      "DOCX in PDF umwandeln (docx to pdf): Word-Dateien online in PDF konvertieren – ohne Word, ohne Anmeldung, ohne Wasserzeichen. Auch DOC, ODT und RTF. Kostenlos.",
+    h1: "DOCX in PDF umwandeln – Word zu PDF",
+    lead: "Wandle DOCX- und DOC-Dateien kostenlos in PDFs um, die auf jedem Gerät gleich aussehen – ideal für Bewerbungen, Rechnungen, Hausarbeiten und Verträge.",
     ui: {
       mode: "server",
       endpoint: "/api/word-to-pdf",
@@ -461,11 +461,18 @@ const tools = [
       dropHint: "DOC, DOCX, ODT oder RTF, bis zu 50 MB",
     },
     steps: [
-      ["Word-Datei auswählen", "Wähle eine DOCX-, DOC-, ODT- oder RTF-Datei aus."],
-      ["Umwandeln", "Klicke auf „In PDF umwandeln“. Die Umwandlung dauert meist nur ein paar Sekunden."],
-      ["Herunterladen", "Speichere die fertige PDF."],
+      ["DOCX-Datei auswählen", "Klicke auf „Datei auswählen“ oder ziehe deine DOCX-Datei in das Feld. Auch DOC, ODT und RTF funktionieren."],
+      ["In PDF umwandeln", "Klicke auf „In PDF umwandeln“. Die Umwandlung von DOCX zu PDF dauert meist nur ein paar Sekunden."],
+      ["PDF herunterladen", "Speichere die fertige PDF. Deine DOCX-Datei wird danach automatisch vom Server gelöscht."],
     ],
     article: [
+      {
+        h: "DOCX zu PDF – ohne Word, auf jedem Gerät",
+        p: [
+          "Du brauchst kein Microsoft Word, um eine DOCX-Datei in PDF umzuwandeln. PDF Libre erledigt die Umwandlung im Browser – auf Windows, Mac, Linux, Chromebook, Android und iPhone. Das ist praktisch, wenn du eine DOCX-Datei per E-Mail bekommen hast und sie als PDF weiterleiten, ausdrucken oder in ein Bewerbungsportal hochladen musst.",
+          "Seitenränder, Kopf- und Fußzeilen, Tabellen, Bilder und Seitenumbrüche aus der DOCX-Datei werden in die PDF übernommen. Überschriften und Links bleiben erhalten, der Text bleibt durchsuchbar und kopierbar.",
+        ],
+      },
       {
         h: "Warum PDF statt Word verschicken?",
         p: [
@@ -480,6 +487,8 @@ const tools = [
       },
     ],
     faq: [
+      ["Wie wandle ich DOCX in PDF um?", "DOCX-Datei oben auswählen, auf „In PDF umwandeln“ klicken und die PDF herunterladen. Kostenlos, ohne Anmeldung und ohne Wasserzeichen."],
+      ["Kann ich DOCX in PDF umwandeln, ohne Word zu haben?", "Ja. Die Umwandlung läuft auf unserem Server, du brauchst nur einen Browser – auch am Handy."],
       ["Welche Formate werden unterstützt?", "DOCX, DOC, ODT (LibreOffice/OpenOffice) und RTF."],
       ["Bleiben Links und Inhaltsverzeichnis erhalten?", "Ja, Hyperlinks und Überschriften werden in die PDF übernommen."],
       ["Warum sieht meine PDF leicht anders aus als in Word?", "Meist liegt es an einer Schrift, die auf dem Server nicht installiert ist. Mit einer Standardschrift oder mit in Word eingebetteten Schriften passiert das nicht."],
