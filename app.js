@@ -25,6 +25,7 @@ const auth = require("./server/auth");
 const billing = require("./server/billing");
 const payments = require("./server/payments");
 const editorRouter = require("./server/editor");
+const agentApi = require("./server/agent-api");
 
 // ---------------------------------------------------------------------------
 // Konfiguration (über Umgebungsvariablen anpassbar)
@@ -447,6 +448,15 @@ app.get("/api/health", async (req, res) => {
 app.use("/api/auth", auth.router());
 app.use("/api/billing", billing.router());
 app.use("/api/pro", apiLimiter, editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_MB }));
+
+// Agenten-API (Bezahlung pro Aufruf in BSV, siehe server/agent-api.js) – nur wenn AGENT_API_ENABLED=true
+if (agentApi.enabled) {
+  try {
+    app.use("/agent/v1", apiLimiter, agentApi.router({ gsCompress, gsMerge, jobDir, outName, MAX_FILE_MB }));
+  } catch (e) {
+    console.error("Agenten-API nicht gestartet:", e.message);
+  }
+}
 app.use("/api", api);
 
 // Alte URLs der ersten Version weiter unterstützen
@@ -508,4 +518,5 @@ db.init()
   console.log(`Prüfe die installierten Programme: http://localhost:${PORT}/api/health`);
   console.log(`Bezahlung: ${payments.enabled ? "an (PDF-Editor mit Pro)" : "aus – alle Werkzeuge kostenlos"}`);
   console.log(`Konten: ${db.enabled ? "an" : "aus (DATABASE_URL fehlt)"} · Stripe: ${billing.enabled ? "an" : "aus (STRIPE_* fehlt)"}`);
+  if (agentApi.enabled) console.log(`Agenten-API: http://localhost:${PORT}/agent/v1 (Bezahlung in BSV)`);
 }));
