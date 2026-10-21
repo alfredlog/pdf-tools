@@ -90,6 +90,24 @@ public/              fertige Website (wird vom Server ausgeliefert)
 | `RATE_LIMIT` | 60 | Anfragen pro IP in 10 Minuten |
 | `TRUST_PROXY` | – | auf `1` setzen, wenn der Server hinter nginx/Cloudflare läuft |
 | `GS_PATH`, `SOFFICE_PATH`, `PYTHON_PATH` | automatisch | Pfade, falls die Programme nicht gefunden werden |
+| `AGENT_API_ENABLED` | `false` | `true` = Agenten-API unter `/agent/v1` an (siehe unten) |
+| `AGENT_PAY_SECRET` | – | Pflicht für die Agenten-API: lange Zufallszeichenkette, daraus werden die BSV-Zahlungsadressen abgeleitet. **Geheim halten.** |
+| `AGENT_BSV_NETWORK` | `test` | `test` = BSV-Testnet (Münzen ohne Wert), `main` = echtes Geld |
+| `AGENT_SKIP_BROADCAST` | – | nur für Tests ohne Internet: Zahlungen prüfen, aber nicht ins Netz senden |
+
+## Agenten-API (Bezahlung pro Aufruf in BSV)
+
+KI-Agenten können PDFs komprimieren und zusammenfügen und **pro Aufruf in Satoshis bezahlen** – ohne Konto, ohne Abo. Protokoll: HTTP 402 nach [BRC-166](https://github.com/bsv-blockchain/BRCs/blob/master/payments/0166.md) (x402 auf BSV).
+
+| Aufruf | Preis | JSON-Body |
+|---|---|---|
+| `GET /agent/v1` | kostenlos | – (Liste der Werkzeuge und Preise) |
+| `POST /agent/v1/compress` | 20 sats | `{ "pdf": "<base64>", "level": "recommended", "filename": "Rechnung.pdf" }` |
+| `POST /agent/v1/merge` | 30 sats | `{ "pdfs": ["<base64>", "<base64>"] }` |
+
+Ablauf: Aufruf ohne Zahlung → `402` mit Rechnung (Header `PAYMENT-REQUIRED`) → derselbe Aufruf mit signierter Transaktion (Header `PAYMENT-SIGNATURE`) → Ergebnis als JSON (`pdf` in Base64) + Quittung im Header `PAYMENT-RESPONSE`.
+
+**Der Agent zahlt nur für echte Arbeit:** Ist die Datei keine PDF, beschädigt oder ohne Seiten, wird die Transaktion nicht gesendet. Die Website selbst bleibt unverändert und kostenlos. Für die Agenten-API `npm install` ausführen (neue Abhängigkeit `@bsv/sdk`).
 
 ## Nach dem Deployment (Google)
 
