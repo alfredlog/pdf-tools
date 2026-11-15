@@ -221,16 +221,15 @@ module.exports = [
     h1: "PDF in PowerPoint umwandeln",
     lead: "Mach aus einer PDF wieder eine bearbeitbare Präsentation – jede Seite wird eine Folie.",
     ui: {
-      mode: "server",
-      endpoint: "/api/pdf-to-powerpoint",
+      mode: "slides",
+      endpoint: "/api/slides/analyze",
       input: PDF,
-      action: "In PowerPoint umwandeln",
-      dropHint: "PDF-Datei, bis zu 50 MB",
+      action: "PowerPoint herunterladen",
     },
     steps: [
-      ["PDF auswählen", "Wähle die PDF aus, z. B. eine als PDF gespeicherte Präsentation."],
-      ["Umwandeln", "Klicke auf „In PowerPoint umwandeln“."],
-      ["Bearbeiten", "Öffne die PPTX-Datei in PowerPoint, Keynote, LibreOffice oder Google Präsentationen und ändere Texte direkt."],
+      ["PDF auswählen", "Wähle die PDF aus, z. B. Vorlesungsfolien oder eine als PDF gespeicherte Präsentation."],
+      ["Design wählen", "Sieh dir die Folien in der Vorschau an und wähle Design, Hintergrund, Akzentfarbe, Schrift und Format."],
+      ["Herunterladen", "Lade die PPTX-Datei herunter und ändere Texte direkt in PowerPoint, Keynote, LibreOffice oder Google Präsentationen."],
     ],
     article: [
       {
@@ -239,11 +238,19 @@ module.exports = [
           "Oft gibt es von einem Vortrag nur noch die PDF-Version. Mit diesem Werkzeug bekommst du wieder Folien, auf denen du Texte ändern, Folien löschen oder ergänzen kannst. Texte werden als echte Textfelder übernommen, Bilder und Formen bleiben an ihrem Platz.",
         ],
       },
+      {
+        h: "Neues Design mit einem Klick",
+        p: [
+          "Vor dem Herunterladen siehst du alle Folien in einer Vorschau. Wähle ein fertiges Design (Original, Modern, Dunkel, Sanft) oder stelle Hintergrund, Akzentfarbe und Schrift selbst ein. Auf Wunsch wird das Format auf 16:9 umgestellt und die wiederkehrende Kopf- und Fußzeile entfernt.",
+          "Auch LaTeX-/Beamer-Folien funktionieren: Der Text wird bearbeitbar, Formeln bleiben gestochen scharf als Bild erhalten.",
+        ],
+      },
     ],
     faq: [
-      ["Bleibt der Text bearbeitbar?", "Ja. Texte werden als Textfelder übernommen. Schriften, die nicht installiert sind, ersetzt PowerPoint durch eine ähnliche Schrift."],
+      ["Bleibt der Text bearbeitbar?", "Ja. Texte werden als Textfelder übernommen. Mathematische Formeln bleiben als Bild erhalten. Schriften, die nicht installiert sind, ersetzt PowerPoint durch eine ähnliche Schrift – oder du wählst vorher selbst eine Standardschrift wie Calibri oder Arial."],
+      ["Kann ich das Design ändern?", "Ja. Vor dem Herunterladen wählst du Hintergrund, Akzentfarbe, Schrift und Folienformat und siehst das Ergebnis sofort in der Vorschau."],
       ["Welche Programme öffnen die Datei?", "PowerPoint, Keynote, LibreOffice Impress und Google Präsentationen."],
-      ["Wird meine Datei gespeichert?", "Nein, sie wird direkt nach der Umwandlung gelöscht."],
+      ["Wird meine Datei gespeichert?", "Nein. Für die Vorschau bleibt sie höchstens 30 Minuten auf dem Server und wird danach automatisch gelöscht."],
     ],
     related: ["ppt-to-pdf", "pdf-to-docx", "pdf-to-excel", "pdf-to-jpg"],
   },

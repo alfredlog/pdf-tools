@@ -437,6 +437,7 @@ function optionHtml(o) {
 
 function workspace(t) {
   if (t.ui.mode === "editor") return editorWorkspace(t);
+  if (t.ui.mode === "slides") return slidesWorkspace(t);
   const ui = t.ui;
   const c = catById[t.cat].color;
   const data = {
@@ -534,6 +535,93 @@ function workspace(t) {
   </section>`;
 }
 
+// PDF → PowerPoint mit Design-Auswahl und Live-Vorschau (Logik: public/assets/slides.js)
+function slidesWorkspace(t) {
+  const c = catById[t.cat].color;
+  const presets = [
+    ["orig", "Original", "#ffffff", "#002776"],
+    ["modern", "Modern", "#f8fafc", "#4f46e5"],
+    ["dark", "Dunkel", "#0f172a", "#f59e0b"],
+    ["soft", "Sanft", "#fdf6ec", "#b45309"],
+  ];
+  const fonts = ["Calibri", "Arial", "Helvetica", "Verdana", "Georgia", "Times New Roman"];
+  return `<section class="tool tool--${c}" data-slides aria-label="${esc(t.name)}">
+    <div class="stage stage--pick">
+      <div class="drop" data-drop>
+        ${toolIcon(t, 56)}
+        <label class="btn btn--primary btn--lg drop__btn">
+          ${ICON.upload}<span>Datei auswählen</span>
+          <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
+        </label>
+        <p class="drop__or">oder Datei hierher ziehen</p>
+        <p class="drop__hint">PDF-Datei, bis zu 50 MB und 80 Seiten</p>
+      </div>
+      <p class="privacy">${ICON.shield}<span><strong>Sicher:</strong> Verschlüsselte Übertragung, die Dateien werden spätestens nach 30 Minuten gelöscht.</span></p>
+    </div>
+
+    <div class="stage stage--busy" hidden aria-live="polite">
+      <div class="busy">
+        <div class="busy__bar"><span data-progress></span></div>
+        <p data-busy-text>Folien werden vorbereitet …</p>
+      </div>
+    </div>
+
+    <div class="stage stage--work" hidden>
+      <div class="work">
+        <div class="work__main">
+          <p class="work__help">So sieht deine Präsentation aus. Texte bleiben in PowerPoint und Keynote bearbeitbar, Formeln und Bilder stehen an ihrem Platz.</p>
+          <div class="sl-stage"><div class="sl-slide" data-slide></div></div>
+          <div class="sl-nav">
+            <button type="button" class="btn btn--ghost btn--sm" data-prev aria-label="Vorherige Folie">‹</button>
+            <span data-counter></span>
+            <button type="button" class="btn btn--ghost btn--sm" data-next aria-label="Nächste Folie">›</button>
+            <span class="sl-nav__sel">
+              <button type="button" class="btn btn--link" data-all>Alle</button>
+              <button type="button" class="btn btn--link" data-none>Keine</button>
+            </span>
+          </div>
+          <ol class="sl-thumbs" data-thumbs></ol>
+        </div>
+        <aside class="work__side">
+          <p class="work__summary" data-summary></p>
+          <fieldset class="sl-presets">
+            <legend>Design</legend>
+            ${presets
+              .map(
+                ([id, label, bg, ac], i) =>
+                  `<button type="button" class="sl-preset${i === 0 ? " is-on" : ""}" data-preset="${id}" aria-pressed="${i === 0}"><span class="sl-preset__sw" style="background:${bg}"><i style="background:${ac}"></i></span>${label}</button>`
+              )
+              .join("")}
+          </fieldset>
+          <div class="sl-row">
+            <div class="field"><label for="sl-bg">Hintergrund</label><input type="color" id="sl-bg" data-opt="bg" value="#ffffff"></div>
+            <div class="field"><label for="sl-accent">Akzentfarbe</label><input type="color" id="sl-accent" data-opt="accent" value="#002776"></div>
+          </div>
+          <div class="field">
+            <label for="sl-font">Schrift</label>
+            <select id="sl-font" data-opt="font">
+              <option value="orig">Wie im Original</option>
+              ${fonts.map((f) => `<option>${f}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label for="sl-format">Folienformat</label>
+            <select id="sl-format" data-opt="format">
+              <option value="orig">Wie die PDF</option>
+              <option value="4:3">4:3</option>
+              <option value="16:9">16:9 (Breitbild)</option>
+            </select>
+          </div>
+          <label class="check"><input type="checkbox" data-opt="hideRepeat"> Kopf- und Fußzeile entfernen</label>
+          <p class="form-error" data-error role="alert" hidden></p>
+          <button type="button" class="btn btn--primary btn--lg btn--block" data-build>PowerPoint herunterladen</button>
+          <button type="button" class="btn btn--link" data-reset>Andere Datei wählen</button>
+        </aside>
+      </div>
+    </div>
+  </section>`;
+}
+
 function toolPage(t) {
   const cat = catById[t.cat];
   const jsonLd = [
@@ -606,6 +694,9 @@ function toolPage(t) {
       .map((s) => `\n<script src="${s}" defer></script>`)
       .join("");
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts, ads: false });
+  }
+  if (t.ui.mode === "slides") {
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/slides.js?v=${BUILD_ID}" defer></script>` });
   }
   const needsPdfJs = t.ui.preview === "pages";
   const needsPdfLib = t.ui.mode === "client";

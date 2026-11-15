@@ -22,10 +22,10 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=db6ea8ef">
+  <link rel="stylesheet" href="/assets/style.css?v=4c868320">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF in PowerPoint – PDF Libre","url":"https://pdf-libre.de/pdf-to-powerpoint.html","description":"PDF in PowerPoint umwandeln: Jede Seite wird eine Folie, Text bleibt bearbeitbar. PDF zu PPTX kostenlos, ohne Anmeldung, Datei wird sofort gelöscht.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"PDF in PowerPoint","item":"https://pdf-libre.de/pdf-to-powerpoint.html"}]}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Bleibt der Text bearbeitbar?","acceptedAnswer":{"@type":"Answer","text":"Ja. Texte werden als Textfelder übernommen. Schriften, die nicht installiert sind, ersetzt PowerPoint durch eine ähnliche Schrift."}},{"@type":"Question","name":"Welche Programme öffnen die Datei?","acceptedAnswer":{"@type":"Answer","text":"PowerPoint, Keynote, LibreOffice Impress und Google Präsentationen."}},{"@type":"Question","name":"Wird meine Datei gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein, sie wird direkt nach der Umwandlung gelöscht."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Bleibt der Text bearbeitbar?","acceptedAnswer":{"@type":"Answer","text":"Ja. Texte werden als Textfelder übernommen. Mathematische Formeln bleiben als Bild erhalten. Schriften, die nicht installiert sind, ersetzt PowerPoint durch eine ähnliche Schrift – oder du wählst vorher selbst eine Standardschrift wie Calibri oder Arial."}},{"@type":"Question","name":"Kann ich das Design ändern?","acceptedAnswer":{"@type":"Answer","text":"Ja. Vor dem Herunterladen wählst du Hintergrund, Akzentfarbe, Schrift und Folienformat und siehst das Ergebnis sofort in der Vorschau."}},{"@type":"Question","name":"Welche Programme öffnen die Datei?","acceptedAnswer":{"@type":"Answer","text":"PowerPoint, Keynote, LibreOffice Impress und Google Präsentationen."}},{"@type":"Question","name":"Wird meine Datei gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Für die Vorschau bleibt sie höchstens 30 Minuten auf dem Server und wird danach automatisch gelöscht."}}]}</script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
   gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
   gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);</script>
@@ -91,84 +91,108 @@
 </div>
 
 <div class="wrap">
-  <section class="tool tool--frompdf" data-tool="pdf-to-powerpoint" data-mode="server" data-endpoint="/api/pdf-to-powerpoint" data-accept=".pdf,application/pdf" data-kind="PDF" aria-label="PDF in PowerPoint">
-    <form class="tool__form" novalidate>
-      <div class="stage stage--pick">
-        <div class="drop" data-drop>
-          <svg class="ficon ficon--frompdf" width="56" height="66" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+  <section class="tool tool--frompdf" data-slides aria-label="PDF in PowerPoint">
+    <div class="stage stage--pick">
+      <div class="drop" data-drop>
+        <svg class="ficon ficon--frompdf" width="56" height="66" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
 <g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M12 16v3M9 19h6M8 9h5M8 12h8"/></g>
 </svg>
-          <label class="btn btn--primary btn--lg drop__btn">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg><span>Datei auswählen</span>
-            <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
-          </label>
-          <p class="drop__or">oder Datei hierher ziehen</p>
-          <p class="drop__hint">PDF-Datei, bis zu 50 MB</p>
-        </div>
-        <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span><strong>Sicher:</strong> Verschlüsselte Übertragung, automatische Löschung nach der Verarbeitung.</span></p>
+        <label class="btn btn--primary btn--lg drop__btn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg><span>Datei auswählen</span>
+          <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
+        </label>
+        <p class="drop__or">oder Datei hierher ziehen</p>
+        <p class="drop__hint">PDF-Datei, bis zu 50 MB und 80 Seiten</p>
       </div>
+      <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span><strong>Sicher:</strong> Verschlüsselte Übertragung, die Dateien werden spätestens nach 30 Minuten gelöscht.</span></p>
+    </div>
 
-      <div class="stage stage--work" hidden>
-        <div class="work">
-          <div class="work__main">
-            <ul class="files" data-files></ul>
-            
+    <div class="stage stage--busy" hidden aria-live="polite">
+      <div class="busy">
+        <div class="busy__bar"><span data-progress></span></div>
+        <p data-busy-text>Folien werden vorbereitet …</p>
+      </div>
+    </div>
+
+    <div class="stage stage--work" hidden>
+      <div class="work">
+        <div class="work__main">
+          <p class="work__help">So sieht deine Präsentation aus. Texte bleiben in PowerPoint und Keynote bearbeitbar, Formeln und Bilder stehen an ihrem Platz.</p>
+          <div class="sl-stage"><div class="sl-slide" data-slide></div></div>
+          <div class="sl-nav">
+            <button type="button" class="btn btn--ghost btn--sm" data-prev aria-label="Vorherige Folie">‹</button>
+            <span data-counter></span>
+            <button type="button" class="btn btn--ghost btn--sm" data-next aria-label="Nächste Folie">›</button>
+            <span class="sl-nav__sel">
+              <button type="button" class="btn btn--link" data-all>Alle</button>
+              <button type="button" class="btn btn--link" data-none>Keine</button>
+            </span>
           </div>
-          <aside class="work__side">
-            <p class="work__summary" data-summary></p>
-            
-            <p class="form-error" data-error role="alert" hidden></p>
-            <button type="submit" class="btn btn--primary btn--lg btn--block">In PowerPoint umwandeln</button>
-            <button type="button" class="btn btn--link" data-action="reset">Andere Datei wählen</button>
-          </aside>
+          <ol class="sl-thumbs" data-thumbs></ol>
         </div>
-      </div>
-
-      <div class="stage stage--busy" hidden aria-live="polite">
-        <div class="busy">
-          <div class="busy__bar"><span data-progress></span></div>
-          <p data-busy-text>Wird verarbeitet …</p>
-        </div>
-      </div>
-
-      <div class="stage stage--done" hidden>
-        <div class="done">
-          <h2 class="done__title" tabindex="-1">Fertig!</h2>
-          <p class="done__info" data-done-info></p>
-          <div class="done__preview" data-done-preview hidden></div>
-          <a class="btn btn--primary btn--lg" data-download href="#">Herunterladen</a>
-          <button type="button" class="btn btn--link" data-action="reset">Noch eine Datei bearbeiten</button>
-          <div class="done__next">
-            <p>Weiter mit:</p>
-            <ul><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li><li><a href="/pdf-to-docx.html">PDF in Word</a></li><li><a href="/pdf-to-excel.html">PDF in Excel</a></li><li><a href="/pdf-to-jpg.html">PDF in JPG</a></li></ul>
+        <aside class="work__side">
+          <p class="work__summary" data-summary></p>
+          <fieldset class="sl-presets">
+            <legend>Design</legend>
+            <button type="button" class="sl-preset is-on" data-preset="orig" aria-pressed="true"><span class="sl-preset__sw" style="background:#ffffff"><i style="background:#002776"></i></span>Original</button><button type="button" class="sl-preset" data-preset="modern" aria-pressed="false"><span class="sl-preset__sw" style="background:#f8fafc"><i style="background:#4f46e5"></i></span>Modern</button><button type="button" class="sl-preset" data-preset="dark" aria-pressed="false"><span class="sl-preset__sw" style="background:#0f172a"><i style="background:#f59e0b"></i></span>Dunkel</button><button type="button" class="sl-preset" data-preset="soft" aria-pressed="false"><span class="sl-preset__sw" style="background:#fdf6ec"><i style="background:#b45309"></i></span>Sanft</button>
+          </fieldset>
+          <div class="sl-row">
+            <div class="field"><label for="sl-bg">Hintergrund</label><input type="color" id="sl-bg" data-opt="bg" value="#ffffff"></div>
+            <div class="field"><label for="sl-accent">Akzentfarbe</label><input type="color" id="sl-accent" data-opt="accent" value="#002776"></div>
           </div>
-        </div>
+          <div class="field">
+            <label for="sl-font">Schrift</label>
+            <select id="sl-font" data-opt="font">
+              <option value="orig">Wie im Original</option>
+              <option>Calibri</option><option>Arial</option><option>Helvetica</option><option>Verdana</option><option>Georgia</option><option>Times New Roman</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sl-format">Folienformat</label>
+            <select id="sl-format" data-opt="format">
+              <option value="orig">Wie die PDF</option>
+              <option value="4:3">4:3</option>
+              <option value="16:9">16:9 (Breitbild)</option>
+            </select>
+          </div>
+          <label class="check"><input type="checkbox" data-opt="hideRepeat"> Kopf- und Fußzeile entfernen</label>
+          <p class="form-error" data-error role="alert" hidden></p>
+          <button type="button" class="btn btn--primary btn--lg btn--block" data-build>PowerPoint herunterladen</button>
+          <button type="button" class="btn btn--link" data-reset>Andere Datei wählen</button>
+        </aside>
       </div>
-    </form>
+    </div>
   </section>
 </div>
 
 <section class="wrap howto" aria-labelledby="so-gehts">
   <h2 id="so-gehts">So geht's: PDF in PowerPoint</h2>
   <ol class="steps">
-    <li><h3>PDF auswählen</h3><p>Wähle die PDF aus, z. B. eine als PDF gespeicherte Präsentation.</p></li>
-    <li><h3>Umwandeln</h3><p>Klicke auf „In PowerPoint umwandeln“.</p></li>
-    <li><h3>Bearbeiten</h3><p>Öffne die PPTX-Datei in PowerPoint, Keynote, LibreOffice oder Google Präsentationen und ändere Texte direkt.</p></li>
+    <li><h3>PDF auswählen</h3><p>Wähle die PDF aus, z. B. Vorlesungsfolien oder eine als PDF gespeicherte Präsentation.</p></li>
+    <li><h3>Design wählen</h3><p>Sieh dir die Folien in der Vorschau an und wähle Design, Hintergrund, Akzentfarbe, Schrift und Format.</p></li>
+    <li><h3>Herunterladen</h3><p>Lade die PPTX-Datei herunter und ändere Texte direkt in PowerPoint, Keynote, LibreOffice oder Google Präsentationen.</p></li>
   </ol>
 </section>
 
 <section class="wrap article">
   <h2>Präsentation verloren, nur die PDF übrig?</h2>
   <p>Oft gibt es von einem Vortrag nur noch die PDF-Version. Mit diesem Werkzeug bekommst du wieder Folien, auf denen du Texte ändern, Folien löschen oder ergänzen kannst. Texte werden als echte Textfelder übernommen, Bilder und Formen bleiben an ihrem Platz.</p>
+  <h2>Neues Design mit einem Klick</h2>
+  <p>Vor dem Herunterladen siehst du alle Folien in einer Vorschau. Wähle ein fertiges Design (Original, Modern, Dunkel, Sanft) oder stelle Hintergrund, Akzentfarbe und Schrift selbst ein. Auf Wunsch wird das Format auf 16:9 umgestellt und die wiederkehrende Kopf- und Fußzeile entfernt.</p>
+  <p>Auch LaTeX-/Beamer-Folien funktionieren: Der Text wird bearbeitbar, Formeln bleiben gestochen scharf als Bild erhalten.</p>
 </section>
 
 <section class="wrap faq" aria-labelledby="faq-title">
   <h2 id="faq-title">Häufige Fragen</h2>
   <details>
     <summary>Bleibt der Text bearbeitbar?</summary>
-    <p>Ja. Texte werden als Textfelder übernommen. Schriften, die nicht installiert sind, ersetzt PowerPoint durch eine ähnliche Schrift.</p>
+    <p>Ja. Texte werden als Textfelder übernommen. Mathematische Formeln bleiben als Bild erhalten. Schriften, die nicht installiert sind, ersetzt PowerPoint durch eine ähnliche Schrift – oder du wählst vorher selbst eine Standardschrift wie Calibri oder Arial.</p>
+  </details>
+  <details>
+    <summary>Kann ich das Design ändern?</summary>
+    <p>Ja. Vor dem Herunterladen wählst du Hintergrund, Akzentfarbe, Schrift und Folienformat und siehst das Ergebnis sofort in der Vorschau.</p>
   </details>
   <details>
     <summary>Welche Programme öffnen die Datei?</summary>
@@ -176,7 +200,7 @@
   </details>
   <details>
     <summary>Wird meine Datei gespeichert?</summary>
-    <p>Nein, sie wird direkt nach der Umwandlung gelöscht.</p>
+    <p>Nein. Für die Vorschau bleibt sie höchstens 30 Minuten auf dem Server und wird danach automatisch gelöscht.</p>
   </details>
 </section>
 
@@ -272,7 +296,7 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=db6ea8ef" defer></script>
-<script src="/assets/tool.js?v=db6ea8ef" defer></script>
+<script src="/assets/site.js?v=4c868320" defer></script>
+<script src="/assets/slides.js?v=4c868320" defer></script>
 </body>
 </html>

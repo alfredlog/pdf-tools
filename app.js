@@ -268,7 +268,7 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Zu viele Anfragen. Bitte warte ein paar Minuten." },
   // Schriftdateien für die Editor-Vorschau zählen nicht mit (werden vom Browser zwischengespeichert)
-  skip: (req) => req.method === "GET" && req.path.startsWith("/sysfont/"),
+  skip: (req) => req.method === "GET" && (req.path.startsWith("/sysfont/") || req.originalUrl.startsWith("/api/slides/")),
 });
 
 const api = express.Router();
@@ -469,6 +469,66 @@ api.post(
   })
 );
 
+// PDF → Folien mit Design-Auswahl ----------------------------------------------------
+// 1) /api/slides/analyze zerlegt die PDF (Bild ohne Text + Textfelder) und hebt das Ergebnis
+//    bis zu 30 Minuten auf, damit die Vorschau im Browser live umgestellt werden kann.
+// 2) /api/slides/:token/build erzeugt erst beim Herunterladen die PPTX mit den gewählten Optionen.
+const SLIDES_TOKEN = /^[0-9a-f-]{36}$/;
+const slidesDir = (token) => path.join(TMP_ROOT, "slides-" + token);
+
+api.post(
+  "/slides/analyze",
+  uploader("pdf"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    const token = crypto.randomUUID();
+    const dir = slidesDir(token);
+    await fsp.mkdir(dir, { recursive: true });
+    try {
+      await run(PYTHON, [path.join(__dirname, "pdf_slides.py"), "analyze", file.path, dir]);
+    } catch (e) {
+      await fsp.rm(dir, { recursive: true, force: true });
+      if (/password/.test(e.stderr || "")) throw new UserError("Diese PDF ist passwortgeschützt. Entsperre sie zuerst mit „PDF entsperren“.");
+      const many = /zu viele Seiten:(\d+)/.exec(e.stderr || "");
+      if (many) throw new UserError(`Die PDF hat zu viele Seiten (höchstens ${many[1]}). Teile sie zuerst mit „PDF teilen“.`, 413);
+      throw e;
+    }
+    const name = outName(file.originalname, "", ".pptx");
+    await fsp.writeFile(path.join(dir, "meta.json"), JSON.stringify({ name }));
+    const data = JSON.parse(await fsp.readFile(path.join(dir, "slides.json"), "utf8"));
+    res.json({ token, name, ...data });
+  })
+);
+
+api.post(
+  "/slides/:token/build",
+  express.json({ limit: "20kb" }),
+  wrap(async (req, res) => {
+    const { token } = req.params;
+    const dir = slidesDir(token);
+    if (!SLIDES_TOKEN.test(token) || !fs.existsSync(path.join(dir, "slides.json"))) {
+      throw new UserError("Die Vorschau ist abgelaufen. Bitte lade die PDF noch einmal hoch.", 410);
+    }
+    const b = req.body || {};
+    const hex = (v) => (typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v) ? v : null);
+    const opts = {
+      pages: Array.isArray(b.pages) ? b.pages.filter((n) => Number.isInteger(n) && n >= 0 && n < 1000).slice(0, 1000) : undefined,
+      format: ["4:3", "16:9", "orig"].includes(b.format) ? b.format : "orig",
+      bg: hex(b.bg) || "#ffffff",
+      accent: hex(b.accent),
+      font: typeof b.font === "string" && /^[\p{L}\p{N} -]{1,40}$/u.test(b.font) ? b.font : "orig",
+      hideRepeat: b.hideRepeat === true,
+    };
+    const optsFile = path.join(req.jobDir, "options.json");
+    const out = path.join(req.jobDir, "out.pptx");
+    await fsp.writeFile(optsFile, JSON.stringify(opts));
+    await fsp.utimes(dir, new Date(), new Date()).catch(() => {});
+    await run(PYTHON, [path.join(__dirname, "pdf_slides.py"), "build", dir, optsFile, out]);
+    const meta = JSON.parse(await fsp.readFile(path.join(dir, "meta.json"), "utf8"));
+    await sendFile(res, out, meta.name);
+  })
+);
+
 // Bewerbungsmappe: Dokumente, Bilder und Word-Dateien zu einer PDF ------------------
 api.post(
   "/bewerbungsmappe",
@@ -546,6 +606,16 @@ if (agentApi.enabled) {
     console.error("Agenten-API nicht gestartet:", e.message);
   }
 }
+// Folienbilder für die Vorschau (ohne jobDir: der Ordner bleibt bis zum Aufräumen bestehen)
+app.get("/api/slides/:token/:img", (req, res) => {
+  const { token, img } = req.params;
+  if (!SLIDES_TOKEN.test(token) || !/^((dark-)?page|thumb)-\d{3}\.png$/.test(img)) return res.status(404).end();
+  const file = path.join(slidesDir(token), img);
+  if (!fs.existsSync(file)) return res.status(404).end();
+  fsp.utimes(slidesDir(token), new Date(), new Date()).catch(() => {});
+  res.setHeader("Cache-Control", "private, max-age=1800");
+  res.sendFile(file);
+});
 app.use("/api", api);
 
 // Alte URLs der ersten Version weiter unterstützen
