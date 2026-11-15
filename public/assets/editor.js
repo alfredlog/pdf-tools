@@ -809,7 +809,7 @@
       } catch {
         f = null;
       }
-      const name = (f && f.name) || "";
+      const name = String((f && f.name) || "").replace(/^[A-Z]{6}\+/, "");
       const cssFam = content.styles[fontName]?.fontFamily || "";
       const generic = /mono|courier|consol/i.test(name + cssFam) ? "cour" : (/serif/i.test(cssFam) && !/sans/i.test(cssFam)) || /times|roman|georgia|garamond|cambria|minion|book|serif/i.test(name.replace(/sans/i, "")) ? "tiro" : "helv";
       return {
@@ -874,7 +874,14 @@
   async function replaceLine(p, i) {
     const ln = p.lines[i];
     const c = p.canvas;
-    if (p.renderPromise) await p.renderPromise;
+    p.replacing ||= new Set();
+    if (p.replacing.has(i) || c.getObjects().some((o) => o.data?.replacesLine === i)) return;
+    p.replacing.add(i);
+    try {
+      if (p.renderPromise) await p.renderPromise;
+    } finally {
+      p.replacing.delete(i);
+    }
     const st = ln.style || { generic: ln.font, bold: false, italic: false };
     const color = sampleColor(p, ln) || "#000000";
     suspendHistory = true;
@@ -890,9 +897,13 @@
       data: { kind: "redact", locked: true, replacesLine: i },
     });
     const size = Math.round(ln.fh * 10) / 10;
-    const orig = { src: p.src, x: ln.x, top: ln.top, w: ln.w, h: ln.h, name: st.name || "", family: st.family || "", generic: st.generic || ln.font, bold: st.bold, italic: st.italic, color };
+    const orig = { src: p.src, x: ln.x, top: ln.top, w: ln.w, h: ln.h, text: ln.text, size, name: st.name || "", family: st.family || "", generic: st.generic || ln.font, bold: st.bold, italic: st.italic, color };
     const t = makeText(ln.x, ln.y - size * FABRIC_BASELINE, ln.text, { font: ln.font, size, color, bold: st.bold, italic: st.italic, orig });
     t.data.replacesLine = i;
+    // Gleiche Breite wie das Original (z. B. schmal gesetzte Adressen), sonst wirkt der neue Text breiter und fetter
+    t.initDimensions();
+    const sx = t.width > 0 ? ln.w / t.width : 1;
+    if (sx > 0.5 && sx < 1.6 && Math.abs(sx - 1) > 0.02) t.set({ scaleX: sx });
     t.opacity = 1;
     applyObjectDefaults(cover);
     applyObjectDefaults(t);
@@ -931,7 +942,7 @@
             x: o.left + o._getLineLeftOffset(i) * o.scaleX,
             y: o.top + fs * 1.13 * (i * o.lineHeight + (1 - 0.222)),
           }));
-          const item = { type: "text", lines, size: fs, font: o.data.font || "helv", bold: o.fontWeight === "bold", italic: o.fontStyle === "italic", color: colorOf(o.fill), opacity };
+          const item = { type: "text", lines, size: fs, hscale: o.scaleX / (o.scaleY || 1), font: o.data.font || "helv", bold: o.fontWeight === "bold", italic: o.fontStyle === "italic", color: colorOf(o.fill), opacity };
           if (o.data.orig) item.orig = { ...o.data.orig, keepColor: !o.data.colorChanged };
           items.push(item);
         } else if (kind === "rect" || kind === "highlight" || kind === "whiteout") {

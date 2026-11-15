@@ -96,6 +96,20 @@ def system_font(family, generic, bold, italic):
     return font
 
 
+def text_hscale(item, font):
+    """Horizontale Skalierung: bei geänderten PDF-Zeilen so, dass der Originaltext genau seine alte Breite hätte."""
+    orig = item.get("orig") or {}
+    scale = num(item.get("hscale"), 1.0)
+    if item.get("font") == "orig" and orig.get("text") and num(orig.get("w")) > 0:
+        try:
+            natural = font.text_length(str(orig["text"]), fontsize=num(orig.get("size"), num(item.get("size"), 12)))
+            if natural > 0:
+                scale = num(orig["w"]) / natural
+        except Exception:
+            pass
+    return scale if 0.5 < scale < 1.6 else 1.0
+
+
 def text_font(item, text):
     """Schrift für einen Text: Original aus der PDF, sonst ähnliche Systemschrift, sonst Standardschrift."""
     orig = item.get("orig") or {}
@@ -145,11 +159,14 @@ def draw_item(page, item, image_dir):
         lines = [(line, str(line.get("text", ""))[:2000]) for line in item.get("lines", [])[:500]]
         all_text = "".join(t for _, t in lines)
         font = text_font(item, all_text)
-        writer = pymupdf.TextWriter(page.rect, opacity=opacity, color=color)
+        hscale = text_hscale(item, font)
         for line, text in lines:
-            if text.strip():
-                writer.append(pymupdf.Point(num(line.get("x")), num(line.get("y"))), text, font=font, fontsize=size)
-        writer.write_text(page)
+            if not text.strip():
+                continue
+            point = pymupdf.Point(num(line.get("x")), num(line.get("y")))
+            writer = pymupdf.TextWriter(page.rect, opacity=opacity, color=color)
+            writer.append(point, text, font=font, fontsize=size)
+            writer.write_text(page, morph=(point, pymupdf.Matrix(hscale, 1)) if abs(hscale - 1) > 0.02 else None)
         return
 
     if kind in ("rect", "ellipse"):
