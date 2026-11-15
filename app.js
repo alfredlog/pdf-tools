@@ -265,6 +265,8 @@ const apiLimiter = rateLimit({
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: { error: "Zu viele Anfragen. Bitte warte ein paar Minuten." },
+  // Schriftdateien für die Editor-Vorschau zählen nicht mit (werden vom Browser zwischengespeichert)
+  skip: (req) => req.method === "GET" && req.path.startsWith("/sysfont/"),
 });
 
 const api = express.Router();

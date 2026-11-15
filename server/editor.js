@@ -80,5 +80,51 @@ module.exports = function editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_
     })
   );
 
+  // ---------------------------------------------------------------------------
+  // Schriften für die Editor-Vorschau: dieselben Schriften wie beim Export,
+  // damit die Vorschau auf jedem Gerät gleich aussieht (unabhängig von installierten Schriften).
+  // ---------------------------------------------------------------------------
+  const sysFonts = new Map(); // id → Pfad einer Systemschrift (nur von fc-match gelieferte Dateien)
+  const FONT_DIRS = ["/usr/share/fonts/", "/usr/local/share/fonts/", "/usr/share/texmf/fonts/", "/usr/share/texlive/"];
+
+  const uploadPdf = multer({
+    storage: multer.diskStorage({ destination: (req, file, cb) => cb(null, req.jobDir), filename: (req, file, cb) => cb(null, "source.pdf") }),
+    limits: { fileSize: MAX_FILE_MB * 1024 * 1024, files: 1 },
+    fileFilter: (req, file, cb) => (file.fieldname === "file" ? cb(null, true) : cb(new ApiError("Ungültige Datei im Upload."))),
+  }).single("file");
+
+  r.post("/fonts", jobDir, (req, res, next) =>
+    uploadPdf(req, res, async (err) => {
+      try {
+        if (err) throw err instanceof ApiError ? err : new ApiError("Upload fehlgeschlagen.");
+        if (!req.file) throw new ApiError("Keine PDF erhalten.");
+        const out = path.join(req.jobDir, "fonts.json");
+        await run(PYTHON, [path.join(__dirname, "..", "pdf_fonts.py"), req.file.path, out]);
+        const data = JSON.parse(await fsp.readFile(out, "utf8"));
+        for (const info of Object.values(data.fonts || {})) {
+          for (const [variant, file] of Object.entries(info.fallback || {})) {
+            if (!FONT_DIRS.some((d) => file.startsWith(d))) {
+              delete info.fallback[variant];
+              continue;
+            }
+            const id = crypto.createHash("sha1").update(file).digest("hex").slice(0, 16);
+            sysFonts.set(id, file);
+            info.fallback[variant] = `/api/pro/sysfont/${id}${path.extname(file).toLowerCase()}`;
+          }
+        }
+        res.json(data);
+      } catch (e) {
+        next(e);
+      }
+    })
+  );
+
+  r.get("/sysfont/:id", (req, res) => {
+    const file = sysFonts.get(String(req.params.id).replace(/\.(ttf|otf)$/i, ""));
+    if (!file) return res.status(404).end();
+    res.set("Cache-Control", "public, max-age=2592000, immutable");
+    res.sendFile(file);
+  });
+
   return r;
 };

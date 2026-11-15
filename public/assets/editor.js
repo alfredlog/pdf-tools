@@ -27,7 +27,7 @@
   function familyOf(name) {
     let base = String(name || "").replace(/^[A-Z]{6}\+/, "");
     base = base.split(/[-,]/)[0].replace(/(PSMT|PS|MT)$/, "").trim();
-    return base.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\s+(Bold|Italic|Oblique|Regular|Light|Medium|Semibold|Black)$/i, "").trim();
+    return base.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\s+(Bold|Italic|Oblique|Regular|Book|Normal|Light|Medium|Semibold|Black)$/i, "").trim();
   }
 
   /** CSS-Schriftliste für Originalschrift: echte Familie, dann ähnliche Standardschrift */
@@ -36,9 +36,103 @@
     return fam + GENERIC_CSS[orig.generic || "helv"];
   }
 
+  // --- Schriften vom Server: dieselben wie beim Export, unabhängig von den Schriften auf dem Gerät
+  let fontInfoPromise = null;
+  const faceLoads = new Map();
+
+  function loadFontInfo() {
+    if (!state.sourceBytes) return Promise.resolve(null);
+    if (!fontInfoPromise) {
+      const fd = new FormData();
+      fd.append("file", new Blob([state.sourceBytes], { type: "application/pdf" }), "dokument.pdf");
+      fontInfoPromise = fetch("/api/pro/fonts", { method: "POST", body: fd, credentials: "same-origin" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => {
+          const fonts = (j && j.fonts) || {};
+          let n = 0;
+          for (const info of Object.values(fonts)) {
+            info.id = ++n + "_" + Math.random().toString(36).slice(2, 7);
+            info.cps = new Set(info.codepoints || []);
+          }
+          state.fontInfo = fonts;
+          return fonts;
+        })
+        .catch(() => null);
+    }
+    return fontInfoPromise;
+  }
+
+  function serverFont(orig) {
+    return (orig && state.fontInfo && state.fontInfo[orig.name]) || null;
+  }
+
+  const variantOf = (bold, italic) => `${bold ? "bold" : "normal"}-${italic ? "italic" : "normal"}`;
+
+  /** Gleiche Regel wie pdf_edit.py: Originalschrift nur bei gleichem Stil und wenn sie alle Zeichen hat, sonst Ersatzschrift */
+  function usesEmbedded(info, orig, text, bold, italic) {
+    if (!info.embedded || bold !== Boolean(orig.bold) || italic !== Boolean(orig.italic)) return false;
+    for (const ch of text) if (!/\s/.test(ch) && !info.cps.has(ch.codePointAt(0))) return false;
+    return true;
+  }
+
+  function b64ToBuffer(b64) {
+    const bin = atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return arr.buffer;
+  }
+
+  function ensureFace(family, source, desc) {
+    const key = `${family}|${desc.weight}|${desc.style}`;
+    if (!faceLoads.has(key)) {
+      const face = new FontFace(family, source, desc);
+      document.fonts.add(face);
+      faceLoads.set(key, face.load().catch(() => null));
+    }
+    return faceLoads.get(key);
+  }
+
   function cssForText(o) {
-    if (o.data?.font === "orig" && o.data.orig) return origCss(o.data.orig);
+    if (o.data?.font === "orig" && o.data.orig) {
+      const info = serverFont(o.data.orig);
+      if (!info) return origCss(o.data.orig);
+      const bold = o.fontWeight === "bold";
+      const italic = o.fontStyle === "italic";
+      const fams = [];
+      if (usesEmbedded(info, o.data.orig, o.text || "", bold, italic)) fams.push(`"plE${info.id}"`);
+      if (info.fallback && info.fallback[variantOf(bold, italic)]) fams.push(`"plF${info.id}"`);
+      return fams.concat(GENERIC_CSS[o.data.orig.generic || "helv"]).join(", ");
+    }
     return FONT_CSS[o.data?.font] || FONT_CSS.helv;
+  }
+
+  const measureCtx = document.createElement("canvas").getContext("2d");
+
+  /** Schrift laden, setzen und Breite wie beim Export an das Original anpassen */
+  async function refreshTextFont(o, p) {
+    const orig = o.data?.orig;
+    const info = o.data?.font === "orig" && serverFont(orig);
+    if (info) {
+      const bold = o.fontWeight === "bold";
+      const italic = o.fontStyle === "italic";
+      const waits = [];
+      if (info.embedded) waits.push(ensureFace(`plE${info.id}`, b64ToBuffer(info.embedded), { weight: orig.bold ? "bold" : "normal", style: orig.italic ? "italic" : "normal" }));
+      const url = info.fallback && info.fallback[variantOf(bold, italic)];
+      if (url) waits.push(ensureFace(`plF${info.id}`, `url(${url})`, { weight: bold ? "bold" : "normal", style: italic ? "italic" : "normal" }));
+      await Promise.all(waits);
+    }
+    const fam = cssForText(o);
+    o.set({ fontFamily: fam });
+    if (orig && o.data.font === "orig" && orig.text && orig.w > 0) {
+      measureCtx.font = `${o.fontStyle} ${o.fontWeight} ${orig.size || o.fontSize}px ${fam}`;
+      const natural = measureCtx.measureText(orig.text).width;
+      const sx = natural > 0 ? orig.w / natural : 1;
+      o.set({ scaleX: sx > 0.5 && sx < 1.6 && Math.abs(sx - 1) > 0.02 ? sx * (o.scaleY || 1) : o.scaleY || 1 });
+    }
+    fabric.util.clearFabricFontCache();
+    o.initDimensions();
+    o.setCoords();
+    p.canvas.requestRenderAll();
   }
 
   const state = {
@@ -172,6 +266,8 @@
   }
 
   function clearDocument() {
+    fontInfoPromise = null;
+    state.fontInfo = null;
     state.pages.forEach((p) => p.canvas.dispose());
     state.pages = [];
     state.undo = [];
@@ -364,7 +460,10 @@
       });
       if (tool !== "select" && !(tool === "edittext" && c.getActiveObject()?.data?.kind === "text")) c.discardActiveObject();
       c.requestRenderAll();
-      if (tool === "edittext" && p.src !== null) buildTextLayer(p);
+      if (tool === "edittext" && p.src !== null) {
+        loadFontInfo();
+        buildTextLayer(p);
+      }
       p.textLayer.hidden = tool !== "edittext";
     }
     updateProps();
@@ -516,6 +615,7 @@
     c.on("object:modified", onChange);
     c.on("object:removed", onChange);
     c.on("text:changed", (opt) => {
+      if (opt.target?.data?.orig) refreshTextFont(opt.target, p);
       if (opt.target?.data?.pending) {
         if (opt.target.text === opt.target.data.orig?.text) return;
         activateReplacement(p, opt.target);
@@ -710,6 +810,7 @@
         if (name === "color") o.set({ fill: value });
         if (name === "bold") o.set({ fontWeight: value ? "bold" : "normal" });
         if (name === "italic") o.set({ fontStyle: value ? "italic" : "normal" });
+        if (o.data.orig && ["font", "bold", "italic", "size"].includes(name)) refreshTextFont(o, p);
       }
       if (["rect", "ellipse", "line", "draw"].includes(kind)) {
         if (name === "stroke") o.set({ stroke: value });
@@ -819,7 +920,7 @@
       }
       const name = String((f && f.name) || "").replace(/^[A-Z]{6}\+/, "");
       const cssFam = content.styles[fontName]?.fontFamily || "";
-      const generic = /mono|courier|consol/i.test(name + cssFam) ? "cour" : (/serif/i.test(cssFam) && !/sans/i.test(cssFam)) || /times|roman|georgia|garamond|cambria|minion|book|serif/i.test(name.replace(/sans/i, "")) ? "tiro" : "helv";
+      const generic = /mono|courier|consol/i.test(name + cssFam) ? "cour" : (/serif/i.test(cssFam) && !/sans/i.test(cssFam)) || /times|roman|georgia|garamond|cambria|minion|serif/i.test(name.replace(/sans/i, "")) ? "tiro" : "helv";
       return {
         name,
         family: familyOf(name),
@@ -882,6 +983,7 @@
   async function replaceLine(p, i) {
     const ln = p.lines[i];
     const c = p.canvas;
+    await loadFontInfo();
     p.replacing ||= new Set();
     if (p.replacing.has(i) || c.getObjects().some((o) => o.data?.replacesLine === i)) return;
     p.replacing.add(i);
@@ -890,7 +992,9 @@
     } finally {
       p.replacing.delete(i);
     }
-    const st = ln.style || { generic: ln.font, bold: false, italic: false };
+    const st = { ...(ln.style || { generic: ln.font, bold: false, italic: false }) };
+    const srv = st.name && state.fontInfo && state.fontInfo[st.name];
+    if (srv) Object.assign(st, { family: srv.family, generic: srv.generic, bold: srv.bold || st.bold, italic: srv.italic || st.italic });
     const color = sampleColor(p, ln) || "#000000";
     suspendHistory = true;
     const cover = new fabric.Rect({
@@ -909,10 +1013,8 @@
     const orig = { src: p.src, x: ln.x, top: ln.top, w: ln.w, h: ln.h, text: ln.text, size, name: st.name || "", family: st.family || "", generic: st.generic || ln.font, bold: st.bold, italic: st.italic, color };
     const t = makeText(ln.x, ln.y - size * FABRIC_BASELINE, ln.text, { font: ln.font, size, color, bold: st.bold, italic: st.italic, orig });
     t.data.replacesLine = i;
-    // Gleiche Breite wie das Original (z. B. schmal gesetzte Adressen), sonst wirkt der neue Text breiter und fetter
-    t.initDimensions();
-    const sx = t.width > 0 ? ln.w / t.width : 1;
-    if (sx > 0.5 && sx < 1.6 && Math.abs(sx - 1) > 0.02) t.set({ scaleX: sx });
+    // Schrift vom Server laden und gleiche Breite wie das Original (z. B. schmal gesetzte Adressen)
+    await refreshTextFont(t, p);
     // Solange nichts geändert ist, bleibt der Originaltext sichtbar (neuer Text unsichtbar, nur Cursor/Auswahl)
     t.data.pending = true;
     t.data.origFill = color;
