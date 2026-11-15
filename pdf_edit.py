@@ -244,10 +244,22 @@ def main():
                     item["_orig_style"] = original_style(src, src[int(index)], item["orig"])
 
         # 2b) Inhalte in den markierten Bereichen wirklich löschen
+        # Geänderte Zeilen: nur den Text entfernen (Bilder, Linien und Nachbarzeilen bleiben unberührt)
+        text_by_src = {}
         redact_by_src = {}
         for p in pages:
             if p.get("src") is not None:
+                text_by_src.setdefault(int(p["src"]), []).extend(p.get("textRedactions", []))
                 redact_by_src.setdefault(int(p["src"]), []).extend(p.get("redactions", []))
+        for index, rects in text_by_src.items():
+            if not rects or index < 0 or index >= src.page_count:
+                continue
+            page = src[index]
+            for r in rects:
+                rect = pymupdf.Rect(num(r["x"]), num(r["y"]), num(r["x"]) + num(r["w"]), num(r["y"]) + num(r["h"]))
+                page.add_redact_annot(rect, fill=False, cross_out=False)
+            page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE)
+        # Werkzeug „Entfernen“: alles im Bereich endgültig löschen
         for index, rects in redact_by_src.items():
             if not rects or index < 0 or index >= src.page_count:
                 continue

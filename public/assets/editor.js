@@ -515,9 +515,16 @@
     c.on("object:added", onChange);
     c.on("object:modified", onChange);
     c.on("object:removed", onChange);
-    c.on("text:changed", () => (state.dirty = true));
+    c.on("text:changed", (opt) => {
+      if (opt.target?.data?.pending) {
+        if (opt.target.text === opt.target.data.orig?.text) return;
+        activateReplacement(p, opt.target);
+      }
+      state.dirty = true;
+    });
     c.on("text:editing:exited", (opt) => {
       const t = opt.target;
+      if (t && t.data?.pending) return setTimeout(() => cancelReplacement(p, t));
       // Leerer Text wird entfernt (bei geänderten Zeilen bleibt die Abdeckung: Zeile gelöscht)
       if (t && !t.text.trim()) c.remove(t);
       else recordChange(p);
@@ -691,6 +698,7 @@
     if (!p) return;
     for (const o of objs) {
       const kind = o.data?.kind;
+      if (kind === "text" && o.data.pending) activateReplacement(p, o);
       if (kind === "text") {
         if (name === "font") {
           if (value === "orig" && !o.data.orig) continue;
@@ -894,6 +902,7 @@
       strokeWidth: 0,
       selectable: false,
       evented: false,
+      visible: false, // erst sichtbar, wenn der Text wirklich geändert wird
       data: { kind: "redact", locked: true, replacesLine: i },
     });
     const size = Math.round(ln.fh * 10) / 10;
@@ -904,18 +913,44 @@
     t.initDimensions();
     const sx = t.width > 0 ? ln.w / t.width : 1;
     if (sx > 0.5 && sx < 1.6 && Math.abs(sx - 1) > 0.02) t.set({ scaleX: sx });
+    // Solange nichts geändert ist, bleibt der Originaltext sichtbar (neuer Text unsichtbar, nur Cursor/Auswahl)
+    t.data.pending = true;
+    t.data.origFill = color;
+    t.set({ fill: "rgba(0,0,0,0)" });
     t.opacity = 1;
     applyObjectDefaults(cover);
     applyObjectDefaults(t);
     c.add(cover);
     c.add(t);
     suspendHistory = false;
-    recordChange(p);
     buildTextLayer(p, true);
     c.setActiveObject(t);
     t.enterEditing();
     t.selectAll();
     c.requestRenderAll();
+  }
+
+  /** Erste echte Änderung an einer PDF-Zeile: Original abdecken, neuen Text zeigen, Verlauf merken */
+  function activateReplacement(p, t) {
+    if (!t.data?.pending) return;
+    t.data.pending = false;
+    t.set({ fill: t.data.origFill || "#000000" });
+    const cover = p.canvas.getObjects().find((o) => o.data?.kind === "redact" && o.data.replacesLine === t.data.replacesLine);
+    if (cover) cover.set({ visible: true });
+    p.canvas.requestRenderAll();
+    state.dirty = true; // der Verlauf wird beim Beenden der Eingabe gespeichert → ein Schritt „Rückgängig“ stellt das Original her
+  }
+
+  /** Zeile angeklickt, aber nichts geändert: alles wieder wie vorher */
+  function cancelReplacement(p, t) {
+    const i = t.data.replacesLine;
+    suspendHistory = true;
+    p.canvas.getObjects().filter((o) => o.data?.replacesLine === i).forEach((o) => p.canvas.remove(o));
+    suspendHistory = false;
+    p.lastJSON = serialize(p);
+    if (!p.textLayer.hidden) buildTextLayer(p, true);
+    p.canvas.requestRenderAll();
+    updateProps();
   }
 
   // ---------------------------------------------------------------------------
@@ -925,6 +960,7 @@
     const images = [];
     const pages = state.pages.map((p) => {
       const redactions = [];
+      const textRedactions = [];
       const items = [];
       for (const o of p.canvas.getObjects()) {
         const kind = o.data?.kind;
@@ -932,7 +968,13 @@
         const box = () => ({ x: o.left + sw / 2, y: o.top + sw / 2, w: o.width * o.scaleX, h: o.height * o.scaleY });
         const opacity = o.opacity ?? 1;
 
-        if (kind === "redact") {
+        if (o.data?.pending) continue;
+        if (kind === "redact" && o.data.replacesLine !== undefined) {
+          if (!o.visible) continue;
+          // Nur ein schmaler Streifen in der Zeilenmitte: trifft jedes Zeichen dieser Zeile, aber nie die Nachbarzeilen
+          const fh = (o.height - 2) / 1.2;
+          textRedactions.push({ x: o.left, y: o.top + 1 + 0.35 * fh, w: o.width, h: 0.35 * fh });
+        } else if (kind === "redact") {
           const b = box();
           redactions.push({ x: o.left, y: o.top, w: b.w + sw, h: b.h + sw });
         } else if (kind === "text") {
@@ -971,7 +1013,7 @@
           items.push({ type: "image", ...box(), image: images.length - 1, opacity });
         }
       }
-      return { src: p.src, width: p.width, height: p.height, redactions, items };
+      return { src: p.src, width: p.width, height: p.height, redactions, textRedactions, items };
     });
     return { spec: { pages }, images };
   }
