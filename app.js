@@ -463,6 +463,8 @@ api.post(
   wrap(async (req, res) => {
     const [file] = requireFiles(req);
     const out = await sofficeConvert(file.path, req.jobDir, "pptx", "impress_pdf_import");
+    // Weißer Hintergrund, sonst zeigt Keynote Folien aus LaTeX/Beamer-PDFs schwarz an
+    await run(PYTHON, [path.join(__dirname, "pptx_white_bg.py"), out]);
     await sendFile(res, out, outName(file.originalname, "", ".pptx"));
   })
 );
