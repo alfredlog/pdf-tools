@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=9b388914">
+  <link rel="stylesheet" href="/assets/style.css?v=db6ea8ef">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF zusammenfügen – PDF Libre","url":"https://pdf-libre.de/merge.html","description":"PDFs online zusammenfügen: mehrere PDF-Dateien per Drag & Drop sortieren und zu einer PDF kombinieren. Kostenlos, ohne Anmeldung, sofort gelöscht.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"PDF zusammenfügen","item":"https://pdf-libre.de/merge.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie viele PDFs kann ich auf einmal zusammenfügen?","acceptedAnswer":{"@type":"Answer","text":"Bis zu 20 Dateien mit jeweils maximal 50 MB. Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."}},{"@type":"Question","name":"Kann ich einzelne Seiten statt ganzer Dateien kombinieren?","acceptedAnswer":{"@type":"Answer","text":"Ja: Füge zuerst die Dateien zusammen und entferne danach mit „Seiten entfernen“ oder „PDF organisieren“ die Seiten, die du nicht brauchst."}},{"@type":"Question","name":"Funktioniert das auch mit passwortgeschützten PDFs?","acceptedAnswer":{"@type":"Answer","text":"Nein. Entsperre die Datei zuerst mit „PDF entsperren“ – dafür brauchst du das Passwort."}},{"@type":"Question","name":"Werden meine Dateien gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Dateien werden nur für die Verarbeitung auf dem Server abgelegt und direkt nach dem Download automatisch gelöscht."}}]}</script>
@@ -52,24 +52,28 @@
   <div class="mega" id="mega" hidden>
     <div class="wrap mega__grid">
         <div class="mega__col">
-          <p class="mega__cat mega__cat--organize">Organisieren</p>
-          <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li></ul>
+          <p class="mega__cat mega__cat--organize">Zusammenfügen &amp; Organisieren</p>
+          <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
         </div>
         <div class="mega__col">
-          <p class="mega__cat mega__cat--optimize">Optimieren</p>
+          <p class="mega__cat mega__cat--optimize">Komprimieren</p>
           <ul><li><a href="/compress.html">PDF komprimieren</a></li><li><a href="/merge-compress.html">Zusammenfügen &amp; komprimieren</a></li></ul>
         </div>
         <div class="mega__col">
+          <p class="mega__cat mega__cat--edit">Bearbeiten &amp; Unterschreiben</p>
+          <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/sign.html">PDF unterschreiben</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
+        </div>
+        <div class="mega__col">
           <p class="mega__cat mega__cat--topdf">In PDF umwandeln</p>
-          <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li></ul>
+          <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li></ul>
         </div>
         <div class="mega__col">
-          <p class="mega__cat mega__cat--frompdf">PDF umwandeln</p>
-          <ul><li><a href="/pdf-to-docx.html">PDF in Word</a></li><li><a href="/pdf-to-jpg.html">PDF in JPG</a></li></ul>
+          <p class="mega__cat mega__cat--frompdf">Aus PDF umwandeln</p>
+          <ul><li><a href="/pdf-to-docx.html">PDF in Word</a></li><li><a href="/pdf-to-excel.html">PDF in Excel</a></li><li><a href="/pdf-to-powerpoint.html">PDF in PowerPoint</a></li><li><a href="/pdf-to-jpg.html">PDF in JPG</a></li></ul>
         </div>
         <div class="mega__col">
-          <p class="mega__cat mega__cat--edit">Bearbeiten</p>
-          <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
+          <p class="mega__cat mega__cat--ai">KI-Werkzeuge</p>
+          <ul><li><a href="/summarize.html">PDF zusammenfassen</a></li><li><a href="/translate.html">PDF übersetzen</a></li></ul>
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--security">Sicherheit</p>
@@ -80,7 +84,7 @@
 </header>
 <main id="inhalt">
 <div class="tool-head wrap">
-  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>Organisieren</span></nav>
+  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>Zusammenfügen &amp; Organisieren</span></nav>
   <h1>PDF zusammenfügen</h1>
   <p class="tool-head__lead">Kombiniere mehrere PDF-Dateien zu einem Dokument. Reihenfolge per Drag &amp; Drop festlegen, fertig.</p>
 </div>
@@ -132,11 +136,12 @@
         <div class="done">
           <h2 class="done__title" tabindex="-1">Fertig!</h2>
           <p class="done__info" data-done-info></p>
+          <div class="done__preview" data-done-preview hidden></div>
           <a class="btn btn--primary btn--lg" data-download href="#">Herunterladen</a>
           <button type="button" class="btn btn--link" data-action="reset">Noch eine Datei bearbeiten</button>
           <div class="done__next">
             <p>Weiter mit:</p>
-            <ul><li><a href="/merge-compress.html">Zusammenfügen &amp; komprimieren</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/compress.html">PDF komprimieren</a></li></ul>
+            <ul><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li><li><a href="/merge-compress.html">Zusammenfügen &amp; komprimieren</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/compress.html">PDF komprimieren</a></li></ul>
           </div>
         </div>
       </div>
@@ -186,6 +191,17 @@
 <section class="wrap related" aria-labelledby="related-title">
   <h2 id="related-title">Passende Werkzeuge</h2>
   <ul class="tgrid tgrid--compact">
+      <li class="tcard" data-cat="organize">
+        <a href="/bewerbungsmappe.html">
+          <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+<path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
+<path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
+<g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="4" y="8" width="16" height="11" rx="1.5"/><path d="M9 8V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v2M4 13h16"/></g>
+</svg>
+          <span class="tcard__name">Bewerbungsmappe erstellen <span class="new-badge">Neu</span></span>
+          <span class="tcard__text">Anschreiben, Lebenslauf und Zeugnisse zu einer PDF – mit Deckblatt und unter 5 MB.</span>
+        </a>
+      </li>
       <li class="tcard" data-cat="optimize">
         <a href="/merge-compress.html">
           <svg class="ficon ficon--optimize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
@@ -208,17 +224,6 @@
           <span class="tcard__text">Seiten per Drag &amp; Drop sortieren, drehen und löschen.</span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
-        <a href="/split.html">
-          <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
-<path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
-<path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
-<g transform="translate(10 17) scale(1)" class="ficon__glyph"><path d="M12 5v6m0 0-5 5v3m5-8 5 5v3"/><path d="m4 16 3 3 3-3M14 16l3 3 3-3"/></g>
-</svg>
-          <span class="tcard__name">PDF teilen</span>
-          <span class="tcard__text">Eine PDF in einzelne Seiten oder eigene Seitenbereiche aufteilen.</span>
-        </a>
-      </li>
       <li class="tcard" data-cat="optimize">
         <a href="/compress.html">
           <svg class="ficon ficon--optimize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
@@ -238,27 +243,31 @@
     <div class="site-footer__grid">
       <div class="site-footer__about">
         <a href="/" class="brand brand--footer"><svg class="brand__mark" viewBox="0 0 32 36" aria-hidden="true"><path d="M3 2h17l9 9v22a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M20 2v8a1 1 0 0 0 1 1h8Z" fill="#fff" opacity=".45"/><path d="M9 25V14h4.5a3.5 3.5 0 0 1 0 7H9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>PDF Libre</span></a>
-        <p>20 kostenlose PDF-Werkzeuge ohne Anmeldung. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <p>26 kostenlose PDF-Werkzeuge ohne Anmeldung. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
       </div>
       <div>
-        <p class="site-footer__head">Organisieren</p>
-        <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li></ul>
+        <p class="site-footer__head">Zusammenfügen &amp; Organisieren</p>
+        <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
       </div>
       <div>
-        <p class="site-footer__head">Optimieren</p>
+        <p class="site-footer__head">Komprimieren</p>
         <ul><li><a href="/compress.html">PDF komprimieren</a></li><li><a href="/merge-compress.html">Zusammenfügen &amp; komprimieren</a></li></ul>
       </div>
       <div>
+        <p class="site-footer__head">Bearbeiten &amp; Unterschreiben</p>
+        <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/sign.html">PDF unterschreiben</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
+      </div>
+      <div>
         <p class="site-footer__head">In PDF umwandeln</p>
-        <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li></ul>
+        <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li></ul>
       </div>
       <div>
-        <p class="site-footer__head">PDF umwandeln</p>
-        <ul><li><a href="/pdf-to-docx.html">PDF in Word</a></li><li><a href="/pdf-to-jpg.html">PDF in JPG</a></li></ul>
+        <p class="site-footer__head">Aus PDF umwandeln</p>
+        <ul><li><a href="/pdf-to-docx.html">PDF in Word</a></li><li><a href="/pdf-to-excel.html">PDF in Excel</a></li><li><a href="/pdf-to-powerpoint.html">PDF in PowerPoint</a></li><li><a href="/pdf-to-jpg.html">PDF in JPG</a></li></ul>
       </div>
       <div>
-        <p class="site-footer__head">Bearbeiten</p>
-        <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
+        <p class="site-footer__head">KI-Werkzeuge</p>
+        <ul><li><a href="/summarize.html">PDF zusammenfassen</a></li><li><a href="/translate.html">PDF übersetzen</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">Sicherheit</p>
@@ -271,8 +280,8 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=9b388914" defer></script>
+<script src="/assets/site.js?v=db6ea8ef" defer></script>
 <script src="/vendor/Sortable.min.js" defer></script>
-<script src="/assets/tool.js?v=9b388914" defer></script>
+<script src="/assets/tool.js?v=db6ea8ef" defer></script>
 </body>
 </html>

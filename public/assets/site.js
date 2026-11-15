@@ -65,8 +65,8 @@
     chip.addEventListener("click", () => {
       const f = chip.dataset.filter;
       chips.forEach((c) => c.setAttribute("aria-pressed", String(c === chip)));
-      document.querySelectorAll(".tools-index .tcard").forEach((card) => {
-        card.hidden = f !== "all" && card.dataset.cat !== f;
+      document.querySelectorAll(".tools-index .tgroup").forEach((group) => {
+        group.hidden = f !== "all" && group.dataset.group !== f;
       });
     })
   );

@@ -58,15 +58,22 @@
     return name.replace(/\.[^.]+$/, "") || "datei";
   }
 
-  function showError(msg) {
+  function showError(msg, link) {
     const el = $("[data-error]");
     el.textContent = msg;
+    if (link) {
+      el.append(" ");
+      const a = document.createElement("a");
+      a.href = link.href;
+      a.textContent = link.label;
+      el.append(a);
+    }
     el.hidden = !msg;
   }
 
-  function fail(msg) {
+  function fail(msg, link) {
     show("work");
-    showError(msg);
+    showError(msg, link);
   }
 
   function acceptList() {
@@ -464,7 +471,8 @@
       }
     } catch (err) {
       console.error(err);
-      fail(err && err.userMessage ? err.userMessage : err && err.message && !/^[A-Z][a-zA-Z]+Error/.test(err.name || "") ? err.message : "Das hat leider nicht geklappt. Ist die Datei beschädigt?");
+      if (err && err.userMessage) return fail(err.userMessage, err.link);
+      fail(err && err.message && !/^[A-Z][a-zA-Z]+Error/.test(err.name || "") ? err.message : "Das hat leider nicht geklappt. Ist die Datei beschädigt?");
     }
   });
 
@@ -512,7 +520,29 @@
           } catch {
             /* keine JSON-Antwort */
           }
-          return reject(Object.assign(new Error(), { userMessage: msg }));
+          // Pro-Werkzeug: Anmelden bzw. Tarif wählen
+          let link = null;
+          if (xhr.status === 401) link = { href: `/anmelden.html?next=${encodeURIComponent(location.pathname)}`, label: "Anmelden oder kostenlos registrieren" };
+          if (xhr.status === 402) link = { href: "/preise.html", label: "Tarife ansehen" };
+          return reject(Object.assign(new Error(), { userMessage: msg, link }));
+        }
+        // Ergebnis mit Vorschau (z. B. KI-Zusammenfassung): JSON mit Datei als Base64
+        if (/json/.test(xhr.getResponseHeader("Content-Type") || "")) {
+          try {
+            const data = JSON.parse(await xhr.response.text());
+            const bin = atob(data.file);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+            finish({
+              blob: new Blob([bytes], { type: data.mime || "application/pdf" }),
+              filename: data.filename || "ergebnis.pdf",
+              preview: data.preview,
+              info: data.truncated ? "Das Dokument war sehr lang – zusammengefasst wurden die ersten rund 60 Seiten." : "",
+            });
+            return resolve();
+          } catch {
+            return reject(Object.assign(new Error(), { userMessage: "Das Ergebnis konnte nicht gelesen werden. Bitte versuche es erneut." }));
+          }
         }
         const filename = filenameFromHeader(xhr.getResponseHeader("Content-Disposition")) || "ergebnis.pdf";
         const before = Number(xhr.getResponseHeader("X-Original-Size"));
@@ -540,7 +570,7 @@
     return plain ? plain[1] : null;
   }
 
-  function finish({ blob, filename, info = "" }) {
+  function finish({ blob, filename, info = "", preview = "" }) {
     if (state.resultUrl) URL.revokeObjectURL(state.resultUrl);
     state.resultUrl = URL.createObjectURL(blob);
     const a = $("[data-download]");
@@ -548,9 +578,15 @@
     a.download = filename;
     a.textContent = `${filename.toLowerCase().endsWith(".zip") ? "ZIP" : "Datei"} herunterladen (${formatSize(blob.size)})`;
     $("[data-done-info]").innerHTML = info || escapeHtml(filename);
+    const pv = $("[data-done-preview]");
+    if (pv) {
+      pv.innerHTML = preview || ""; // vom Server aus Markdown erzeugt und maskiert
+      pv.hidden = !preview;
+    }
+    if (preview) a.textContent = `Als PDF herunterladen (${formatSize(blob.size)})`;
     show("done");
     $(".done__title").focus();
-    a.click(); // Download direkt starten
+    if (!preview) a.click(); // Download direkt starten (bei einer Vorschau liest man zuerst)
   }
 
   function escapeHtml(s) {
@@ -569,6 +605,11 @@
     if (pages) pages.innerHTML = "";
     const files = $("[data-files]");
     if (files) files.innerHTML = "";
+    const pv = $("[data-done-preview]");
+    if (pv) {
+      pv.innerHTML = "";
+      pv.hidden = true;
+    }
     showError("");
     show("pick");
   }

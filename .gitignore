@@ -1,6 +1,7 @@
+*.log
+.DS_Store
+.env
+__pycache__/
+converted/
 node_modules/
 uploads/
-converted/
-.env
-.DS_Store
-*.log

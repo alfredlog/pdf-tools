@@ -13,6 +13,12 @@ const absUrl = (slug) => config.domain + url(slug);
 const bySlug = Object.fromEntries(tools.map((t) => [t.slug, t]));
 const catById = Object.fromEntries(categories.map((c) => [c.id, c]));
 
+/** „A“, „B“ und „C“ – die Namen aller Pro-Werkzeuge (für Texte) */
+function proNames() {
+  const names = tools.filter((t) => t.pro).map((t) => `„${t.name}“`);
+  return names.length > 1 ? `${names.slice(0, -1).join(", ")} und ${names[names.length - 1]}` : names[0] || "";
+}
+
 // Kostenlose Fassung (ohne Bezahlung): wird von scripts/build.js nach den Pro-Seiten eingeschaltet
 let FREE = false;
 function setFreeMode() {
@@ -50,6 +56,12 @@ const GLYPHS = {
   edit: '<path d="M14.5 5.5l4 4L9 19H5v-4Z"/><path d="m12.5 7.5 4 4"/>',
   create: '<path d="M12 6v12M6 12h12"/>',
   unlock: '<rect x="5" y="10.5" width="14" height="9.5" rx="1.5"/><path d="M8 10.5V8a4 4 0 0 1 7.7-1.5"/><path d="M12 14.5v2"/>',
+  sign: '<path d="M4 16c2-5 4-8 5.5-8S9 16 11 16s2.5-4 4-4 1 4 3 4"/><path d="M4 20h16"/>',
+  mappe: '<rect x="4" y="8" width="16" height="11" rx="1.5"/><path d="M9 8V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v2M4 13h16"/>',
+  table: '<rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M4 10h16M4 14.5h16M10 5v14"/>',
+  slides: '<rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M12 16v3M9 19h6M8 9h5M8 12h8"/>',
+  summary: '<path d="M5 7h9M5 11h14M5 15h10M5 19h6"/><path d="m18 3 .9 2.1L21 6l-2.1.9L18 9l-.9-2.1L15 6l2.1-.9Z"/>',
+  translate: '<path d="M4 6h8M8 4v2c0 4-2 7-4.5 8.5M6 10c1 2 3 3.5 5 4"/><path d="m13 20 4-9 4 9M14.5 17h5"/>',
 };
 
 /** Datei-Symbol mit umgeknickter Ecke – die Farbe kommt aus der Kategorie */
@@ -178,7 +190,7 @@ function footer() {
     <div class="site-footer__grid">
       <div class="site-footer__about">
         <a href="/" class="brand brand--footer">${ICON.logo}<span>PDF Libre</span></a>
-        <p>${tools.filter((t) => !t.pro).length} kostenlose PDF-Werkzeuge ohne Anmeldung${FREE ? "" : ", dazu PDF Libre Pro zum Bearbeiten und Erstellen von PDFs"}. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <p>${tools.filter((t) => !t.pro).length} kostenlose PDF-Werkzeuge ohne Anmeldung${FREE ? "" : ", dazu PDF Libre Pro mit PDF-Editor und KI-Werkzeugen"}. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
       </div>
       ${categories
         .map(
@@ -221,7 +233,7 @@ function toolCard(t) {
   return `<li class="tcard" data-cat="${t.cat}">
         <a href="${url(t.slug)}">
           ${toolIcon(t)}
-          <span class="tcard__name">${esc(t.name)}${t.pro ? ' <span class="pro-badge">Pro</span>' : ""}</span>
+          <span class="tcard__name">${esc(t.name)}${t.pro ? ' <span class="pro-badge">Pro</span>' : t.isNew ? ' <span class="new-badge">Neu</span>' : ""}</span>
           <span class="tcard__text">${esc(t.short)}</span>
         </a>
       </li>`;
@@ -232,11 +244,11 @@ function homePage() {
     FREE
       ? [
           "Ist PDF Libre kostenlos?",
-          `Ja. Alle ${tools.length} Werkzeuge – auch „PDF bearbeiten“ und „PDF erstellen“ – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.`,
+          `Ja. Alle ${tools.length} Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.`,
         ]
       : [
       "Ist PDF Libre kostenlos?",
-      `Fast alles: ${tools.filter((t) => !t.pro).length} Werkzeuge wie Zusammenfügen, Komprimieren und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur „PDF bearbeiten“ und „PDF erstellen“ gehören zu PDF Libre Pro: ${config.pricing.trialDays} Tage kostenlos testen, danach ${config.pricing.pro} im Monat oder ${config.pricing.daypass} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.`,
+      `Fast alles: ${tools.filter((t) => !t.pro).length} Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur ${proNames()} gehören zu PDF Libre Pro: ${config.pricing.trialDays} Tage kostenlos testen, danach ${config.pricing.pro} im Monat oder ${config.pricing.daypass} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.`,
     ],
     ["Was passiert mit meinen Dateien?", "Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."],
     ["Brauche ich ein Programm oder eine App?", "Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."],
@@ -263,7 +275,7 @@ function homePage() {
   const body = `<section class="home-hero">
   <div class="wrap">
     <h1>Jedes PDF-Werkzeug, das du im Alltag brauchst.</h1>
-    <p class="home-hero__lead">Zusammenfügen, verkleinern, umwandeln, teilen und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen. ${FREE ? 'Text in PDFs ändern kannst du mit dem <a href="/edit.html">PDF-Editor</a> – ebenfalls kostenlos.' : 'Text in PDFs ändern kannst du mit <a href="/preise.html">PDF Libre Pro</a>.'}</p>
+    <p class="home-hero__lead">Zusammenfügen, verkleinern, umwandeln, unterschreiben und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen. ${FREE ? 'Text in PDFs ändern kannst du mit dem <a href="/edit.html">PDF-Editor</a> – ebenfalls kostenlos.' : 'Text in PDFs ändern kannst du mit <a href="/preise.html">PDF Libre Pro</a>.'}</p>
     <ul class="facts">
       <li>${ICON.device}<span><strong>${tools.filter((t) => t.ui.mode === "client").length} Werkzeuge</strong> laufen komplett in deinem Browser</span></li>
       <li>${ICON.shield}<span><strong>Automatisch gelöscht</strong> nach der Verarbeitung</span></li>
@@ -275,11 +287,18 @@ function homePage() {
   <h2 id="alle-werkzeuge" class="visually-hidden">Alle Werkzeuge</h2>
   <div class="filters" role="toolbar" aria-label="Werkzeuge filtern">
     <button type="button" class="chip" aria-pressed="true" data-filter="all">Alle</button>
-    ${categories.map((c) => `<button type="button" class="chip chip--${c.color}" aria-pressed="false" data-filter="${c.id}">${esc(c.name)}</button>`).join("\n    ")}
+    ${categories.map((c) => `<button type="button" class="chip chip--${c.color}" aria-pressed="false" data-filter="${c.id}">${esc(c.short || c.name)}</button>`).join("\n    ")}
   </div>
-  <ul class="tgrid">
-      ${tools.map(toolCard).join("\n      ")}
-  </ul>
+  ${categories
+    .map(
+      (c) => `<div class="tgroup" data-group="${c.id}">
+    <h3 class="tgroup__title tgroup__title--${c.color}">${esc(c.name)}</h3>
+    <ul class="tgrid">
+      ${tools.filter((t) => t.cat === c.id).map(toolCard).join("\n      ")}
+    </ul>
+  </div>`
+    )
+    .join("\n  ")}
 </section>
 
 ${FREE ? `<section class="wrap pro-band" aria-labelledby="pro-title">
@@ -296,7 +315,7 @@ ${FREE ? `<section class="wrap pro-band" aria-labelledby="pro-title">
   <div class="pro-band__text">
     <p class="pro-band__tag">PDF Libre Pro</p>
     <h2 id="pro-title">Text in PDFs ändern, Inhalte endgültig löschen, eigene PDFs gestalten.</h2>
-    <p>Der PDF-Editor gehört zu Pro: ${config.pricing.trialDays} Tage kostenlos testen, ohne Zahlungsdaten. Danach ${config.pricing.pro} im Monat (monatlich kündbar) oder ${config.pricing.daypass} für einen Tagespass. Alle anderen Werkzeuge bleiben kostenlos.</p>
+    <p>PDF-Editor, PDF zusammenfassen und PDF übersetzen gehören zu Pro: ${config.pricing.trialDays} Tage kostenlos testen, ohne Zahlungsdaten. Danach ${config.pricing.pro} im Monat (monatlich kündbar) oder ${config.pricing.daypass} für einen Tagespass. Alle anderen Werkzeuge bleiben kostenlos.</p>
   </div>
   <div class="pro-band__actions">
     <a class="btn btn--primary btn--lg" href="/edit.html">PDF-Editor ausprobieren</a>
@@ -432,14 +451,17 @@ function workspace(t) {
     preview: ui.preview,
     select: ui.select,
     savings: ui.showSavings ? "true" : undefined,
+    pro: t.pro ? "true" : undefined,
   };
   const dataAttrs = Object.entries(data)
     .filter(([, v]) => v !== undefined)
     .map(([k, v]) => `data-${k}="${esc(v)}"`)
     .join(" ");
 
-  const privacy =
-    ui.mode === "client"
+  const P = config.pricing;
+  const privacy = t.pro
+    ? `${ICON.shield}<span><strong>Pro-Werkzeug:</strong> Mit Konto ${P.trialDays} Tage gratis, danach ${P.pro}/Monat oder ${P.daypass} Tagespass. <a href="/preise.html">Preise</a> · <a href="/anmelden.html?next=/${t.slug}.html">Anmelden</a></span>`
+    : ui.mode === "client"
       ? `${ICON.device}<span><strong>Im Browser:</strong> Deine Datei wird nicht hochgeladen.</span>`
       : `${ICON.shield}<span><strong>Sicher:</strong> Verschlüsselte Übertragung, automatische Löschung nach der Verarbeitung.</span>`;
 
@@ -496,6 +518,7 @@ function workspace(t) {
         <div class="done">
           <h2 class="done__title" tabindex="-1">Fertig!</h2>
           <p class="done__info" data-done-info></p>
+          <div class="done__preview" data-done-preview hidden></div>
           <a class="btn btn--primary btn--lg" data-download href="#">Herunterladen</a>
           <button type="button" class="btn btn--link" data-action="reset">Noch eine Datei bearbeiten</button>
           <div class="done__next">
@@ -578,7 +601,8 @@ function toolPage(t) {
 </section>`;
 
   if (t.ui.mode === "editor") {
-    const scripts = ["/vendor/pdf.min.js", "/vendor/fabric.min.js", `/assets/account.js?v=${BUILD_ID}`, `/assets/editor.js?v=${BUILD_ID}`]
+    const scripts = ["/vendor/pdf.min.js", "/vendor/fabric.min.js", t.ui.sign && "/vendor/pdf-lib.min.js", `/assets/account.js?v=${BUILD_ID}`, `/assets/editor.js?v=${BUILD_ID}`]
+      .filter(Boolean)
       .map((s) => `\n<script src="${s}" defer></script>`)
       .join("");
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts, ads: false });
@@ -621,6 +645,7 @@ const ED_ICON = {
   undo: '<path d="M9 7 4 12l5 5"/><path d="M4 12h10a6 6 0 0 1 0 12"/>',
   trash: '<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',
   download: '<path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M4 17v1.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V17"/>',
+  sign: '<path d="M4 16c2-5 4-8 5.5-8S9 16 11 16s2.5-4 4-4 1 4 3 4"/><path d="M4 20h16"/>',
 };
 const edIcon = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ED_ICON[k]}</svg>`;
 
@@ -630,25 +655,19 @@ function edTool(key, label, extra = "") {
 
 function editorWorkspace(t) {
   const blank = t.ui.start === "blank";
+  const sign = Boolean(t.ui.sign);
   const P = config.pricing;
-  return `<section class="editor tool tool--edit" data-editor data-start="${t.ui.start}" aria-label="${esc(t.name)}">
-    <div class="stage stage--pick"${blank ? " hidden" : ""}>
-      <div class="drop" data-drop>
-        ${toolIcon(t, 56)}
-        <label class="btn btn--primary btn--lg drop__btn">
-          ${ICON.upload}<span>PDF auswählen</span>
-          <input type="file" class="visually-hidden" accept=".pdf,application/pdf" data-ed-open>
-        </label>
-        <p class="drop__or">oder PDF hierher ziehen</p>
-        <p class="drop__hint">Oder <button type="button" class="btn--inline" data-ed-blank>mit einer leeren Seite beginnen</button></p>
-      </div>
-      ${FREE ? `<p class="privacy">${ICON.device}<span><strong>Kostenlos:</strong> Bearbeiten und Herunterladen ohne Konto und ohne Wasserzeichen.</span></p>` : `<p class="privacy">${ICON.device}<span><strong>Pro-Werkzeug:</strong> Bearbeiten geht ohne Konto. Zum Herunterladen brauchst du ein Konto: ${P.trialDays} Tage gratis, danach ${P.pro}/Monat oder ${P.daypass} Tagespass. <a href="/preise.html">Preise</a></span></p>`}
-    </div>
-
-    <div class="stage stage--editor"${blank ? "" : " hidden"}>
-      <div class="ed-bar" role="toolbar" aria-label="Werkzeuge">
-        <div class="ed-tools">
-          ${edTool("select", "Auswählen")}
+  const notice = sign
+    ? `<p class="privacy">${ICON.device}<span><strong>Im Browser:</strong> Deine PDF wird nicht hochgeladen. Kostenlos und ohne Konto.</span></p>`
+    : FREE
+      ? `<p class="privacy">${ICON.device}<span><strong>Kostenlos:</strong> Bearbeiten und Herunterladen ohne Konto und ohne Wasserzeichen.</span></p>`
+      : `<p class="privacy">${ICON.device}<span><strong>Pro-Werkzeug:</strong> Bearbeiten geht ohne Konto. Zum Herunterladen brauchst du ein Konto: ${P.trialDays} Tage gratis, danach ${P.pro}/Monat oder ${P.daypass} Tagespass. <a href="/preise.html">Preise</a></span></p>`;
+  const toolButtons = sign
+    ? `${edTool("select", "Auswählen")}
+          ${edTool("sign", "Unterschrift")}
+          ${edTool("text", "Text / Datum")}
+          ${edTool("image", "Bild")}`
+    : `${edTool("select", "Auswählen")}
           ${edTool("edittext", "Text ändern", " data-needs-source hidden")}
           ${edTool("text", "Text")}
           ${edTool("image", "Bild")}
@@ -658,7 +677,25 @@ function editorWorkspace(t) {
           ${edTool("draw", "Zeichnen")}
           ${edTool("highlight", "Markieren")}
           ${edTool("whiteout", "Überdecken")}
-          ${edTool("redact", "Entfernen")}
+          ${edTool("redact", "Entfernen")}`;
+  return `<section class="editor tool tool--edit" data-editor data-start="${t.ui.start}"${sign ? " data-sign" : ""} aria-label="${esc(t.name)}">
+    <div class="stage stage--pick"${blank ? " hidden" : ""}>
+      <div class="drop" data-drop>
+        ${toolIcon(t, 56)}
+        <label class="btn btn--primary btn--lg drop__btn">
+          ${ICON.upload}<span>PDF auswählen</span>
+          <input type="file" class="visually-hidden" accept=".pdf,application/pdf" data-ed-open>
+        </label>
+        <p class="drop__or">oder PDF hierher ziehen</p>
+        ${sign ? "" : `<p class="drop__hint">Oder <button type="button" class="btn--inline" data-ed-blank>mit einer leeren Seite beginnen</button></p>`}
+      </div>
+      ${notice}
+    </div>
+
+    <div class="stage stage--editor"${blank ? "" : " hidden"}>
+      <div class="ed-bar" role="toolbar" aria-label="Werkzeuge">
+        <div class="ed-tools">
+          ${toolButtons}
         </div>
         <div class="ed-actions">
           <button type="button" class="ed-tool ed-tool--icon" data-ed-undo title="Rückgängig (Strg+Z)" disabled>${edIcon("undo")}<span class="visually-hidden">Rückgängig</span></button>
@@ -706,6 +743,7 @@ function editorWorkspace(t) {
       <div class="busy"><div class="busy__bar is-indeterminate"><span></span></div><p data-busy-text>PDF wird erstellt …</p></div>
     </div>
 
+    ${sign ? signatureDialog() : ""}
     <dialog class="modal" data-modal aria-labelledby="modal-title">
       <button type="button" class="modal__close" data-modal-close aria-label="Schließen">${ICON.close}</button>
       <div data-modal-view="auth">
@@ -720,6 +758,38 @@ function editorWorkspace(t) {
       </div>
     </dialog>
   </section>`;
+}
+
+function signatureDialog() {
+  return `<dialog class="modal sig" data-sig aria-labelledby="sig-title">
+      <button type="button" class="modal__close" data-sig-close aria-label="Schließen">${ICON.close}</button>
+      <h2 id="sig-title">Unterschrift erstellen</h2>
+      <div class="sig__tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="true" data-sig-tab="draw">Zeichnen</button>
+        <button type="button" role="tab" aria-selected="false" data-sig-tab="upload">Foto hochladen</button>
+      </div>
+      <div class="sig__panel" data-sig-panel="draw">
+        <canvas class="sig__pad" data-sig-pad width="900" height="300" aria-label="Feld zum Unterschreiben"></canvas>
+        <div class="sig__row">
+          <span class="sig__colors" role="radiogroup" aria-label="Farbe">
+            <button type="button" class="sig__color" data-sig-color="#111827" aria-pressed="true" aria-label="Schwarz" style="--c:#111827"></button>
+            <button type="button" class="sig__color" data-sig-color="#1d3fb8" aria-pressed="false" aria-label="Blau" style="--c:#1d3fb8"></button>
+          </span>
+          <button type="button" class="btn btn--link" data-sig-clear>Löschen</button>
+        </div>
+        <p class="sig__hint">Mit Maus, Touchpad oder Finger unterschreiben.</p>
+      </div>
+      <div class="sig__panel" data-sig-panel="upload" hidden>
+        <label class="btn btn--ghost btn--block">Foto der Unterschrift auswählen<input type="file" class="visually-hidden" accept="image/png,image/jpeg" data-sig-file></label>
+        <p class="sig__hint">Unterschrift auf weißem Papier fotografieren – der weiße Hintergrund wird automatisch entfernt.</p>
+        <img class="sig__preview" data-sig-preview alt="Vorschau der Unterschrift" hidden>
+      </div>
+      <label class="check"><input type="checkbox" data-sig-remember> <span>Unterschrift auf diesem Gerät merken</span></label>
+      <div class="sig__actions">
+        <button type="button" class="btn btn--ghost" data-sig-saved hidden>Gespeicherte Unterschrift verwenden</button>
+        <button type="button" class="btn btn--primary" data-sig-insert>Einfügen</button>
+      </div>
+    </dialog>`;
 }
 
 function authForms(prefix) {
@@ -751,7 +821,7 @@ function planCards(prefix) {
           <div class="plan plan--main">
             <h3>Pro</h3>
             <p class="plan__price"><strong>${P.pro}</strong> / Monat</p>
-            <ul><li>PDF bearbeiten und erstellen ohne Limit</li><li>Monatlich kündbar</li></ul>
+            <ul><li>PDF-Editor und KI-Werkzeuge ohne Limit</li><li>Monatlich kündbar</li></ul>
             <button type="button" class="btn btn--primary btn--block" data-checkout="pro">Pro wählen</button>
           </div>
           <div class="plan">
@@ -776,17 +846,18 @@ function pricingPage() {
     ["Muss ich für die Testphase Zahlungsdaten angeben?", `Nein. Du registrierst dich nur mit E-Mail und Passwort und kannst ${P.trialDays} Tage lang alle Pro-Funktionen nutzen. Danach entscheidest du, ob du weitermachen willst.`],
     ["Wie kündige ich Pro?", "Jederzeit in deinem Konto über „Abo verwalten oder kündigen“. Du behältst den Zugang bis zum Ende des bezahlten Monats."],
     ["Was ist der Unterschied zum Tagespass?", `Der Tagespass kostet einmalig ${P.daypass} und gibt dir ${P.daypassHours} Stunden vollen Zugang – ideal, wenn du nur ein Dokument bearbeiten musst. Er verlängert sich nicht.`],
-    ["Bleiben die anderen Werkzeuge kostenlos?", "Ja. Zusammenfügen, Komprimieren, Umwandeln und alle anderen Werkzeuge bleiben kostenlos und ohne Konto nutzbar."],
+    ["Bleiben die anderen Werkzeuge kostenlos?", "Ja. Zusammenfügen, Komprimieren, Unterschreiben, Umwandeln und alle anderen Werkzeuge bleiben kostenlos und ohne Konto nutzbar."],
+    ["Was ist in Pro enthalten?", `${proNames()}. Alles ohne Wasserzeichen und ohne Tageslimit.`],
   ];
   return page({
-    title: "Preise – PDF Libre Pro | PDF bearbeiten & erstellen",
-    description: `PDF Libre Pro: PDF bearbeiten und erstellen. ${P.trialDays} Tage kostenlos testen, danach ${P.pro} im Monat oder Tagespass für ${P.daypass}. Alle anderen Werkzeuge bleiben gratis.`,
+    title: "Preise – PDF Libre Pro | PDF-Editor & KI-Werkzeuge",
+    description: `PDF Libre Pro: PDF bearbeiten, erstellen, mit KI zusammenfassen und übersetzen. ${P.trialDays} Tage kostenlos testen, danach ${P.pro} im Monat oder Tagespass für ${P.daypass}. Alle anderen Werkzeuge bleiben gratis.`,
     slug: "preise",
     ads: false,
     jsonLd: [faqLd(faq)],
     body: `<div class="tool-head wrap">
   <h1>Einfache Preise</h1>
-  <p class="tool-head__lead">Alle Werkzeuge sind kostenlos. Nur der PDF-Editor gehört zu Pro – und den testest du ${P.trialDays} Tage gratis.</p>
+  <p class="tool-head__lead">Fast alle Werkzeuge sind kostenlos. Nur der PDF-Editor und die KI-Werkzeuge gehören zu Pro – und die testest du ${P.trialDays} Tage gratis.</p>
 </div>
 <section class="wrap pricing">
   <div class="plans plans--page">
@@ -799,7 +870,7 @@ function pricingPage() {
     <div class="plan plan--main">
       <h2>Pro</h2>
       <p class="plan__price"><strong>${P.pro}</strong> / Monat</p>
-      <ul><li>PDF bearbeiten: Text ändern, einfügen, entfernen</li><li>PDF erstellen</li><li>${P.trialDays} Tage kostenlos testen</li><li>Monatlich kündbar</li></ul>
+      <ul><li>PDF bearbeiten: Text ändern, einfügen, entfernen</li><li>PDF erstellen</li><li>PDF mit KI zusammenfassen</li><li>PDF mit KI übersetzen</li><li>${P.trialDays} Tage kostenlos testen</li><li>Monatlich kündbar</li></ul>
       <a class="btn btn--primary btn--block" href="/anmelden.html?next=/edit.html">${P.trialDays} Tage gratis testen</a>
     </div>
     <div class="plan">

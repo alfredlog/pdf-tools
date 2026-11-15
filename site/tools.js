@@ -6,13 +6,26 @@
  *       "client" = läuft komplett im Browser, die Datei verlässt das Gerät nicht
  */
 
+// Reihenfolge = Reihenfolge auf der Startseite, im Menü und in den Filtern
 const categories = [
-  { id: "organize", name: "Organisieren", color: "organize" },
-  { id: "optimize", name: "Optimieren", color: "optimize" },
-  { id: "to-pdf", name: "In PDF umwandeln", color: "topdf" },
-  { id: "from-pdf", name: "PDF umwandeln", color: "frompdf" },
-  { id: "edit", name: "Bearbeiten", color: "edit" },
-  { id: "security", name: "Sicherheit", color: "security" },
+  { id: "organize", name: "Zusammenfügen & Organisieren", short: "Organisieren", color: "organize" },
+  { id: "optimize", name: "Komprimieren", short: "Komprimieren", color: "optimize" },
+  { id: "edit", name: "Bearbeiten & Unterschreiben", short: "Bearbeiten", color: "edit" },
+  { id: "to-pdf", name: "In PDF umwandeln", short: "In PDF", color: "topdf" },
+  { id: "from-pdf", name: "Aus PDF umwandeln", short: "Aus PDF", color: "frompdf" },
+  { id: "ai", name: "KI-Werkzeuge", short: "KI", color: "ai" },
+  { id: "security", name: "Sicherheit", short: "Sicherheit", color: "security" },
+];
+
+// Reihenfolge der Werkzeuge innerhalb der Kategorien (beliebteste zuerst)
+const ORDER = [
+  "merge", "bewerbungsmappe", "split", "organize", "rotate", "remove-pages", "extract-pages",
+  "compress", "merge-compress",
+  "edit", "sign", "create", "page-numbers", "watermark",
+  "docx-to-pdf", "jpg-to-pdf", "excel-to-pdf", "ppt-to-pdf",
+  "pdf-to-docx", "pdf-to-excel", "pdf-to-powerpoint", "pdf-to-jpg",
+  "summarize", "translate",
+  "protect", "unlock",
 ];
 
 const PDF = { accept: ".pdf,application/pdf", label: "PDF" };
@@ -69,7 +82,7 @@ const tools = [
       ["Funktioniert das auch mit passwortgeschützten PDFs?", "Nein. Entsperre die Datei zuerst mit „PDF entsperren“ – dafür brauchst du das Passwort."],
       ["Werden meine Dateien gespeichert?", "Nein. Die Dateien werden nur für die Verarbeitung auf dem Server abgelegt und direkt nach dem Download automatisch gelöscht."],
     ],
-    related: ["merge-compress", "organize", "split", "compress"],
+    related: ["bewerbungsmappe", "merge-compress", "organize", "compress"],
   },
   {
     slug: "split",
@@ -437,7 +450,7 @@ const tools = [
       ["Wie viele Dateien sind möglich?", "Bis zu 20 PDFs mit jeweils maximal 50 MB."],
       ["Werden die Dateien gespeichert?", "Nein, sie werden direkt nach der Verarbeitung gelöscht."],
     ],
-    related: ["merge", "compress", "organize", "jpg-to-pdf"],
+    related: ["bewerbungsmappe", "merge", "organize", "jpg-to-pdf"],
   },
 
   // ------------------------------------------------------------------ IN PDF
@@ -534,7 +547,7 @@ const tools = [
       ["Bleiben Animationen erhalten?", "Nein. PDFs sind statisch, jede Folie wird im fertigen Zustand dargestellt."],
       ["Wird meine Datei gespeichert?", "Nein, sie wird direkt nach der Umwandlung gelöscht."],
     ],
-    related: ["docx-to-pdf", "excel-to-pdf", "compress", "merge"],
+    related: ["pdf-to-powerpoint", "docx-to-pdf", "excel-to-pdf", "compress"],
   },
   {
     slug: "excel-to-pdf",
@@ -574,7 +587,7 @@ const tools = [
       ["Warum ist meine Tabelle auf mehrere Seiten verteilt?", "Die Tabelle ist breiter als eine Seite. Stelle in Excel das Querformat oder „An Seite anpassen“ ein und wandle erneut um."],
       ["Bleiben Formeln erhalten?", "In der PDF stehen die berechneten Werte. Formeln selbst sind in einer PDF nicht enthalten."],
     ],
-    related: ["docx-to-pdf", "ppt-to-pdf", "merge", "compress"],
+    related: ["pdf-to-excel", "docx-to-pdf", "ppt-to-pdf", "merge"],
   },
   {
     slug: "jpg-to-pdf",
@@ -650,7 +663,7 @@ const tools = [
       ["Werden meine Bilder hochgeladen?", "Nein. Die PDF wird direkt in deinem Browser erzeugt."],
       ["Wird die Bildqualität verringert?", "Nein, die Bilder werden in Originalqualität eingebettet. Wenn die PDF zu groß wird, kannst du sie danach komprimieren."],
     ],
-    related: ["pdf-to-jpg", "compress", "merge", "organize"],
+    related: ["pdf-to-excel", "pdf-to-powerpoint", "pdf-to-jpg", "compress"],
   },
 
   // ------------------------------------------------------------------ AUS PDF
@@ -803,7 +816,7 @@ const tools = [
       ["Kann ich meine Unterschrift einfügen?", "Ja. Zeichne sie mit „Zeichnen“ direkt mit Maus oder Finger oder füge ein Foto deiner Unterschrift als Bild ein."],
       ["Werden meine Dateien gespeichert?", "Nein. Beim Herunterladen wird die PDF verschlüsselt an den Server geschickt, verarbeitet und direkt danach gelöscht."],
     ],
-    related: ["create", "watermark", "page-numbers", "protect"],
+    related: ["sign", "create", "watermark", "page-numbers"],
     // Texte, wenn die Bezahlung ausgeschaltet ist (PAYMENTS_ENABLED=false)
     free: {
       short: "Text ändern, hinzufügen oder löschen, Bilder und Formen einfügen. Kostenlos.",
@@ -1088,5 +1101,11 @@ const tools = [
     related: ["protect", "merge", "pdf-to-docx", "compress"],
   },
 ];
+
+tools.push(...require("./tools-new"));
+
+// Nach Kategorie und Beliebtheit sortieren
+const catIndex = Object.fromEntries(categories.map((c, i) => [c.id, i]));
+tools.sort((a, b) => catIndex[a.cat] - catIndex[b.cat] || ORDER.indexOf(a.slug) - ORDER.indexOf(b.slug));
 
 module.exports = { tools, categories };

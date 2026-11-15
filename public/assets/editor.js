@@ -146,6 +146,7 @@
     exporting: false,
   };
 
+  const signMode = root.hasAttribute("data-sign"); // „PDF unterschreiben“: alles im Browser, kostenlos
   const defaults = { font: "helv", size: 16, color: "#16213d", bold: false, italic: false, stroke: "#2b4bdb", fill: "#ffffff", nofill: true, strokeWidth: 2, opacity: 100 };
 
   root.__editor = state; // für Tests und Fehlersuche in der Browser-Konsole
@@ -438,9 +439,14 @@
     whiteout: "Ziehe über einen Bereich, um ihn weiß zu überdecken. Der Inhalt darunter bleibt in der Datei.",
     redact: "Ziehe über einen Bereich. Text, Bilder und Grafiken darin werden beim Speichern endgültig gelöscht.",
   };
+  if (signMode) {
+    HINTS.select = "Klicke auf „Unterschrift“, um zu unterschreiben. Ziehe Elemente an die richtige Stelle, die Ecken ändern die Größe.";
+    HINTS.text = "Klicke auf die Seite, um Text einzufügen – z. B. Ort und Datum.";
+  }
 
   function setTool(tool) {
     if (tool === "image") return $("[data-ed-image]").click();
+    if (tool === "sign") return openSignature();
     state.tool = tool;
     $$("[data-ed-tool]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.edTool === tool)));
     const creating = !["select", "edittext"].includes(tool);
@@ -550,7 +556,7 @@
       }
       if (tool === "text") {
         if (opt.target && opt.target.type === "i-text") return;
-        const t = makeText(pt.x, pt.y - (Number(defaults.size) || 16) / 2);
+        const t = makeText(pt.x, pt.y - (Number(defaults.size) || 16) / 2, signMode ? new Date().toLocaleDateString("de-DE") : undefined);
         c.add(t);
         c.setActiveObject(t);
         t.enterEditing();
@@ -1131,6 +1137,7 @@
 
   async function exportPdf() {
     if (state.exporting) return;
+    if (signMode) return exportInBrowser();
     // Laufende Texteingabe abschließen
     state.pages.forEach((p) => {
       const o = p.canvas.getActiveObject();
@@ -1182,6 +1189,286 @@
     }
   }
   $("[data-ed-download]").addEventListener("click", exportPdf);
+
+  // ---------------------------------------------------------------------------
+  // PDF unterschreiben: Export im Browser mit pdf-lib (die Datei verlässt das Gerät nicht)
+  // ---------------------------------------------------------------------------
+  const STD_FONTS = {
+    helv: ["Helvetica", "HelveticaBold", "HelveticaOblique", "HelveticaBoldOblique"],
+    tiro: ["TimesRoman", "TimesRomanBold", "TimesRomanItalic", "TimesRomanBoldItalic"],
+    cour: ["Courier", "CourierBold", "CourierOblique", "CourierBoldOblique"],
+  };
+
+  async function exportInBrowser() {
+    const L = window.PDFLib;
+    if (!L) return toast("Die Seite ist noch nicht vollständig geladen. Bitte versuche es gleich noch einmal.");
+    state.pages.forEach((p) => {
+      const o = p.canvas.getActiveObject();
+      if (o && o.isEditing) o.exitEditing();
+    });
+    state.exporting = true;
+    const btn = $("[data-ed-download]");
+    btn.disabled = true;
+    btn.querySelector("span").textContent = "Wird erstellt …";
+    try {
+      const src = state.sourceBytes ? await L.PDFDocument.load(state.sourceBytes) : null;
+      const out = await L.PDFDocument.create();
+      const fonts = {};
+      const fontFor = async (o) => {
+        const variants = STD_FONTS[o.data?.font] || STD_FONTS.helv;
+        const name = variants[(o.fontWeight === "bold" ? 1 : 0) + (o.fontStyle === "italic" ? 2 : 0)];
+        return (fonts[name] ||= await out.embedFont(L.StandardFonts[name]));
+      };
+      let skipped = false;
+      for (const p of state.pages) {
+        let page;
+        if (src && p.src !== null) {
+          [page] = await out.copyPages(src, [p.src]);
+          out.addPage(page);
+        } else {
+          page = out.addPage([p.width, p.height]);
+        }
+        // Sichtbare Koordinaten (oben links, wie im Editor) → PDF-Koordinaten, auch bei gedrehten Seiten
+        const box = page.getCropBox();
+        const rot = ((page.getRotation().angle % 360) + 360) % 360;
+        const vh = rot % 180 ? box.width : box.height;
+        const map = (vx, vyTop) => {
+          const vy = vh - vyTop;
+          let x, y;
+          if (rot === 90) [x, y] = [box.width - vy, vx];
+          else if (rot === 180) [x, y] = [box.width - vx, box.height - vy];
+          else if (rot === 270) [x, y] = [vy, box.height - vx];
+          else [x, y] = [vx, vy];
+          return { x: x + box.x, y: y + box.y };
+        };
+        for (const o of p.canvas.getObjects()) {
+          const opacity = o.opacity ?? 1;
+          if (o.data?.kind === "image") {
+            const w = o.width * o.scaleX;
+            const h = o.height * o.scaleY;
+            const srcUrl = o.getSrc();
+            const img = /^data:image\/png/.test(srcUrl) ? await out.embedPng(srcUrl) : await out.embedJpg(srcUrl);
+            page.drawImage(img, { ...map(o.left, o.top + h), width: w, height: h, rotate: L.degrees(rot), opacity });
+          } else if (o.data?.kind === "text") {
+            const font = await fontFor(o);
+            const fs = o.fontSize * o.scaleY;
+            const color = colorOf(o.fill) || [0, 0, 0];
+            o.textLines.forEach((raw, i) => {
+              // Standardschriften kennen nur westeuropäische Zeichen
+              const text = Array.from(raw).filter((ch) => {
+                try {
+                  font.encodeText(ch);
+                  return true;
+                } catch {
+                  skipped = true;
+                  return false;
+                }
+              }).join("");
+              if (!text.trim()) return;
+              const x = o.left + o._getLineLeftOffset(i) * o.scaleX;
+              const yTop = o.top + fs * 1.13 * (i * o.lineHeight + (1 - 0.222));
+              page.drawText(text, { ...map(x, yTop), size: fs, font, color: L.rgb(...color), opacity, rotate: L.degrees(rot) });
+            });
+          }
+        }
+      }
+      const bytes = await out.save();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+      a.download = `${(state.sourceName || "Dokument").replace(/\.pdf$/i, "")}_unterschrieben.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      state.dirty = false;
+      toast(skipped ? "Fertig! Einige Sonderzeichen im Text wurden weggelassen." : "Fertig! Deine unterschriebene PDF wird heruntergeladen.");
+    } catch (e) {
+      console.error(e);
+      toast(/encrypt/i.test(e.message || "") ? "Diese PDF ist verschlüsselt. Entsperre sie zuerst mit „PDF entsperren“." : "Die PDF konnte nicht erstellt werden.");
+    } finally {
+      state.exporting = false;
+      btn.disabled = false;
+      btn.querySelector("span").textContent = "Herunterladen";
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Unterschrift zeichnen oder als Foto einfügen
+  // ---------------------------------------------------------------------------
+  const sig = root.querySelector("[data-sig]");
+  const SIG_KEY = "pl_signature";
+  let openSignature = () => {};
+  if (sig) {
+    const pad = sig.querySelector("[data-sig-pad]");
+    const ctx = pad.getContext("2d");
+    let color = "#111827";
+    let strokes = 0;
+    let uploaded = null;
+    let tab = "draw";
+    let pts = [];
+
+    const savedSig = () => {
+      try {
+        return localStorage.getItem(SIG_KEY);
+      } catch {
+        return null;
+      }
+    };
+    const clearPad = () => {
+      ctx.clearRect(0, 0, pad.width, pad.height);
+      strokes = 0;
+    };
+    const pos = (e) => {
+      const r = pad.getBoundingClientRect();
+      return { x: ((e.clientX - r.left) * pad.width) / r.width, y: ((e.clientY - r.top) * pad.height) / r.height };
+    };
+    pad.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      pad.setPointerCapture(e.pointerId);
+      pts = [pos(e)];
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(pts[0].x, pts[0].y, 2.6, 0, Math.PI * 2);
+      ctx.fill();
+      strokes++;
+    });
+    pad.addEventListener("pointermove", (e) => {
+      if (!pts.length) return;
+      const p = pos(e);
+      pts.push(p);
+      if (pts.length < 3) return;
+      // geglättete Linie durch die Mittelpunkte
+      const [a, b, c] = pts.slice(-3);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 5.2;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo((a.x + b.x) / 2, (a.y + b.y) / 2);
+      ctx.quadraticCurveTo(b.x, b.y, (b.x + c.x) / 2, (b.y + c.y) / 2);
+      ctx.stroke();
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach((t) => pad.addEventListener(t, () => (pts = [])));
+
+    /** Leerraum abschneiden; optional weißen Hintergrund entfernen (Fotos) */
+    function trimmed(source, removeWhite) {
+      const c = document.createElement("canvas");
+      c.width = source.width;
+      c.height = source.height;
+      const cx = c.getContext("2d");
+      cx.drawImage(source, 0, 0);
+      const img = cx.getImageData(0, 0, c.width, c.height);
+      const d = img.data;
+      let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+      for (let y = 0; y < c.height; y++) {
+        for (let x = 0; x < c.width; x++) {
+          const i = (y * c.width + x) * 4;
+          if (removeWhite) {
+            const l = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            // hell → durchsichtig, dunkel → kräftig (weicher Übergang an den Kanten)
+            d[i + 3] = l > 205 ? 0 : Math.min(255, Math.round(((205 - l) / 90) * 255));
+          }
+          if (d[i + 3] > 20) {
+            if (x < x0) x0 = x;
+            if (x > x1) x1 = x;
+            if (y < y0) y0 = y;
+            if (y > y1) y1 = y;
+          }
+        }
+      }
+      if (x1 < 0) return null;
+      cx.putImageData(img, 0, 0);
+      const m = 6;
+      const out = document.createElement("canvas");
+      out.width = Math.min(c.width, x1 - x0 + 1 + 2 * m);
+      out.height = Math.min(c.height, y1 - y0 + 1 + 2 * m);
+      out.getContext("2d").drawImage(c, Math.max(0, x0 - m), Math.max(0, y0 - m), out.width, out.height, 0, 0, out.width, out.height);
+      return out.toDataURL("image/png");
+    }
+
+    function setTab(name) {
+      tab = name;
+      sig.querySelectorAll("[data-sig-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.sigTab === name)));
+      sig.querySelectorAll("[data-sig-panel]").forEach((p) => (p.hidden = p.dataset.sigPanel !== name));
+    }
+    sig.querySelectorAll("[data-sig-tab]").forEach((b) => b.addEventListener("click", () => setTab(b.dataset.sigTab)));
+    sig.querySelectorAll("[data-sig-color]").forEach((b) =>
+      b.addEventListener("click", () => {
+        color = b.dataset.sigColor;
+        sig.querySelectorAll("[data-sig-color]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      })
+    );
+    sig.querySelector("[data-sig-clear]").addEventListener("click", clearPad);
+    sig.querySelector("[data-sig-close]").addEventListener("click", () => sig.close());
+    sig.querySelector("[data-sig-file]").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      e.target.value = "";
+      if (!file) return;
+      const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+      const s = Math.min(1, 1400 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(bmp.width * s);
+      c.height = Math.round(bmp.height * s);
+      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+      uploaded = trimmed(c, true);
+      const pv = sig.querySelector("[data-sig-preview]");
+      pv.hidden = !uploaded;
+      if (uploaded) pv.src = uploaded;
+      else toast("Auf dem Foto wurde keine Unterschrift erkannt.");
+    });
+
+    function insertSignature(url) {
+      // Seite, die gerade am meisten zu sehen ist
+      const mid = window.innerHeight / 2;
+      const p =
+        state.pages
+          .map((q) => ({ q, r: q.el.querySelector(".ed-page__stage").getBoundingClientRect() }))
+          .sort((a, b) => Math.abs((a.r.top + a.r.bottom) / 2 - mid) - Math.abs((b.r.top + b.r.bottom) / 2 - mid))[0]?.q || state.pages[0];
+      if (!p) return;
+      const r = p.el.querySelector(".ed-page__stage").getBoundingClientRect();
+      fabric.Image.fromURL(url, (img) => {
+        const w = Math.min(180, p.width * 0.32);
+        const s = w / img.width;
+        const cy = Math.min(p.height - img.height * s - 20, Math.max(20, (mid - r.top) / p.scale));
+        img.set({ left: (p.width - w) / 2, top: cy, scaleX: s, scaleY: s, strokeWidth: 0, data: { kind: "image", signature: true } });
+        applyObjectDefaults(img);
+        p.canvas.add(img);
+        setTool("select");
+        p.canvas.setActiveObject(img);
+        p.canvas.requestRenderAll();
+        state.lastPage = p;
+      });
+    }
+
+    sig.querySelector("[data-sig-insert]").addEventListener("click", () => {
+      const url = tab === "draw" ? (strokes ? trimmed(pad, false) : null) : uploaded;
+      if (!url) return toast(tab === "draw" ? "Bitte unterschreibe zuerst im Feld." : "Bitte wähle zuerst ein Foto deiner Unterschrift aus.");
+      if (sig.querySelector("[data-sig-remember]").checked) {
+        try {
+          localStorage.setItem(SIG_KEY, url);
+        } catch {
+          /* Speicher nicht verfügbar – egal */
+        }
+      }
+      sig.close();
+      insertSignature(url);
+    });
+    sig.querySelector("[data-sig-saved]").addEventListener("click", () => {
+      const url = savedSig();
+      sig.close();
+      if (url) insertSignature(url);
+    });
+
+    openSignature = () => {
+      if (!state.pages.length) return;
+      clearPad();
+      uploaded = null;
+      sig.querySelector("[data-sig-preview]").hidden = true;
+      sig.querySelector("[data-sig-saved]").hidden = !savedSig();
+      setTab("draw");
+      sig.showModal();
+    };
+  }
 
   // ---------------------------------------------------------------------------
   // Anmelden / Bezahlen im Dialog

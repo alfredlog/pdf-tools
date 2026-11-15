@@ -25,6 +25,7 @@ const auth = require("./server/auth");
 const billing = require("./server/billing");
 const payments = require("./server/payments");
 const editorRouter = require("./server/editor");
+const aiRouter = require("./server/ai");
 const agentApi = require("./server/agent-api");
 
 // ---------------------------------------------------------------------------
@@ -117,6 +118,7 @@ const EXT = {
   word: [".doc", ".docx", ".odt", ".rtf"],
   powerpoint: [".ppt", ".pptx", ".odp"],
   excel: [".xls", ".xlsx", ".ods", ".csv"],
+  mappe: [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".odt", ".rtf"],
 };
 
 function uploader(kind, { multiple = false } = {}) {
@@ -416,6 +418,88 @@ api.post("/word-to-pdf", ...officeToPdf("word"));
 api.post("/powerpoint-to-pdf", ...officeToPdf("powerpoint"));
 api.post("/excel-to-pdf", ...officeToPdf("excel"));
 
+/** Datei mit LibreOffice umwandeln (eigenes Profil pro Auftrag, damit Aufträge sich nicht blockieren) */
+async function sofficeConvert(filePath, jobDirPath, format, infilter) {
+  const profile = "file://" + path.join(jobDirPath, "lo-profile").split(path.sep).join("/");
+  const outDir = path.join(jobDirPath, "lo-out");
+  await fsp.mkdir(outDir, { recursive: true });
+  await run(SOFFICE, [
+    `-env:UserInstallation=${profile}`,
+    "--headless",
+    "--norestore",
+    ...(infilter ? [`--infilter=${infilter}`] : []),
+    "--convert-to",
+    format,
+    "--outdir",
+    outDir,
+    filePath,
+  ]);
+  const out = path.join(outDir, path.parse(filePath).name + "." + format.split(":")[0]);
+  if (!fs.existsSync(out)) throw new UserError("Die Datei konnte nicht umgewandelt werden. Ist sie beschädigt?", 422);
+  return out;
+}
+
+// PDF → Excel (Tabellen erkennen) ---------------------------------------------------
+api.post(
+  "/pdf-to-excel",
+  uploader("pdf"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    const out = path.join(req.jobDir, "out.xlsx");
+    try {
+      await run(PYTHON, [path.join(__dirname, "pdf_to_excel.py"), file.path, out]);
+    } catch (e) {
+      if (/password/.test(e.stderr || "")) throw new UserError("Diese PDF ist passwortgeschützt. Entsperre sie zuerst mit „PDF entsperren“.");
+      throw e;
+    }
+    await sendFile(res, out, outName(file.originalname, "", ".xlsx"));
+  })
+);
+
+// PDF → PowerPoint (LibreOffice: Text bleibt bearbeitbar) ---------------------------
+api.post(
+  "/pdf-to-powerpoint",
+  uploader("pdf"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    const out = await sofficeConvert(file.path, req.jobDir, "pptx", "impress_pdf_import");
+    await sendFile(res, out, outName(file.originalname, "", ".pptx"));
+  })
+);
+
+// Bewerbungsmappe: Dokumente, Bilder und Word-Dateien zu einer PDF ------------------
+api.post(
+  "/bewerbungsmappe",
+  uploader("mappe", { multiple: true }),
+  wrap(async (req, res) => {
+    const files = requireFiles(req);
+    const parts = [];
+    let originalBytes = 0;
+    for (const f of files) {
+      const ext = path.extname(f.originalname).toLowerCase();
+      const label = path.parse(Buffer.from(f.originalname, "latin1").toString("utf8")).name.replace(/[_-]+/g, " ").trim();
+      originalBytes += f.size;
+      if ([".jpg", ".jpeg", ".png"].includes(ext)) parts.push({ path: f.path, kind: "image", label });
+      else if (ext === ".pdf") parts.push({ path: f.path, kind: "pdf", label });
+      else parts.push({ path: await sofficeConvert(f.path, req.jobDir, "pdf"), kind: "pdf", label });
+    }
+    const b = req.body || {};
+    const cover = b.cover === "yes" ? { name: b.name, position: b.position, company: b.company, email: b.email, phone: b.phone, address: b.address } : null;
+    for (const [k, v] of Object.entries(cover || {})) cover[k] = String(v || "").slice(0, 120);
+    const spec = path.join(req.jobDir, "mappe.json");
+    const out = path.join(req.jobDir, "Bewerbung.pdf");
+    await fsp.writeFile(spec, JSON.stringify({ files: parts, cover, pageNumbers: b.pageNumbers === "yes", maxMb: Number(b.maxMb) || 0 }));
+    try {
+      await run(PYTHON, [path.join(__dirname, "bewerbungsmappe.py"), spec, out]);
+    } catch (e) {
+      if (/password/.test(e.stderr || "")) throw new UserError("Eine der PDFs ist passwortgeschützt. Entsperre sie zuerst mit „PDF entsperren“.");
+      throw e;
+    }
+    const name = cover && cover.name ? `Bewerbung_${cover.name}` : "Bewerbung";
+    await sendFile(res, out, outName(name, "", ".pdf"), { "X-Original-Size": originalBytes, "X-Result-Size": (await fsp.stat(out)).size });
+  })
+);
+
 // PDF → Word (Python pdf2docx) ------------------------------------------------------
 api.post(
   "/pdf-to-word",
@@ -444,12 +528,13 @@ app.get("/api/health", async (req, res) => {
     check(PYTHON, ["-c", "import pdf2docx"]),
   ]);
   const pymupdf = await check(PYTHON, ["-c", "import pymupdf"]);
-  res.json({ ok: true, ghostscript, libreoffice, pdf2docx, pymupdf, database: db.enabled, stripe: billing.enabled, payments: payments.enabled });
+  res.json({ ok: true, ghostscript, libreoffice, pdf2docx, pymupdf, ai: aiRouter.enabled, database: db.enabled, stripe: billing.enabled, payments: payments.enabled });
 });
 
 app.use("/api/auth", auth.router());
 app.use("/api/billing", billing.router());
 app.use("/api/pro", apiLimiter, editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_MB }));
+app.use("/api/ai", aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile }));
 
 // Agenten-API (Bezahlung pro Aufruf in BSV, siehe server/agent-api.js) – nur wenn AGENT_API_ENABLED=true
 if (agentApi.enabled) {

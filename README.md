@@ -29,6 +29,13 @@ npm start                 # → http://localhost:3000
 
 Ohne `DATABASE_URL` laufen alle kostenlosen Werkzeuge trotzdem – nur Konten und der Editor-Download sind dann aus.
 
+## Kostenlose und Pro-Werkzeuge
+
+Mit `PAYMENTS_ENABLED=true` gehören diese Werkzeuge zu Pro (Konto + Abo oder Tagespass):
+PDF bearbeiten, PDF erstellen, PDF zusammenfassen (KI), PDF übersetzen (KI).
+Alle anderen bleiben kostenlos – auch „PDF unterschreiben“, das komplett im Browser läuft.
+Welche Werkzeuge Pro sind, steht in `site/tools.js` bzw. `site/tools-new.js` (`pro: true`).
+
 ## Bezahlung an/aus
 
 In der `.env`:
@@ -84,6 +91,10 @@ public/              fertige Website (wird vom Server ausgeliefert)
 
 | Variable | Standard | Bedeutung |
 |---|---|---|
+| `AI_API_KEY` | – | Schlüssel für die KI-Werkzeuge (PDF zusammenfassen/übersetzen). Jede OpenAI-kompatible API. Ohne Schlüssel sind die KI-Werkzeuge aus. |
+| `AI_BASE_URL` | `https://api.openai.com/v1` | Andere Anbieter, z. B. `https://api.mistral.ai/v1` |
+| `AI_MODEL` | `gpt-4o-mini` | KI-Modell |
+| `AI_RATE_LIMIT` | `10` | KI-Aufträge pro Stunde und IP-Adresse (schützt deine API-Kosten) |
 | `PAYMENTS_ENABLED` | `false` | `false` = **alles kostenlos**, kein Konto nötig, keine Preisseite. `true` = PDF-Editor nur mit Pro/Tagespass (Stripe). Nach Änderung Server neu starten. |
 | `PORT` | 3000 | Port |
 | `MAX_FILE_MB` | 50 | max. Größe pro Datei |

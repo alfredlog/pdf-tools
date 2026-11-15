@@ -30,6 +30,7 @@
   --c-frompdf: #7447d1;
   --c-edit: #c23b78;
   --c-security: #243152;
+  --c-ai: #0f7c8c;
 
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -111,7 +112,7 @@ button, input, select { font: inherit; color: inherit; }
 .nav__burger svg { width: 26px; height: 26px; }
 
 .mega { border-top: 1px solid var(--line); background: var(--surface); box-shadow: 0 16px 30px -18px rgba(22,33,61,.35); }
-.mega__grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; padding: 24px 0 28px; }
+.mega__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px 24px; padding: 24px 0 28px; }
 .mega__cat { font: 700 .875rem/1.2 var(--display); margin: 0 0 10px; padding-left: 10px; border-left: 3px solid; }
 .mega__cat--organize { border-color: var(--c-organize); }
 .mega__cat--optimize { border-color: var(--c-optimize); }
@@ -119,6 +120,7 @@ button, input, select { font: inherit; color: inherit; }
 .mega__cat--frompdf { border-color: var(--c-frompdf); }
 .mega__cat--edit { border-color: var(--c-edit); }
 .mega__cat--security { border-color: var(--c-security); }
+.mega__cat--ai { border-color: var(--c-ai); }
 .mega ul { list-style: none; margin: 0; padding: 0; }
 .mega li a { display: block; padding: 5px 10px; color: var(--ink-2); text-decoration: none; border-radius: var(--r-sm); font-size: .96875rem; }
 .mega li a:hover { background: var(--bg); color: var(--ink); }
@@ -143,6 +145,7 @@ button, input, select { font: inherit; color: inherit; }
 .ficon--frompdf { --fc: var(--c-frompdf); }
 .ficon--edit { --fc: var(--c-edit); }
 .ficon--security { --fc: var(--c-security); }
+.ficon--ai { --fc: var(--c-ai); }
 
 /* ---------- Startseite ---------- */
 .home-hero { padding: 56px 0 28px; }
@@ -195,6 +198,7 @@ button, input, select { font: inherit; color: inherit; }
 .tool--frompdf { --tc: var(--c-frompdf); }
 .tool--edit { --tc: var(--c-edit); }
 .tool--security { --tc: var(--c-security); }
+.tool--ai { --tc: var(--c-ai); }
 .tool__form { margin: 0; }
 
 .stage--pick { padding: 20px; }
@@ -386,6 +390,10 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 /* ==========================================================================
    Konto, Preise, Pro
    ========================================================================== */
+.new-badge {
+  display: inline-block; vertical-align: middle; margin-left: 4px; padding: 2px 7px; border-radius: 99px;
+  background: #e3f6ee; color: #0b6b4c; font: 700 .6875rem/1.3 var(--body); letter-spacing: .02em;
+}
 .pro-badge {
   display: inline-block; vertical-align: middle; margin-left: 4px; padding: 2px 7px; border-radius: 99px;
   background: var(--ink); color: #fff; font: 700 .6875rem/1.3 var(--body); letter-spacing: .02em;
@@ -541,3 +549,42 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .privacy a { color: var(--brand); }
 .brand { white-space: nowrap; }
 @media (max-width: 420px) { .nav__pricing { display: none; } .nav__account { margin-left: auto; } }
+
+/* ---------- Ergebnis-Vorschau (z. B. KI-Zusammenfassung) ---------- */
+.done__preview {
+  width: min(720px, 100%); max-height: 460px; overflow: auto; margin: 4px 0 10px; padding: 18px 22px;
+  text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: var(--r);
+}
+.done__preview h2 { font-size: 1.125rem; margin: 14px 0 6px; color: var(--c-ai); }
+.done__preview h2:first-child { margin-top: 0; }
+.done__preview h3 { font-size: 1rem; margin: 12px 0 4px; }
+.done__preview p, .done__preview li { margin: 0 0 6px; line-height: 1.55; }
+.done__preview ul, .done__preview ol { padding-left: 22px; margin: 0 0 8px; }
+.form-error a { color: inherit; font-weight: 700; }
+
+/* ---------- Unterschrift ---------- */
+.sig h2 { margin: 0 0 14px; }
+.sig__tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.sig__tabs button { flex: 1; padding: 9px 12px; border: 1px solid var(--line-2); background: var(--surface); border-radius: var(--r-sm); font-weight: 700; cursor: pointer; color: var(--ink-2); }
+.sig__tabs button[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.sig__pad { display: block; width: 100%; aspect-ratio: 3 / 1; border: 2px dashed var(--line-2); border-radius: var(--r); background: #fff; touch-action: none; cursor: crosshair; }
+.sig__row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.sig__colors { display: flex; gap: 8px; }
+.sig__color { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff; background: var(--c); box-shadow: 0 0 0 1px var(--line-2); cursor: pointer; }
+.sig__color[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ink); }
+.sig__hint { color: var(--ink-3); font-size: .875rem; margin: 6px 0 10px; }
+.sig__preview { display: block; max-width: 100%; max-height: 140px; margin: 8px auto; background: repeating-conic-gradient(#f1f3f8 0 25%, #fff 0 50%) 0 0 / 16px 16px; border-radius: var(--r-sm); }
+.sig__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+@media (max-width: 520px) { .sig__actions .btn { flex: 1; } }
+
+/* ---------- Startseite: Werkzeuge nach Kategorie ---------- */
+.tgroup { margin: 0 0 30px; }
+.tgroup[hidden] { display: none; }
+.tgroup__title { font: 700 1.125rem/1.3 var(--display); margin: 0 0 12px; padding-left: 12px; border-left: 4px solid var(--ink-3); }
+.tgroup__title--organize { border-color: var(--c-organize); }
+.tgroup__title--optimize { border-color: var(--c-optimize); }
+.tgroup__title--edit { border-color: var(--c-edit); }
+.tgroup__title--topdf { border-color: var(--c-topdf); }
+.tgroup__title--frompdf { border-color: var(--c-frompdf); }
+.tgroup__title--ai { border-color: var(--c-ai); }
+.tgroup__title--security { border-color: var(--c-security); }
