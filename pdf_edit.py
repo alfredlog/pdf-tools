@@ -18,6 +18,9 @@ Alle Koordinaten sind PDF-Punkte, Ursprung oben links, so wie die Seite angezeig
 """
 import json
 import os
+import re
+import shutil
+import subprocess
 import sys
 
 import pymupdf
@@ -29,6 +32,91 @@ FONTS = {
 }
 
 MAX_PAGES = 500
+GENERIC_FC = {"helv": "sans-serif", "tiro": "serif", "cour": "monospace"}
+_font_cache = {}
+
+
+def strip_subset(name):
+    return re.sub(r"^[A-Z]{6}\+", "", str(name or ""))
+
+
+def covers(font, text):
+    """True, wenn die Schrift für jedes Zeichen eine Glyphe hat."""
+    try:
+        return all(c.isspace() or font.has_glyph(ord(c)) for c in text)
+    except Exception:
+        return False
+
+
+def original_style(doc, page, orig):
+    """Liest Schrift, Farbe und Stil der Originalzeile – vor dem Schwärzen, solange der Text noch da ist."""
+    rect = pymupdf.Rect(num(orig.get("x")), num(orig.get("top")), num(orig.get("x")) + num(orig.get("w")), num(orig.get("top")) + num(orig.get("h")))
+    best = None
+    try:
+        for block in page.get_text("dict", clip=rect)["blocks"]:
+            for line in block.get("lines", []):
+                for span in line.get("spans", []):
+                    if span.get("text", "").strip() and (best is None or len(span["text"]) > len(best["text"])):
+                        best = span
+    except Exception:
+        best = None
+    if not best:
+        return None
+    c = int(best.get("color", 0))
+    style = {"font": best.get("font", ""), "color": ((c >> 16 & 255) / 255, (c >> 8 & 255) / 255, (c & 255) / 255), "buffer": None}
+    wanted = strip_subset(style["font"])
+    try:
+        for xref, ext, _type, basefont, *_ in page.get_fonts(full=True):
+            if strip_subset(basefont) == wanted and ext not in ("n/a", ""):
+                buf = doc.extract_font(xref)[3]
+                if buf:
+                    style["buffer"] = buf
+                break
+    except Exception:
+        pass
+    return style
+
+
+def system_font(family, generic, bold, italic):
+    """Ähnlichste installierte Schrift über fontconfig (z. B. Calibri → Carlito, Arial → Liberation Sans)."""
+    key = (family, generic, bold, italic)
+    if key in _font_cache:
+        return _font_cache[key]
+    font = None
+    if shutil.which("fc-match"):
+        fams = ",".join(x for x in (re.sub(r"[:,\\]", " ", family or "").strip(), GENERIC_FC.get(generic, "sans-serif")) if x)
+        pattern = fams + (":weight=bold" if bold else "") + (":slant=italic" if italic else "")
+        try:
+            path = subprocess.run(["fc-match", "-f", "%{file}", pattern], capture_output=True, text=True, timeout=5).stdout.strip()
+            if path and os.path.isfile(path):
+                font = pymupdf.Font(fontfile=path)
+        except Exception:
+            font = None
+    _font_cache[key] = font
+    return font
+
+
+def text_font(item, text):
+    """Schrift für einen Text: Original aus der PDF, sonst ähnliche Systemschrift, sonst Standardschrift."""
+    orig = item.get("orig") or {}
+    style = item.get("_orig_style") or {}
+    bold, italic = bool(item.get("bold")), bool(item.get("italic"))
+    if item.get("font") == "orig" and orig:
+        same_style = bold == bool(orig.get("bold")) and italic == bool(orig.get("italic"))
+        if same_style and style.get("buffer"):
+            try:
+                f = pymupdf.Font(fontbuffer=style["buffer"])
+                if covers(f, text):
+                    return f
+            except Exception:
+                pass
+        f = system_font(orig.get("family", ""), orig.get("generic", "helv"), bold, italic)
+        if f and covers(f, text):
+            return f
+        generic = orig.get("generic", "helv")
+    else:
+        generic = item.get("font", "helv")
+    return pymupdf.Font(FONTS.get((generic, bold, italic), "helv"))
 
 
 def rgb(value, default=None):
@@ -49,21 +137,19 @@ def draw_item(page, item, image_dir):
     opacity = max(0.0, min(1.0, num(item.get("opacity"), 1.0)))
 
     if kind == "text":
-        font = FONTS.get((item.get("font", "helv"), bool(item.get("bold")), bool(item.get("italic"))), "helv")
         size = max(1.0, min(400.0, num(item.get("size"), 12)))
         color = rgb(item.get("color"), (0, 0, 0))
-        for line in item.get("lines", [])[:500]:
-            text = str(line.get("text", ""))[:2000]
+        style = item.get("_orig_style")
+        if style and (item.get("orig") or {}).get("keepColor"):
+            color = style["color"]
+        lines = [(line, str(line.get("text", ""))[:2000]) for line in item.get("lines", [])[:500]]
+        all_text = "".join(t for _, t in lines)
+        font = text_font(item, all_text)
+        writer = pymupdf.TextWriter(page.rect, opacity=opacity, color=color)
+        for line, text in lines:
             if text.strip():
-                page.insert_text(
-                    pymupdf.Point(num(line.get("x")), num(line.get("y"))),
-                    text,
-                    fontsize=size,
-                    fontname=font,
-                    color=color,
-                    fill_opacity=opacity,
-                    stroke_opacity=opacity,
-                )
+                writer.append(pymupdf.Point(num(line.get("x")), num(line.get("y"))), text, font=font, fontsize=size)
+        writer.write_text(page)
         return
 
     if kind in ("rect", "ellipse"):
@@ -131,7 +217,16 @@ def main():
             if page.rotation:
                 page.remove_rotation()
 
-        # 2) Inhalte in den markierten Bereichen wirklich löschen
+        # 2a) Schrift und Farbe geänderter Zeilen lesen, solange der Originaltext noch da ist
+        for p in pages:
+            index = p.get("src")
+            if index is None or not (0 <= int(index) < src.page_count):
+                continue
+            for item in p.get("items", [])[:5000]:
+                if item.get("type") == "text" and isinstance(item.get("orig"), dict):
+                    item["_orig_style"] = original_style(src, src[int(index)], item["orig"])
+
+        # 2b) Inhalte in den markierten Bereichen wirklich löschen
         redact_by_src = {}
         for p in pages:
             if p.get("src") is not None:

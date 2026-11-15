@@ -21,6 +21,25 @@
   const SIZES = { a4p: [595.28, 841.89], a4l: [841.89, 595.28], a5p: [419.53, 595.28], letterp: [612, 792] };
   const FONT_CSS = { helv: "Helvetica, Arial, sans-serif", tiro: '"Times New Roman", Times, serif', cour: '"Courier New", Courier, monospace' };
   const FABRIC_BASELINE = 1.13 * (1 - 0.222); // Fabric setzt die Grundlinie der ersten Zeile bei fontSize * 0,879
+  const GENERIC_CSS = { helv: "Helvetica, Arial, sans-serif", tiro: '"Times New Roman", Times, serif', cour: '"Courier New", Courier, monospace' };
+
+  /** Schriftname aus der PDF ("ABCDEF+Calibri-Bold") → Familienname ("Calibri") */
+  function familyOf(name) {
+    let base = String(name || "").replace(/^[A-Z]{6}\+/, "");
+    base = base.split(/[-,]/)[0].replace(/(PSMT|PS|MT)$/, "").trim();
+    return base.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/\s+(Bold|Italic|Oblique|Regular|Light|Medium|Semibold|Black)$/i, "").trim();
+  }
+
+  /** CSS-Schriftliste für Originalschrift: echte Familie, dann ähnliche Standardschrift */
+  function origCss(orig) {
+    const fam = orig.family ? `"${orig.family.replace(/"/g, "")}", ` : "";
+    return fam + GENERIC_CSS[orig.generic || "helv"];
+  }
+
+  function cssForText(o) {
+    if (o.data?.font === "orig" && o.data.orig) return origCss(o.data.orig);
+    return FONT_CSS[o.data?.font] || FONT_CSS.helv;
+  }
 
   const state = {
     sourceBytes: null,
@@ -239,7 +258,12 @@
     { rootMargin: "600px" }
   );
 
-  async function renderBackground(p) {
+  function renderBackground(p) {
+    p.renderPromise = doRenderBackground(p);
+    return p.renderPromise;
+  }
+
+  async function doRenderBackground(p) {
     const s = p.scale;
     p.rendered = s;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -336,9 +360,9 @@
       c.selection = tool === "select";
       c.defaultCursor = creating ? "crosshair" : "default";
       c.getObjects().forEach((o) => {
-        if (!o.data || !o.data.locked) o.selectable = tool === "select";
+        if (!o.data || !o.data.locked) o.selectable = isSelectableIn(o, tool);
       });
-      if (tool !== "select") c.discardActiveObject();
+      if (tool !== "select" && !(tool === "edittext" && c.getActiveObject()?.data?.kind === "text")) c.discardActiveObject();
       c.requestRenderAll();
       if (tool === "edittext" && p.src !== null) buildTextLayer(p);
       p.textLayer.hidden = tool !== "edittext";
@@ -347,6 +371,11 @@
   }
 
   $$("[data-ed-tool]").forEach((b) => b.addEventListener("click", () => setTool(b.dataset.edTool)));
+
+  /** Im Modus „Text ändern“ bleiben bereits geänderte und neue Texte anklickbar. */
+  function isSelectableIn(o, tool) {
+    return tool === "select" || (tool === "edittext" && o.data?.kind === "text");
+  }
 
   function applyObjectDefaults(o) {
     if (!o.data) o.data = {};
@@ -387,7 +416,7 @@
     return new fabric.IText(text, {
       left: x,
       top: y,
-      fontFamily: FONT_CSS[font],
+      fontFamily: opts.orig ? origCss(opts.orig) : FONT_CSS[font],
       fontSize: opts.size || Number(defaults.size) || 16,
       fill: opts.color || defaults.color,
       fontWeight: (opts.bold ?? defaults.bold) ? "bold" : "normal",
@@ -397,7 +426,7 @@
       lineHeight: 1.16,
       editingBorderColor: "#2b4bdb",
       cursorColor: "#2b4bdb",
-      data: { kind: "text", font },
+      data: opts.orig ? { kind: "text", font: "orig", orig: opts.orig } : { kind: "text", font },
     });
   }
 
@@ -410,6 +439,16 @@
       state.lastPage = p;
       const pt = c.getPointer(opt.e);
       const tool = state.tool;
+      if (tool === "edittext" && opt.target && opt.target.type === "i-text") {
+        const t = opt.target;
+        if (!t.isEditing) {
+          c.setActiveObject(t);
+          t.enterEditing(opt.e);
+          t.selectionStart = t.selectionEnd = t.getSelectionStartFromPointer(opt.e);
+          c.requestRenderAll();
+        }
+        return;
+      }
       if (tool === "text") {
         if (opt.target && opt.target.type === "i-text") return;
         const t = makeText(pt.x, pt.y - (Number(defaults.size) || 16) / 2);
@@ -532,7 +571,7 @@
     await new Promise((r) => p.canvas.loadFromJSON(step.json, r));
     p.canvas.getObjects().forEach((o) => {
       applyObjectDefaults(o);
-      if (!o.data.locked) o.selectable = state.tool === "select";
+      if (!o.data.locked) o.selectable = isSelectableIn(o, state.tool);
     });
     p.canvas.renderAll();
     suspendHistory = false;
@@ -608,9 +647,11 @@
 
     // Werte der Auswahl in die Felder übernehmen
     const o = objs[0];
+    if (!o || o.data?.kind !== "text") syncOrigOption(null);
     const values = { ...defaults };
     if (o) {
       if (o.data?.kind === "text") {
+        syncOrigOption(o);
         Object.assign(values, { font: o.data.font || "helv", size: Math.round(o.fontSize * o.scaleY), color: o.fill, bold: o.fontWeight === "bold", italic: o.fontStyle === "italic" });
       }
       if (["rect", "ellipse", "line", "draw"].includes(o.data?.kind)) {
@@ -627,6 +668,22 @@
     });
   }
 
+  /** Option „Original: Calibri“ im Schrift-Feld anzeigen, solange ein geänderter PDF-Text ausgewählt ist */
+  function syncOrigOption(o) {
+    const sel = propsEl.querySelector('[data-prop="font"]');
+    let opt = sel.querySelector('option[value="orig"]');
+    if (o && o.data?.orig) {
+      if (!opt) {
+        opt = document.createElement("option");
+        opt.value = "orig";
+        sel.prepend(opt);
+      }
+      opt.textContent = `Original: ${o.data.orig.family || "PDF-Schrift"}`;
+    } else if (opt) {
+      opt.remove();
+    }
+  }
+
   function applyProp(name, value) {
     defaults[name] = value;
     const { p, objs } = kindsInSelection();
@@ -636,9 +693,11 @@
       const kind = o.data?.kind;
       if (kind === "text") {
         if (name === "font") {
-          o.set({ fontFamily: FONT_CSS[value] });
+          if (value === "orig" && !o.data.orig) continue;
           o.data.font = value;
+          o.set({ fontFamily: cssForText(o) });
         }
+        if (name === "color" && o.data.orig) o.data.colorChanged = true;
         if (name === "size") o.set({ fontSize: Number(value) / (o.scaleY || 1) });
         if (name === "color") o.set({ fill: value });
         if (name === "bold") o.set({ fontWeight: value ? "bold" : "normal" });
@@ -742,15 +801,34 @@
     const page = await state.pdf.getPage(p.src + 1);
     const vp = page.getViewport({ scale: 1 });
     const content = await page.getTextContent();
+    await page.getOperatorList(); // lädt die Schriften, damit Name, fett und kursiv bekannt sind
+    const styleOf = (fontName) => {
+      let f = null;
+      try {
+        if (page.commonObjs.has(fontName)) f = page.commonObjs.get(fontName);
+      } catch {
+        f = null;
+      }
+      const name = (f && f.name) || "";
+      const cssFam = content.styles[fontName]?.fontFamily || "";
+      const generic = /mono|courier|consol/i.test(name + cssFam) ? "cour" : (/serif/i.test(cssFam) && !/sans/i.test(cssFam)) || /times|roman|georgia|garamond|cambria|minion|book|serif/i.test(name.replace(/sans/i, "")) ? "tiro" : "helv";
+      return {
+        name,
+        family: familyOf(name),
+        generic,
+        bold: Boolean(f && (f.bold || f.black)) || /bold|black|heavy|semibold|demi/i.test(name),
+        italic: Boolean(f && f.italic) || /italic|oblique/i.test(name),
+      };
+    };
+    const styles = {};
     const items = [];
     for (const it of content.items) {
       if (!it.str || !it.str.trim()) continue;
       const tx = pdfjsLib.Util.transform(vp.transform, it.transform);
       if (Math.abs(tx[1]) > 0.01 || Math.abs(tx[2]) > 0.01 || tx[0] <= 0) continue; // nur waagerechter Text
       const fh = Math.hypot(tx[2], tx[3]);
-      const family = content.styles[it.fontName]?.fontFamily || "";
-      const font = /mono|courier/i.test(family) ? "cour" : /serif/i.test(family) && !/sans/i.test(family) ? "tiro" : "helv";
-      items.push({ str: it.str, x: tx[4], y: tx[5], w: it.width, fh, font });
+      const style = (styles[it.fontName] ||= styleOf(it.fontName));
+      items.push({ str: it.str, x: tx[4], y: tx[5], w: it.width, fh, font: style.generic, style });
     }
     items.sort((a, b) => a.y - b.y || a.x - b.x);
     const lines = [];
@@ -762,15 +840,43 @@
         last.text += (needsSpace ? " " : "") + it.str;
         last.w = it.x + it.w - last.x;
       } else {
-        lines.push({ text: it.str, x: it.x, y: it.y, w: it.w, fh: it.fh, font: it.font });
+        lines.push({ text: it.str, x: it.x, y: it.y, w: it.w, fh: it.fh, font: it.font, style: it.style });
       }
     }
     return lines.map((l) => ({ ...l, text: l.text.trim(), top: l.y - l.fh * 0.92, h: l.fh * 1.2 }));
   }
 
-  function replaceLine(p, i) {
+  /** Textfarbe der Zeile: dunkelstes Pixel im gerenderten Hintergrund (Kantenglättung ist heller) */
+  function sampleColor(p, ln) {
+    try {
+      const k = p.bg.width / p.width;
+      const x = Math.max(0, Math.floor(ln.x * k));
+      const y = Math.max(0, Math.floor(ln.top * k));
+      const w = Math.min(p.bg.width - x, Math.ceil(ln.w * k));
+      const h = Math.min(p.bg.height - y, Math.ceil(ln.h * k));
+      if (w < 1 || h < 1) return null;
+      const d = p.bg.getContext("2d").getImageData(x, y, w, h).data;
+      let best = null;
+      let bestL = 250;
+      for (let j = 0; j < d.length; j += 4) {
+        const l = 0.299 * d[j] + 0.587 * d[j + 1] + 0.114 * d[j + 2];
+        if (l < bestL) {
+          bestL = l;
+          best = [d[j], d[j + 1], d[j + 2]];
+        }
+      }
+      return best ? "#" + best.map((v) => v.toString(16).padStart(2, "0")).join("") : null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function replaceLine(p, i) {
     const ln = p.lines[i];
     const c = p.canvas;
+    if (p.renderPromise) await p.renderPromise;
+    const st = ln.style || { generic: ln.font, bold: false, italic: false };
+    const color = sampleColor(p, ln) || "#000000";
     suspendHistory = true;
     const cover = new fabric.Rect({
       left: ln.x - 1,
@@ -784,7 +890,8 @@
       data: { kind: "redact", locked: true, replacesLine: i },
     });
     const size = Math.round(ln.fh * 10) / 10;
-    const t = makeText(ln.x, ln.y - size * FABRIC_BASELINE, ln.text, { font: ln.font, size, color: "#000000", bold: false, italic: false });
+    const orig = { src: p.src, x: ln.x, top: ln.top, w: ln.w, h: ln.h, name: st.name || "", family: st.family || "", generic: st.generic || ln.font, bold: st.bold, italic: st.italic, color };
+    const t = makeText(ln.x, ln.y - size * FABRIC_BASELINE, ln.text, { font: ln.font, size, color, bold: st.bold, italic: st.italic, orig });
     t.data.replacesLine = i;
     t.opacity = 1;
     applyObjectDefaults(cover);
@@ -794,7 +901,6 @@
     suspendHistory = false;
     recordChange(p);
     buildTextLayer(p, true);
-    setTool("select");
     c.setActiveObject(t);
     t.enterEditing();
     t.selectAll();
@@ -825,7 +931,9 @@
             x: o.left + o._getLineLeftOffset(i) * o.scaleX,
             y: o.top + fs * 1.13 * (i * o.lineHeight + (1 - 0.222)),
           }));
-          items.push({ type: "text", lines, size: fs, font: o.data.font || "helv", bold: o.fontWeight === "bold", italic: o.fontStyle === "italic", color: colorOf(o.fill), opacity });
+          const item = { type: "text", lines, size: fs, font: o.data.font || "helv", bold: o.fontWeight === "bold", italic: o.fontStyle === "italic", color: colorOf(o.fill), opacity };
+          if (o.data.orig) item.orig = { ...o.data.orig, keepColor: !o.data.colorChanged };
+          items.push(item);
         } else if (kind === "rect" || kind === "highlight" || kind === "whiteout") {
           items.push({ type: "rect", ...box(), fill: colorOf(o.fill), stroke: sw ? colorOf(o.stroke) : null, strokeWidth: sw, opacity });
         } else if (kind === "ellipse") {
