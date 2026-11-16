@@ -119,6 +119,7 @@ const EXT = {
   powerpoint: [".ppt", ".pptx", ".odp"],
   excel: [".xls", ".xlsx", ".ods", ".csv"],
   mappe: [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".odt", ".rtf"],
+  einvoice: [".xml", ".pdf"],
 };
 
 function uploader(kind, { multiple = false } = {}) {
@@ -574,6 +575,51 @@ api.post(
   })
 );
 
+// E-Rechnung anzeigen / prüfen ---------------------------------------------------
+// Die Verarbeitung macht der separate E-Rechnung-Dienst (Python, gleicher Server).
+// Er liefert eine lesbare PDF mit Prüfergebnis zurück.
+const ERECHNUNG_API_URL = (process.env.ERECHNUNG_API_URL || "").replace(/\/$/, "");
+
+api.post(
+  "/e-rechnung",
+  uploader("einvoice"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    if (!ERECHNUNG_API_URL) throw new UserError("Dieses Werkzeug ist gerade nicht verfügbar.", 503);
+
+    const form = new FormData();
+    form.append("file", new Blob([await fsp.readFile(file.path)]), file.originalname);
+    let upstream;
+    try {
+      upstream = await fetch(`${ERECHNUNG_API_URL}/api/v1/render`, {
+        method: "POST",
+        body: form,
+        signal: AbortSignal.timeout(60_000),
+      });
+    } catch {
+      throw new UserError("Der Prüfdienst antwortet gerade nicht. Bitte versuche es gleich noch einmal.", 503);
+    }
+    if (!upstream.ok) {
+      let msg = "Die Datei konnte nicht gelesen werden.";
+      try {
+        msg = (await upstream.json()).error || msg;
+      } catch {
+        /* keine JSON-Antwort */
+      }
+      throw new UserError(
+        upstream.status === 422 ? `${msg} Erwartet wird eine XRechnung (XML) oder eine ZUGFeRD-PDF.` : msg,
+        upstream.status === 422 ? 422 : 502
+      );
+    }
+    for (const h of ["Content-Disposition", "X-Result-Info", "X-Check-Ok"]) {
+      const v = upstream.headers.get(h);
+      if (v) res.setHeader(h, v);
+    }
+    res.setHeader("Content-Type", "application/pdf");
+    res.send(Buffer.from(await upstream.arrayBuffer()));
+  })
+);
+
 // Health-Check: zeigt, welche Programme installiert sind --------------------------------
 app.get("/api/health", async (req, res) => {
   const check = async (cmd, args) => {
@@ -590,7 +636,15 @@ app.get("/api/health", async (req, res) => {
     check(PYTHON, ["-c", "import pdf2docx"]),
   ]);
   const pymupdf = await check(PYTHON, ["-c", "import pymupdf"]);
-  res.json({ ok: true, ghostscript, libreoffice, pdf2docx, pymupdf, ai: aiRouter.enabled, database: db.enabled, stripe: billing.enabled, payments: payments.enabled });
+  let erechnung = false;
+  if (ERECHNUNG_API_URL) {
+    try {
+      erechnung = (await fetch(`${ERECHNUNG_API_URL}/health`, { signal: AbortSignal.timeout(5000) })).ok;
+    } catch {
+      erechnung = false;
+    }
+  }
+  res.json({ ok: true, ghostscript, libreoffice, pdf2docx, pymupdf, ai: aiRouter.enabled, erechnung, database: db.enabled, stripe: billing.enabled, payments: payments.enabled });
 });
 
 app.use("/api/auth", auth.router());

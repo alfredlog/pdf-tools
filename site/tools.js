@@ -15,6 +15,7 @@ const categories = [
   { id: "from-pdf", name: "Aus PDF umwandeln", short: "Aus PDF", color: "frompdf" },
   { id: "ai", name: "KI-Werkzeuge", short: "KI", color: "ai" },
   { id: "security", name: "Sicherheit", short: "Sicherheit", color: "security" },
+  { id: "erechnung", name: "E-Rechnung", short: "E-Rechnung", color: "erechnung" },
 ];
 
 // Reihenfolge der Werkzeuge innerhalb der Kategorien (beliebteste zuerst)
@@ -26,9 +27,11 @@ const ORDER = [
   "pdf-to-docx", "pdf-to-excel", "pdf-to-powerpoint", "pdf-to-jpg",
   "summarize", "translate",
   "protect", "unlock",
+  "xrechnung-anzeigen", "e-rechnung-pruefen",
 ];
 
 const PDF = { accept: ".pdf,application/pdf", label: "PDF" };
+const EINVOICE = { accept: ".xml,.pdf,application/xml,text/xml,application/pdf", label: "XML oder PDF" };
 
 const tools = [
   // ------------------------------------------------------------------ ORGANISIEREN
@@ -1099,6 +1102,113 @@ const tools = [
       ["Wird mein Passwort gespeichert?", "Nein. Passwort und Datei werden direkt nach der Verarbeitung gelöscht."],
     ],
     related: ["protect", "merge", "pdf-to-docx", "compress"],
+  },
+  // ------------------------------------------------------------------ E-RECHNUNG
+  {
+    slug: "xrechnung-anzeigen",
+    name: "XRechnung anzeigen",
+    short: "XRechnung (XML) oder ZUGFeRD-PDF als lesbare PDF anzeigen und speichern.",
+    cat: "erechnung",
+    badge: "XML",
+    glyph: "einvoiceView",
+    promo: {
+      title: "Bekommst du regelmäßig E-Rechnungen?",
+      text: "E-Rechnung Agent nimmt sie automatisch an, prüft sie und bereitet sie für deinen Steuerberater (DATEV) vor – mit eigener E-Mail-Adresse für Rechnungen. 30 Tage kostenlos testen.",
+      url: "https://erechnungagent.de/?utm_source=pdf-libre&utm_medium=tool&utm_campaign=xrechnung-anzeigen",
+      button: "E-Rechnung Agent ansehen",
+    },
+    title: "XRechnung anzeigen – XML lesbar als PDF, kostenlos | PDF Libre",
+    description:
+      "XRechnung online anzeigen: XML-Datei hochladen und als übersichtliche PDF mit Positionen, Summen und Steuer erhalten. Auch für ZUGFeRD. Kostenlos, ohne Anmeldung.",
+    h1: "XRechnung anzeigen",
+    lead: "Lade eine XRechnung (XML) oder eine ZUGFeRD-PDF hoch und erhalte eine lesbare PDF mit allen Angaben – inklusive automatischer Prüfung der Beträge.",
+    ui: {
+      mode: "server",
+      endpoint: "/api/e-rechnung",
+      input: EINVOICE,
+      action: "Rechnung anzeigen",
+      dropHint: "XRechnung (.xml, UBL oder CII) oder ZUGFeRD-/Factur-X-PDF, bis zu 15 MB",
+    },
+    steps: [
+      ["Datei auswählen", "Wähle die XRechnung (.xml) oder die ZUGFeRD-PDF aus, die du erhalten hast."],
+      ["Anzeigen", "Klicke auf „Rechnung anzeigen“. Die Daten werden ausgelesen und nachgerechnet."],
+      ["PDF speichern", "Lade die lesbare PDF herunter – zum Ablegen, Weiterleiten oder Ausdrucken."],
+    ],
+    article: [
+      {
+        h: "Warum kann ich eine XRechnung nicht einfach öffnen?",
+        p: [
+          "Eine XRechnung ist keine Bild-Datei, sondern ein strukturierter Datensatz im XML-Format. Programme wie die Buchhaltungssoftware lesen ihn automatisch; im Browser oder Texteditor sieht man dagegen nur Code. Seit 2025 müssen alle Unternehmen in Deutschland solche E-Rechnungen empfangen können – viele kleine Betriebe haben dafür aber noch kein passendes Programm.",
+          "Dieses Werkzeug liest die Daten aus und stellt sie als normale Rechnung dar: Rechnungssteller, Empfänger, Positionen, Umsatzsteuer, Zahlbetrag und Bankverbindung.",
+        ],
+      },
+      {
+        h: "Was ist mit ZUGFeRD und Factur-X?",
+        p: [
+          "ZUGFeRD- und Factur-X-Rechnungen sind PDFs, in denen zusätzlich eine XML-Datei steckt. Die sichtbare PDF und die Daten können sich in seltenen Fällen unterscheiden. Das Werkzeug liest die eingebetteten Daten aus, also genau das, was auch die Buchhaltung verarbeitet.",
+        ],
+      },
+    ],
+    faq: [
+      ["Ist die erzeugte PDF eine gültige Rechnung?", "Nein. Sie ist eine lesbare Darstellung. Rechtlich maßgeblich und aufzubewahren ist die Original-Datei (XML bzw. ZUGFeRD-PDF)."],
+      ["Welche Formate werden unterstützt?", "XRechnung in UBL- und CII-Syntax sowie ZUGFeRD 2.x und Factur-X. Normale PDFs ohne eingebettete Daten und Scans werden nicht erkannt."],
+      ["Werden die Beträge geprüft?", "Ja. Summen, Umsatzsteuer und Zahlbetrag werden nachgerechnet, Pflichtangaben und die IBAN geprüft. Das Ergebnis steht in der PDF."],
+      ["Werden meine Rechnungen gespeichert?", "Nein. Die Datei wird nur für die Verarbeitung auf unserem Server in Deutschland verwendet und danach sofort gelöscht."],
+    ],
+    related: ["e-rechnung-pruefen", "merge", "compress", "protect"],
+  },
+  {
+    slug: "e-rechnung-pruefen",
+    name: "E-Rechnung prüfen",
+    short: "XRechnung oder ZUGFeRD auf Fehler prüfen: Beträge, Steuer, Pflichtangaben.",
+    cat: "erechnung",
+    badge: "XML",
+    glyph: "einvoiceCheck",
+    promo: {
+      title: "Bekommst du regelmäßig E-Rechnungen?",
+      text: "E-Rechnung Agent nimmt sie automatisch an, prüft sie und bereitet sie für deinen Steuerberater (DATEV) vor – mit eigener E-Mail-Adresse für Rechnungen. 30 Tage kostenlos testen.",
+      url: "https://erechnungagent.de/?utm_source=pdf-libre&utm_medium=tool&utm_campaign=e-rechnung-pruefen",
+      button: "E-Rechnung Agent ansehen",
+    },
+    title: "E-Rechnung prüfen – XRechnung & ZUGFeRD validieren, kostenlos | PDF Libre",
+    description:
+      "E-Rechnung online prüfen: XRechnung oder ZUGFeRD hochladen, Beträge, Umsatzsteuer, Pflichtangaben und IBAN werden kontrolliert. Prüfbericht als PDF. Kostenlos.",
+    h1: "E-Rechnung prüfen",
+    lead: "Prüfe eine XRechnung oder ZUGFeRD-Rechnung, bevor du sie bezahlst oder verschickst. Du erhältst einen Prüfbericht als PDF.",
+    ui: {
+      mode: "server",
+      endpoint: "/api/e-rechnung",
+      input: EINVOICE,
+      action: "Rechnung prüfen",
+      dropHint: "XRechnung (.xml, UBL oder CII) oder ZUGFeRD-/Factur-X-PDF, bis zu 15 MB",
+    },
+    steps: [
+      ["Datei auswählen", "Wähle die E-Rechnung aus – egal ob erhalten oder selbst erstellt."],
+      ["Prüfen", "Klicke auf „Rechnung prüfen“. Beträge und Pflichtangaben werden kontrolliert."],
+      ["Bericht lesen", "Das Ergebnis siehst du sofort, die Details stehen in der heruntergeladenen PDF."],
+    ],
+    article: [
+      {
+        h: "Was wird geprüft?",
+        p: [
+          "Das Werkzeug rechnet die Rechnung nach: Stimmen die Positionen mit der Gesamtsumme überein, passt die Umsatzsteuer zum Steuersatz, ergibt Netto plus Steuer den Bruttobetrag und ist der Zahlbetrag korrekt? Außerdem werden Pflichtangaben wie Rechnungsnummer, Datum und Steuernummer des Rechnungsstellers kontrolliert und die IBAN auf Tippfehler geprüft.",
+          "Die vollständige Prüfung gegen die offiziellen XRechnung-Regeln erfolgt mit dem Prüfwerkzeug der KoSIT, wenn es auf dem Server verfügbar ist. Der Bericht zeigt an, ob diese Prüfung durchgeführt wurde.",
+        ],
+      },
+      {
+        h: "Ab wann muss ich E-Rechnungen verschicken?",
+        p: [
+          "Empfangen müssen alle Unternehmen in Deutschland E-Rechnungen schon seit dem 1. Januar 2025. Für das Verschicken gilt: Unternehmen mit mehr als 800.000 Euro Vorjahresumsatz ab dem 1. Januar 2027, alle anderen ab dem 1. Januar 2028. Ausgenommen sind unter anderem Kleinbetragsrechnungen bis 250 Euro und Rechnungen an Privatpersonen. Im Zweifel klärt das dein Steuerberater.",
+        ],
+      },
+    ],
+    faq: [
+      ["Ersetzt das die Prüfung durch meinen Steuerberater?", "Nein. Das Werkzeug findet formale und rechnerische Fehler. Ob eine Rechnung steuerlich korrekt ist, beurteilt dein Steuerberater."],
+      ["Kann ich auch eine normale PDF-Rechnung prüfen?", "Nein. Eine normale PDF enthält keine strukturierten Daten. Unterstützt werden XRechnung (XML) und ZUGFeRD-/Factur-X-PDFs."],
+      ["Was bedeutet „Hinweis“ im Bericht?", "Ein Hinweis ist kein Fehler, sollte aber angeschaut werden – zum Beispiel eine fehlende Steuernummer oder eine Rundungsdifferenz."],
+      ["Werden meine Rechnungen gespeichert?", "Nein. Die Datei wird nur für die Prüfung auf unserem Server in Deutschland verwendet und danach sofort gelöscht."],
+    ],
+    related: ["xrechnung-anzeigen", "merge", "compress", "protect"],
   },
 ];
 

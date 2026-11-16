@@ -36,6 +36,16 @@ PDF bearbeiten, PDF erstellen, PDF zusammenfassen (KI), PDF übersetzen (KI).
 Alle anderen bleiben kostenlos – auch „PDF unterschreiben“, das komplett im Browser läuft.
 Welche Werkzeuge Pro sind, steht in `site/tools.js` bzw. `site/tools-new.js` (`pro: true`).
 
+## E-Rechnung-Werkzeuge
+
+„XRechnung anzeigen“ und „E-Rechnung prüfen“ leiten die Datei an den separaten E-Rechnung-Dienst weiter (Repo `alfredlog/erechnung`, läuft per Docker auf demselben Server). In der `.env`:
+
+```bash
+ERECHNUNG_API_URL=http://127.0.0.1:8100
+```
+
+Ohne diese Variable zeigen die beiden Werkzeuge eine freundliche Fehlermeldung, alle anderen laufen normal. `/api/health` zeigt unter `erechnung`, ob der Dienst erreichbar ist.
+
 ## Bezahlung an/aus
 
 In der `.env`:

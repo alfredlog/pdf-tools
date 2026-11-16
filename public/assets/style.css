@@ -31,6 +31,7 @@
   --c-edit: #c23b78;
   --c-security: #243152;
   --c-ai: #0f7c8c;
+  --c-erechnung: #0e7c74;
 
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -121,6 +122,7 @@ button, input, select { font: inherit; color: inherit; }
 .mega__cat--edit { border-color: var(--c-edit); }
 .mega__cat--security { border-color: var(--c-security); }
 .mega__cat--ai { border-color: var(--c-ai); }
+.mega__cat--erechnung { border-color: var(--c-erechnung); }
 .mega ul { list-style: none; margin: 0; padding: 0; }
 .mega li a { display: block; padding: 5px 10px; color: var(--ink-2); text-decoration: none; border-radius: var(--r-sm); font-size: .96875rem; }
 .mega li a:hover { background: var(--bg); color: var(--ink); }
@@ -146,6 +148,7 @@ button, input, select { font: inherit; color: inherit; }
 .ficon--edit { --fc: var(--c-edit); }
 .ficon--security { --fc: var(--c-security); }
 .ficon--ai { --fc: var(--c-ai); }
+.ficon--erechnung { --fc: var(--c-erechnung); }
 
 /* ---------- Startseite ---------- */
 .home-hero { padding: 56px 0 28px; }
@@ -199,6 +202,7 @@ button, input, select { font: inherit; color: inherit; }
 .tool--edit { --tc: var(--c-edit); }
 .tool--security { --tc: var(--c-security); }
 .tool--ai { --tc: var(--c-ai); }
+.tool--erechnung { --tc: var(--c-erechnung); }
 .tool__form { margin: 0; }
 
 .stage--pick { padding: 20px; }
@@ -331,6 +335,14 @@ button, input, select { font: inherit; color: inherit; }
 .steps h3 { margin-bottom: 6px; }
 .steps p { margin: 0; color: var(--ink-2); font-size: 1rem; }
 
+.promo { margin-top: 20px; }
+.promo__box { display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  padding: 18px 22px; border-radius: 14px; background: #16202e; color: #fff; }
+.promo__box strong { font-size: 1.05rem; }
+.promo__box p { margin: 4px 0 0; color: #c9d1de; max-width: 60ch; }
+.promo__btn { background: #fff; color: #16202e; font-weight: 700; padding: 10px 18px; border-radius: 10px;
+  text-decoration: none; white-space: nowrap; }
+.promo__btn:hover { background: #e6eefb; }
 .article { padding: 48px 0 8px; max-width: 760px; }
 .article h2 { margin-top: 1.4em; }
 .article h2:first-child { margin-top: 0; }

@@ -38,6 +38,8 @@ function setFreeMode() {
 // Icons
 // ---------------------------------------------------------------------------
 const GLYPHS = {
+  einvoiceView: '<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/>',
+  einvoiceCheck: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',
   merge: '<path d="M7 5v4a3 3 0 0 0 3 3h4a3 3 0 0 1 3 3v4M17 5v4a3 3 0 0 1-3 3"/><path d="m14 16 3 3 3-3"/>',
   split: '<path d="M12 5v6m0 0-5 5v3m5-8 5 5v3"/><path d="m4 16 3 3 3-3M14 16l3 3 3-3"/>',
   remove: '<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/><path d="M10.5 11v5M13.5 11v5"/>',
@@ -622,6 +624,16 @@ function slidesWorkspace(t) {
   </section>`;
 }
 
+// Hinweis auf ein Partnerprodukt unter dem Werkzeug (z. B. E-Rechnung Agent bei den E-Rechnung-Werkzeugen)
+function promoBox(p) {
+  return `<aside class="wrap promo" aria-label="${esc(p.title)}">
+  <div class="promo__box">
+    <div><strong>${esc(p.title)}</strong><p>${esc(p.text)}</p></div>
+    <a class="promo__btn" href="${esc(p.url)}" rel="noopener">${esc(p.button)}</a>
+  </div>
+</aside>`;
+}
+
 function toolPage(t) {
   const cat = catById[t.cat];
   const jsonLd = [
@@ -664,6 +676,7 @@ function toolPage(t) {
 <div class="wrap">
   ${workspace(t)}
 </div>
+${t.promo ? promoBox(t.promo) : ""}
 
 <section class="wrap howto" aria-labelledby="so-gehts">
   <h2 id="so-gehts">So geht's: ${esc(t.name)}</h2>

@@ -555,6 +555,11 @@
               ? `Von ${formatSize(before)} auf ${formatSize(after)} verkleinert – <strong>${saved} % gespart</strong>.`
               : `Diese PDF ist bereits gut optimiert (${formatSize(after)}). Eine stärkere Stufe kann noch etwas bringen.`;
         }
+        const resultInfo = xhr.getResponseHeader("X-Result-Info");
+        if (!info && resultInfo) {
+          const ok = xhr.getResponseHeader("X-Check-Ok") !== "0";
+          info = `<strong>${escapeHtml(decodeURIComponent(resultInfo))}</strong>${ok ? "" : " – Details stehen am Ende der PDF."}`;
+        }
         finish({ blob: xhr.response, filename, info });
         resolve();
       };
