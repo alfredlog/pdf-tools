@@ -490,6 +490,7 @@ api.post(
     } catch (e) {
       await fsp.rm(dir, { recursive: true, force: true });
       if (/password/.test(e.stderr || "")) throw new UserError("Diese PDF ist passwortgeschützt. Entsperre sie zuerst mit „PDF entsperren“.");
+      if (/missing-module:|ModuleNotFoundError/.test(e.stderr || "")) throw new UserError("PowerPoint-Umwandlung ist auf dem Server noch nicht eingerichtet (Python-Pakete fehlen).", 503);
       const many = /zu viele Seiten:(\d+)/.exec(e.stderr || "");
       if (many) throw new UserError(`Die PDF hat zu viele Seiten (höchstens ${many[1]}). Teile sie zuerst mit „PDF teilen“.`, 413);
       throw e;
@@ -524,7 +525,12 @@ api.post(
     const out = path.join(req.jobDir, "out.pptx");
     await fsp.writeFile(optsFile, JSON.stringify(opts));
     await fsp.utimes(dir, new Date(), new Date()).catch(() => {});
-    await run(PYTHON, [path.join(__dirname, "pdf_slides.py"), "build", dir, optsFile, out]);
+    try {
+      await run(PYTHON, [path.join(__dirname, "pdf_slides.py"), "build", dir, optsFile, out]);
+    } catch (e) {
+      if (/missing-module:|ModuleNotFoundError/.test(e.stderr || "")) throw new UserError("PowerPoint-Umwandlung ist auf dem Server noch nicht eingerichtet (Python-Pakete fehlen).", 503);
+      throw e;
+    }
     const meta = JSON.parse(await fsp.readFile(path.join(dir, "meta.json"), "utf8"));
     await sendFile(res, out, meta.name);
   })

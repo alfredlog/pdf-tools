@@ -181,10 +181,20 @@ def cmd_analyze(in_path, out_dir):
                     hgt = y1 - y0
                     redact.append(pymupdf.Rect(a.x0 + a.width * 0.3, y0 + hgt * 0.35, z.x1 - z.width * 0.3, y1 - hgt * 0.35))
                     texts[-1]["line"] = [round(v, 2) for v in line["bbox"]]
-        for r in redact:
-            page.add_redact_annot(r, fill=False, cross_out=False)
-        if redact:
-            page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE)
+        try:
+            for r in redact:
+                r = pymupdf.Rect(r).normalize()
+                if r.is_empty or r.is_infinite:
+                    continue
+                page.add_redact_annot(r, fill=False, cross_out=False)
+            if redact:
+                page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE, graphics=pymupdf.PDF_REDACT_LINE_ART_NONE)
+        except Exception as e:
+            # Seite lässt sich nicht zerlegen → sie kommt als Bild (ohne bearbeitbaren Text) in die Präsentation
+            print(f"Seite {pno + 1}: Text nicht entfernt ({e})", file=sys.stderr)
+            texts = []
+            page = pymupdf.open(in_path)[pno]
+            page.remove_rotation()
         zoom = min(4.0, TARGET_PX / w)
         name = f"page-{pno + 1:03d}.png"
         page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom), alpha=True).save(os.path.join(out_dir, name))
@@ -353,6 +363,13 @@ def cmd_build(in_dir, opts_path, out_path):
 
 def main():
     cmd = sys.argv[1]
+    # fehlende Pakete klar melden (der Server zeigt dann einen verständlichen Hinweis)
+    for mod in ("numpy", "PIL") + (("pptx",) if cmd == "build" else ()):
+        try:
+            __import__(mod)
+        except ImportError:
+            print(f"missing-module:{mod}", file=sys.stderr)
+            return 5
     if cmd == "analyze":
         return cmd_analyze(*sys.argv[2:4])
     if cmd == "build":
