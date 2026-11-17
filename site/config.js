@@ -6,7 +6,7 @@ module.exports = {
   name: "PDF Libre",
   domain: "https://pdf-libre.de", // ohne Slash am Ende
   owner: "Alfred Mushagalusa Munganga",
-  email: "support@pdf-libre.de",
+  email: "info@pdf-libre.de",
   address: ["Am Kiefernwald 4", "64297 Darmstadt", "Deutschland"],
 
   // Google Analytics (leer lassen zum Deaktivieren)

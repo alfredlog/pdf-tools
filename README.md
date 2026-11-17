@@ -73,7 +73,7 @@ Danach den Server neu starten. `npm run build` erzeugt beide Fassungen der Seite
 
 Der Zugang wird direkt nach der Rückkehr von Stripe freigeschaltet; der Webhook hält Verlängerungen und Kündigungen aktuell.
 
-**Passwort vergessen:** Mit `SMTP_URL` werden echte E-Mails verschickt, ohne erscheint der Link im Terminal.
+**Passwort vergessen:** Mit `SMTP_URL` werden echte E-Mails verschickt (Absender: `MAIL_FROM`, Standard `PDF Libre <info@pdf-libre.de>`), ohne erscheint der Link im Terminal.
 
 Während der Entwicklung: `npm run dev` (startet bei Änderungen an `app.js` neu).
 
