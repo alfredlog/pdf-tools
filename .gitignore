@@ -5,3 +5,7 @@ __pycache__/
 converted/
 node_modules/
 uploads/
+
+# wird bei jedem Build mit aktuellem Datum neu erzeugt
+public/sitemap.xml
+public/_free/sitemap.xml
