@@ -207,7 +207,7 @@ function footer() {
         .join("\n      ")}
     </div>
     <div class="site-footer__legal">
-      <p>© <span data-year>2026</span> ${config.name} · ${esc(config.owner)}</p>
+      <p>© <span data-year>2026</span> ${config.name} · Entwickelt von <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
       <p>${FREE ? "" : '<a href="/preise.html">Preise</a>'}<a href="/impressum.html">Impressum</a><a href="/Datenschutz.html">Datenschutz</a>${FREE ? "" : '<a href="/agb.html">AGB</a>'}<a href="#" data-consent-settings>Datenschutzeinstellungen</a></p>
     </div>
   </div>
