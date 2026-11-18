@@ -861,3 +861,16 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .langhint a { color: #fff; font-weight: 700; text-decoration: underline; }
 .langhint button { margin-left: auto; background: none; border: 0; color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 2px 6px; }
 .hub-note { margin-top: 14px; font-size: .95rem; color: var(--muted, #556); background: var(--bg); border-left: 3px solid var(--brand); padding: 10px 14px; border-radius: 6px; }
+
+/* Getippte Unterschrift: Handschriften (Dateien liegen in /fonts, geladen nur bei Bedarf) */
+@font-face { font-family: "Caveat"; font-weight: 700; font-display: swap; src: url(/fonts/caveat-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Dancing Script"; font-weight: 600; font-display: swap; src: url(/fonts/dancing-script-latin-600-normal.woff2) format("woff2"); }
+@font-face { font-family: "Great Vibes"; font-weight: 400; font-display: swap; src: url(/fonts/great-vibes-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Homemade Apple"; font-weight: 400; font-display: swap; src: url(/fonts/homemade-apple-latin-400-normal.woff2) format("woff2"); }
+.sig__name { width: 100%; font: inherit; font-size: 1.05rem; padding: 10px 12px; border: 1px solid var(--line-2); border-radius: var(--r-sm); }
+.sig__fonts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.sig__font { min-height: 78px; padding: 6px 10px; font-size: 2rem; line-height: 1.2; color: var(--sigc, #111827); background: #fff; border: 2px solid var(--line-2); border-radius: var(--r); cursor: pointer; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.sig__font[aria-checked="true"] { border-color: var(--brand); box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 25%, transparent); }
+.sig__pad.is-pen { border-color: var(--brand); border-style: solid; }
+.sig__tabs button { white-space: nowrap; }
+.btn[hidden] { display: none; }

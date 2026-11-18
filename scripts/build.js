@@ -120,5 +120,7 @@ copy("fabric/dist/fabric.min.js", "vendor/fabric.min.js");
 console.log("Schriften:");
 for (const w of [600, 700, 800]) copy(`@fontsource/bricolage-grotesque/files/bricolage-grotesque-latin-${w}-normal.woff2`, `fonts/bricolage-grotesque-latin-${w}-normal.woff2`);
 for (const w of [400, 600, 700]) copy(`@fontsource/source-sans-3/files/source-sans-3-latin-${w}-normal.woff2`, `fonts/source-sans-3-latin-${w}-normal.woff2`);
+// Handschrift-Schriften für die getippte Unterschrift (werden nur geladen, wenn der Dialog sie braucht)
+for (const f of ["caveat-latin-700", "dancing-script-latin-600", "great-vibes-latin-400", "homemade-apple-latin-400"]) copy(`@fontsource/${f.replace(/-latin-\d+$/, "")}/files/${f}-normal.woff2`, `fonts/${f}-normal.woff2`);
 
 console.log("\nFertig. Starte den Server mit: npm start");

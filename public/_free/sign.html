@@ -24,7 +24,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=21f45876">
+  <link rel="stylesheet" href="/assets/style.css?v=6364c1a7">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF unterschreiben – PDF Libre","url":"https://pdf-libre.de/sign.html","description":"PDF online unterschreiben: Unterschrift mit Maus oder Finger zeichnen oder als Foto einfügen, Datum ergänzen und speichern. Kostenlos, die Datei verlässt dein Gerät nicht.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"PDF unterschreiben","item":"https://pdf-libre.de/sign.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wird meine PDF hochgeladen?","acceptedAnswer":{"@type":"Answer","text":"Nein. Unterschreiben und Speichern passieren komplett in deinem Browser – die Datei verlässt dein Gerät nicht."}},{"@type":"Question","name":"Kann ich meine Unterschrift speichern?","acceptedAnswer":{"@type":"Answer","text":"Ja, auf Wunsch merkt sich dein Browser die Unterschrift für das nächste Mal. Sie wird nur auf deinem Gerät gespeichert."}},{"@type":"Question","name":"Kann ich mehrere Seiten unterschreiben?","acceptedAnswer":{"@type":"Answer","text":"Ja. Füge die Unterschrift auf jeder Seite ein, auf der sie gebraucht wird – zum Beispiel auch als Paraphe unten auf jeder Seite."}},{"@type":"Question","name":"Was kostet das?","acceptedAnswer":{"@type":"Answer","text":"Nichts. PDF unterschreiben ist kostenlos und ohne Anmeldung."}}]}</script>
@@ -180,6 +180,7 @@
       <h2 id="sig-title">Unterschrift erstellen</h2>
       <div class="sig__tabs" role="tablist">
         <button type="button" role="tab" aria-selected="true" data-sig-tab="draw">Zeichnen</button>
+        <button type="button" role="tab" aria-selected="false" data-sig-tab="type">Tippen</button>
         <button type="button" role="tab" aria-selected="false" data-sig-tab="upload">Foto hochladen</button>
       </div>
       <div class="sig__panel" data-sig-panel="draw">
@@ -191,7 +192,14 @@
           </span>
           <button type="button" class="btn btn--link" data-sig-clear>Löschen</button>
         </div>
-        <p class="sig__hint">Mit Maus, Touchpad oder Finger unterschreiben.</p>
+        <p class="sig__hint" data-sig-hint>Mit der Maus: <b>einmal klicken</b>, dann einfach die Maus bewegen – erneut klicken, um den Stift abzusetzen. Gedrückt halten und ziehen geht auch, ebenso Finger und Stift.</p>
+      </div>
+      <div class="sig__panel" data-sig-panel="type" hidden>
+        <input type="text" class="sig__name" data-sig-name maxlength="60" placeholder="Vor- und Nachname" aria-label="Dein Name" autocomplete="name">
+        <div class="sig__fonts" role="radiogroup" aria-label="Schrift" data-sig-fonts>
+          <button type="button" class="sig__font" role="radio" aria-checked="true" data-sig-font="Caveat" data-sig-weight="700" style="font-family:'Caveat';font-weight:700">Unterschrift</button><button type="button" class="sig__font" role="radio" aria-checked="false" data-sig-font="Dancing Script" data-sig-weight="600" style="font-family:'Dancing Script';font-weight:600">Unterschrift</button><button type="button" class="sig__font" role="radio" aria-checked="false" data-sig-font="Great Vibes" data-sig-weight="400" style="font-family:'Great Vibes';font-weight:400">Unterschrift</button><button type="button" class="sig__font" role="radio" aria-checked="false" data-sig-font="Homemade Apple" data-sig-weight="400" style="font-family:'Homemade Apple';font-weight:400">Unterschrift</button>
+        </div>
+        <p class="sig__hint">Name eintippen und eine Handschrift auswählen. Die Farbe stellst du unter „Zeichnen“ ein.</p>
       </div>
       <div class="sig__panel" data-sig-panel="upload" hidden>
         <label class="btn btn--ghost btn--block">Foto der Unterschrift auswählen<input type="file" class="visually-hidden" accept="image/png,image/jpeg" data-sig-file></label>
@@ -394,11 +402,11 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=21f45876" defer></script>
+<script src="/assets/site.js?v=6364c1a7" defer></script>
 <script src="/vendor/pdf.min.js" defer></script>
 <script src="/vendor/fabric.min.js" defer></script>
 <script src="/vendor/pdf-lib.min.js" defer></script>
-<script src="/assets/account.js?v=21f45876" defer></script>
-<script src="/assets/editor.js?v=21f45876" defer></script>
+<script src="/assets/account.js?v=6364c1a7" defer></script>
+<script src="/assets/editor.js?v=6364c1a7" defer></script>
 </body>
 </html>

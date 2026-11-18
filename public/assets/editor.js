@@ -1322,14 +1322,35 @@
       const r = pad.getBoundingClientRect();
       return { x: ((e.clientX - r.left) * pad.width) / r.width, y: ((e.clientY - r.top) * pad.height) / r.height };
     };
-    pad.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      pad.setPointerCapture(e.pointerId);
-      pts = [pos(e)];
+    // Zwei Arten zu zeichnen:
+    //  • Ziehen (Finger, Stift, gedrückte Maustaste) – wie bisher
+    //  • Klick-Modus für die Maus: ein kurzer Klick setzt den Stift auf, danach zeichnet einfaches
+    //    Bewegen der Maus; der nächste Klick hebt den Stift wieder ab. Kein Gedrückthalten nötig.
+    let penDown = false; // Klick-Modus aktiv
+    let downAt = null; // Position beim Drücken (um Klick und Ziehen zu unterscheiden)
+    const dot = (p) => {
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.arc(pts[0].x, pts[0].y, 2.6, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 2.6, 0, Math.PI * 2);
       ctx.fill();
+    };
+    const setPen = (on) => {
+      penDown = on;
+      pad.classList.toggle("is-pen", on);
+      if (!on) pts = [];
+    };
+    pad.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      if (penDown) {
+        // zweiter Klick: Stift absetzen
+        setPen(false);
+        downAt = null;
+        return;
+      }
+      pad.setPointerCapture(e.pointerId);
+      downAt = { x: e.clientX, y: e.clientY, mouse: e.pointerType === "mouse" };
+      pts = [pos(e)];
+      dot(pts[0]);
       strokes++;
     });
     pad.addEventListener("pointermove", (e) => {
@@ -1348,7 +1369,57 @@
       ctx.quadraticCurveTo(b.x, b.y, (b.x + c.x) / 2, (b.y + c.y) / 2);
       ctx.stroke();
     });
-    ["pointerup", "pointercancel", "pointerleave"].forEach((t) => pad.addEventListener(t, () => (pts = [])));
+    pad.addEventListener("pointerup", (e) => {
+      if (!downAt) return;
+      const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+      // kurzer Mausklick ohne Bewegung → Klick-Modus: weiter zeichnen beim Bewegen
+      if (downAt.mouse && moved < 4) {
+        pad.releasePointerCapture?.(e.pointerId);
+        setPen(true);
+        pts = [pos(e)];
+      } else pts = [];
+      downAt = null;
+    });
+    pad.addEventListener("pointercancel", () => { setPen(false); downAt = null; });
+    // Maus verlässt das Feld: Linie unterbrechen, beim Zurückkommen geht es im Klick-Modus weiter
+    pad.addEventListener("pointerleave", () => { if (penDown) pts = []; });
+    pad.addEventListener("pointerenter", (e) => { if (penDown) pts = [pos(e)]; });
+    // Leertaste oder Esc hebt den Stift ebenfalls ab
+    sig.addEventListener("keydown", (e) => {
+      if (penDown && (e.key === "Escape" || e.key === " ")) { e.preventDefault(); setPen(false); }
+    });
+
+    // Getippte Unterschrift: Name in einer Handschrift auf eine Leinwand schreiben
+    const nameInput = sig.querySelector("[data-sig-name]");
+    let typedFont = { family: "Caveat", weight: 700 };
+    const fontBtns = sig.querySelectorAll("[data-sig-font]");
+    const refreshFonts = () => {
+      const txt = nameInput.value.trim() || nameInput.placeholder;
+      fontBtns.forEach((b) => { b.textContent = txt; b.style.setProperty("--sigc", color); });
+    };
+    nameInput.addEventListener("input", refreshFonts);
+    fontBtns.forEach((b) =>
+      b.addEventListener("click", () => {
+        typedFont = { family: b.dataset.sigFont, weight: b.dataset.sigWeight };
+        fontBtns.forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+      })
+    );
+    async function typedSignature() {
+      const txt = nameInput.value.trim();
+      if (!txt) return null;
+      const font = `${typedFont.weight} 120px "${typedFont.family}"`;
+      await document.fonts.load(font, txt); // Schrift muss geladen sein, sonst malt die Leinwand eine Ersatzschrift
+      const c = document.createElement("canvas");
+      const cx = c.getContext("2d");
+      cx.font = font;
+      c.width = Math.ceil(cx.measureText(txt).width + 120);
+      c.height = 260;
+      cx.font = font; // nach Größenänderung zurückgesetzt
+      cx.fillStyle = color;
+      cx.textBaseline = "middle";
+      cx.fillText(txt, 60, 130);
+      return trimmed(c, false);
+    }
 
     /** Leerraum abschneiden; optional weißen Hintergrund entfernen (Fotos) */
     function trimmed(source, removeWhite) {
@@ -1388,6 +1459,7 @@
 
     function setTab(name) {
       tab = name;
+      if (typeof setPen === "function") setPen(false);
       sig.querySelectorAll("[data-sig-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.sigTab === name)));
       sig.querySelectorAll("[data-sig-panel]").forEach((p) => (p.hidden = p.dataset.sigPanel !== name));
     }
@@ -1396,9 +1468,10 @@
       b.addEventListener("click", () => {
         color = b.dataset.sigColor;
         sig.querySelectorAll("[data-sig-color]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        refreshFonts();
       })
     );
-    sig.querySelector("[data-sig-clear]").addEventListener("click", clearPad);
+    sig.querySelector("[data-sig-clear]").addEventListener("click", () => { setPen(false); clearPad(); });
     sig.querySelector("[data-sig-close]").addEventListener("click", () => sig.close());
     sig.querySelector("[data-sig-file]").addEventListener("change", async (e) => {
       const file = e.target.files[0];
@@ -1440,9 +1513,10 @@
       });
     }
 
-    sig.querySelector("[data-sig-insert]").addEventListener("click", () => {
-      const url = tab === "draw" ? (strokes ? trimmed(pad, false) : null) : uploaded;
-      if (!url) return toast(tab === "draw" ? "Bitte unterschreibe zuerst im Feld." : "Bitte wähle zuerst ein Foto deiner Unterschrift aus.");
+    sig.querySelector("[data-sig-insert]").addEventListener("click", async () => {
+      setPen(false);
+      const url = tab === "draw" ? (strokes ? trimmed(pad, false) : null) : tab === "type" ? await typedSignature() : uploaded;
+      if (!url) return toast(tab === "draw" ? "Bitte unterschreibe zuerst im Feld." : tab === "type" ? "Bitte tippe zuerst deinen Namen ein." : "Bitte wähle zuerst ein Foto deiner Unterschrift aus.");
       if (sig.querySelector("[data-sig-remember]").checked) {
         try {
           localStorage.setItem(SIG_KEY, url);
@@ -1465,6 +1539,8 @@
       uploaded = null;
       sig.querySelector("[data-sig-preview]").hidden = true;
       sig.querySelector("[data-sig-saved]").hidden = !savedSig();
+      setPen(false);
+      refreshFonts();
       setTab("draw");
       sig.showModal();
     };

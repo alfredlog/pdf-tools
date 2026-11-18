@@ -1271,6 +1271,7 @@ function signatureDialog() {
       <h2 id="sig-title">Unterschrift erstellen</h2>
       <div class="sig__tabs" role="tablist">
         <button type="button" role="tab" aria-selected="true" data-sig-tab="draw">Zeichnen</button>
+        <button type="button" role="tab" aria-selected="false" data-sig-tab="type">Tippen</button>
         <button type="button" role="tab" aria-selected="false" data-sig-tab="upload">Foto hochladen</button>
       </div>
       <div class="sig__panel" data-sig-panel="draw">
@@ -1282,7 +1283,16 @@ function signatureDialog() {
           </span>
           <button type="button" class="btn btn--link" data-sig-clear>Löschen</button>
         </div>
-        <p class="sig__hint">Mit Maus, Touchpad oder Finger unterschreiben.</p>
+        <p class="sig__hint" data-sig-hint>Mit der Maus: <b>einmal klicken</b>, dann einfach die Maus bewegen – erneut klicken, um den Stift abzusetzen. Gedrückt halten und ziehen geht auch, ebenso Finger und Stift.</p>
+      </div>
+      <div class="sig__panel" data-sig-panel="type" hidden>
+        <input type="text" class="sig__name" data-sig-name maxlength="60" placeholder="Vor- und Nachname" aria-label="Dein Name" autocomplete="name">
+        <div class="sig__fonts" role="radiogroup" aria-label="Schrift" data-sig-fonts>
+          ${[["Caveat", 700], ["Dancing Script", 600], ["Great Vibes", 400], ["Homemade Apple", 400]]
+            .map(([f, w], i) => `<button type="button" class="sig__font" role="radio" aria-checked="${i === 0}" data-sig-font="${f}" data-sig-weight="${w}" style="font-family:'${f}';font-weight:${w}">Unterschrift</button>`)
+            .join("")}
+        </div>
+        <p class="sig__hint">Name eintippen und eine Handschrift auswählen. Die Farbe stellst du unter „Zeichnen“ ein.</p>
       </div>
       <div class="sig__panel" data-sig-panel="upload" hidden>
         <label class="btn btn--ghost btn--block">Foto der Unterschrift auswählen<input type="file" class="visually-hidden" accept="image/png,image/jpeg" data-sig-file></label>
