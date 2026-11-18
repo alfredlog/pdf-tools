@@ -104,6 +104,7 @@ public/              fertige Website (wird vom Server ausgeliefert)
 | `AI_API_KEY` | – | Schlüssel für die KI-Werkzeuge (PDF zusammenfassen/übersetzen). Jede OpenAI-kompatible API. Ohne Schlüssel sind die KI-Werkzeuge aus. |
 | `AI_BASE_URL` | `https://api.openai.com/v1` | Andere Anbieter, z. B. `https://api.mistral.ai/v1` |
 | `AI_MODEL` | `gpt-4o-mini` | KI-Modell |
+| `AI_MODEL_STRONG` | = `AI_MODEL` | Stärkeres Modell nur für Anschreiben, Formulierungen und Stellenanzeige |
 | `AI_RATE_LIMIT` | `10` | KI-Aufträge pro Stunde und IP-Adresse (schützt deine API-Kosten) |
 | `PAYMENTS_ENABLED` | `false` | `false` = **alles kostenlos**, kein Konto nötig, keine Preisseite. `true` = PDF-Editor nur mit Pro/Tagespass (Stripe). Nach Änderung Server neu starten. |
 | `PORT` | 3000 | Port |

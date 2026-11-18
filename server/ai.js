@@ -5,7 +5,9 @@
  * Einstellungen in der .env:
  *   AI_API_KEY=…                         (Pflicht – ohne Schlüssel sind die KI-Werkzeuge aus)
  *   AI_BASE_URL=https://api.openai.com/v1 (optional)
- *   AI_MODEL=gpt-4o-mini                  (optional)
+ *   AI_MODEL=gpt-4o-mini                  (optional: günstiges Modell für alles Einfache)
+ *   AI_MODEL_STRONG=…                     (optional: stärkeres Modell für Anschreiben, Formulierungen, Stellenanzeige;
+ *                                          leer = AI_MODEL)
  *   AI_RATE_LIMIT=10                      (optional: KI-Aufträge pro Stunde und IP, schützt deine API-Kosten)
  *
  * Mit PAYMENTS_ENABLED=true sind die KI-Werkzeuge Pro-Werkzeuge (Konto + Pro/Tagespass nötig).
@@ -20,6 +22,7 @@ const payments = require("./payments");
 const KEY = process.env.AI_API_KEY || process.env.OPENAI_API_KEY || "";
 const BASE = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, "");
 const MODEL = process.env.AI_MODEL || "gpt-4o-mini";
+const MODEL_STRONG = process.env.AI_MODEL_STRONG || MODEL;
 const enabled = Boolean(KEY);
 
 const MAX_SUMMARY_CHARS = 180_000; // ca. 60 Seiten Fließtext
@@ -41,16 +44,38 @@ const LANGUAGES = {
   uk: "Ukrainisch",
 };
 
-async function chat(messages, { json = false, maxTokens = 1800 } = {}) {
-  let res;
-  try {
-    res = await fetch(`${BASE}/chat/completions`, {
+// Neuere OpenAI-Modelle (GPT-5 und später) erwarten „max_completion_tokens“ statt „max_tokens“
+// und erlauben oft keine eigene „temperature“ – beim ersten 400-Fehler merken wir uns das pro Modell.
+const NEW_STYLE = new Set();
+async function chat(messages, { json = false, maxTokens = 1800, strong = false } = {}) {
+  const model = strong ? MODEL_STRONG : MODEL;
+  const send = (modern) =>
+    fetch(`${BASE}/chat/completions`, {
       method: "POST",
       headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: MODEL, messages, temperature: 0.2, max_tokens: maxTokens, ...(json ? { response_format: { type: "json_object" } } : {}) }),
+      body: JSON.stringify({
+        model,
+        messages,
+        ...(modern ? { max_completion_tokens: maxTokens * 3 } : { temperature: 0.2, max_tokens: maxTokens }), // Denkmodelle brauchen Spielraum
+        ...(json ? { response_format: { type: "json_object" } } : {}),
+      }),
       signal: AbortSignal.timeout(180_000),
     });
-  } catch {
+  let res;
+  try {
+    res = await send(NEW_STYLE.has(model));
+    if (res.status === 400 && !NEW_STYLE.has(model)) {
+      const text = await res.text().catch(() => "");
+      if (/max_tokens|max_completion_tokens|temperature/.test(text)) {
+        NEW_STYLE.add(model);
+        res = await send(true);
+      } else {
+        console.error("KI-Fehler", 400, text.slice(0, 300));
+        throw new ApiError("Der KI-Dienst ist gerade nicht erreichbar. Bitte versuche es später noch einmal.", 502);
+      }
+    }
+  } catch (e) {
+    if (e instanceof ApiError) throw e;
     throw new ApiError("Der KI-Dienst antwortet gerade nicht. Bitte versuche es in ein paar Minuten noch einmal.", 502);
   }
   if (!res.ok) {
@@ -473,7 +498,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
     try {
       const items = cleanItems(req.body.items);
       checkSize(items);
-      const out = parseJson(await chat([{ role: "system", content: CV_IMPROVE_PROMPT }, { role: "user", content: JSON.stringify({ items }) }], { json: true, maxTokens: 6000 }));
+      const out = parseJson(await chat([{ role: "system", content: CV_IMPROVE_PROMPT }, { role: "user", content: JSON.stringify({ items }) }], { json: true, maxTokens: 6000, strong: true }));
       res.json({ changes: changesFrom(items, out.items, allTextOf(items, req.body.cvText)) });
     } catch (e) {
       next(e);
@@ -501,7 +526,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
             { role: "system", content: CV_TAILOR_PROMPT },
             { role: "user", content: JSON.stringify({ stellenanzeige: ad, anforderungen: status, items }) },
           ],
-          { json: true, maxTokens: 6000 }
+          { json: true, maxTokens: 6000, strong: true }
         )
       );
       res.json({
@@ -531,7 +556,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
             { role: "system", content: CV_LETTER_PROMPT },
             { role: "user", content: JSON.stringify({ stellenanzeige: ad, lebenslauf: cvText, ansprechpartner: contact, notizen_des_bewerbers: notes }) },
           ],
-          { json: true, maxTokens: 2500 }
+          { json: true, maxTokens: 2500, strong: true }
         )
       );
       res.json({
