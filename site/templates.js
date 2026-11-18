@@ -8,8 +8,39 @@ const esc = (s) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const url = (slug) => (slug === "" ? "/" : `/${slug}.html`);
-const absUrl = (slug) => config.domain + url(slug);
+// ---------------------------------------------------------------------------
+// Sprachen: Deutsch unter /, Englisch unter /en/, Französisch unter /fr/
+// Texte der Oberfläche: T("deutscher Text") → Übersetzung aus site/i18n/<sprache>.js (Schlüssel = deutscher Text)
+// ---------------------------------------------------------------------------
+const I18N = { en: require("./i18n/en"), fr: require("./i18n/fr") };
+const LANGS = ["de", "en", "fr"];
+const LANG_NAMES = { de: "Deutsch", en: "English", fr: "Français" };
+const LOCALES = { de: "de_DE", en: "en_US", fr: "fr_FR" };
+// Werkzeuge mit eigener, großer Oberfläche werden in einer späteren Phase übersetzt; bis dahin verlinken /en/ und /fr/ auf die deutsche Seite
+const NOT_YET = new Set(["editor", "cv", "slides"]);
+let LANG = "de";
+const MISSING = new Set();
+function T(text, vars) {
+  let out = text;
+  if (LANG !== "de") {
+    const d = I18N[LANG].ui;
+    if (d[text] != null) out = d[text];
+    else MISSING.add(text);
+  }
+  return vars ? out.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m)) : out;
+}
+const BASE_TOOLS = new Map(tools.map((t) => [t.slug, structuredClone(t)]));
+function availableIn(slug, lang) {
+  if (lang === "de" || slug === "" || slug === "404") return true;
+  const b = BASE_TOOLS.get(slug);
+  return !!(b && I18N[lang].tools[slug] && !NOT_YET.has(b.ui.mode));
+}
+const url = (slug, lang = LANG) => {
+  if (lang !== "de" && !availableIn(slug, lang)) lang = "de"; // noch nicht übersetzt → deutsche Seite
+  const pre = lang === "de" ? "" : "/" + lang;
+  return slug === "" ? pre + "/" : `${pre}/${slug}.html`;
+};
+const absUrl = (slug, lang = LANG) => config.domain + url(slug, lang);
 const bySlug = Object.fromEntries(tools.map((t) => [t.slug, t]));
 
 // Ratgeber-Seiten (site/landings.js): gleiche Oberfläche wie das Basis-Werkzeug, eigene Texte für Google
@@ -32,14 +63,50 @@ const catById = Object.fromEntries(categories.map((c) => [c.id, c]));
 
 /** „A“, „B“ und „C“ – die Namen aller Pro-Werkzeuge (für Texte) */
 function proNames() {
-  const names = tools.filter((t) => t.pro).map((t) => `„${t.name}“`);
-  return names.length > 1 ? `${names.slice(0, -1).join(", ")} und ${names[names.length - 1]}` : names[0] || "";
+  const q = { de: ["„", "“"], en: ["“", "”"], fr: ["« ", " »"] }[LANG];
+  const names = tools.filter((t) => t.pro).map((t) => `${q[0]}${t.name}${q[1]}`);
+  return names.length > 1 ? `${names.slice(0, -1).join(", ")} ${T("und")} ${names[names.length - 1]}` : names[0] || "";
 }
 
-// Kostenlose Fassung (ohne Bezahlung): wird von scripts/build.js nach den Pro-Seiten eingeschaltet
+// Sprache und Fassung (mit/ohne Bezahlung) einstellen – scripts/build.js ruft das vor jedem Durchlauf auf.
+// Die Werkzeug-Objekte werden dabei aus dem deutschen Original neu befüllt (gleiche Objekte, damit bySlug stimmt).
 let FREE = false;
-function setFreeMode() {
-  FREE = true;
+const BASE_CATS = categories.map((c) => ({ ...c }));
+function applyTranslation(t, tr) {
+  for (const k of ["name", "short", "title", "description", "h1", "lead"]) if (tr[k]) t[k] = tr[k];
+  if (tr.action) t.ui.action = tr.action;
+  if (tr.dropHint) t.ui.dropHint = tr.dropHint;
+  if (tr.inputLabel) t.ui.input = { ...t.ui.input, label: tr.inputLabel };
+  for (const o of t.ui.options || []) {
+    const to = (tr.options || {})[o.name];
+    if (!to) continue;
+    for (const k of ["label", "placeholder", "hint", "unit"]) if (to[k] != null) o[k] = to[k];
+    for (const c of o.choices || []) {
+      const tc = (to.choices || {})[c.value];
+      if (Array.isArray(tc)) [c.label, c.hint] = tc;
+      else if (tc) c.label = tc;
+    }
+  }
+  for (const b of t.ui.toolbar || []) if (tr.toolbar && tr.toolbar[b.action]) b.label = tr.toolbar[b.action];
+  if (tr.steps) t.steps = tr.steps;
+  if (tr.faq) t.faq = tr.faq;
+  t.article = tr.article || []; // lange SEO-Texte folgen in Phase 2
+  if (t.promo && tr.promo) t.promo = { ...t.promo, ...tr.promo };
+  t.free = tr.free || (t.free ? {} : undefined);
+}
+function prepare({ lang = "de", free = false } = {}) {
+  LANG = lang;
+  FREE = free;
+  for (const t of tools) {
+    const b = structuredClone(BASE_TOOLS.get(t.slug));
+    if (lang !== "de" && I18N[lang].tools[t.slug]) applyTranslation(b, I18N[lang].tools[t.slug]);
+    for (const k of Object.keys(t)) delete t[k];
+    Object.assign(t, b);
+  }
+  categories.forEach((c, i) => {
+    Object.assign(c, BASE_CATS[i], lang === "de" ? {} : I18N[lang].cats[c.id] || {});
+  });
+  if (!free) return;
   for (const t of tools) {
     if (!t.pro && !t.free) continue;
     t.pro = false;
@@ -50,6 +117,11 @@ function setFreeMode() {
     t.faq = t.faq.map((q, i) => (f.faq && f.faq[i]) || q);
   }
 }
+function setFreeMode() {
+  prepare({ lang: LANG, free: true });
+}
+// In dieser Sprache vorhandene Werkzeuge (für Startseite, Menü, Footer)
+const shown = () => tools.filter((t) => LANG === "de" || availableIn(t.slug, LANG));
 
 // ---------------------------------------------------------------------------
 // Icons
@@ -143,18 +215,25 @@ function trackingScripts(ads = true) {
 
 function head({ title, description, slug, jsonLd = [], noindex = false, extraHead = "", ads = true }) {
   const canonical = absUrl(slug);
+  const alternates = noindex
+    ? ""
+    : LANGS.filter((l) => availableIn(slug, l))
+        .map((l) => `<link rel="alternate" hreflang="${l}" href="${absUrl(slug, l)}">`)
+        .concat(`<link rel="alternate" hreflang="x-default" href="${absUrl(slug, "de")}">`)
+        .join("\n  ");
   return `<!doctype html>
-<html lang="de">
+<html lang="${LANG}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
   ${noindex ? '<meta name="robots" content="noindex, follow">' : `<link rel="canonical" href="${canonical}">`}
+  ${alternates}
   <meta name="theme-color" content="#2b4bdb">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="${config.name}">
-  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale" content="${LOCALES[LANG]}">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:url" content="${canonical}">
@@ -176,8 +255,8 @@ function megaMenu() {
   return categories
     .map(
       (c) => `<div class="mega__col">
-          <p class="mega__cat mega__cat--${c.color}">${c.hub ? `<a href="${url(c.hub)}">${esc(c.name)}</a>` : esc(c.name)}</p>
-          <ul>${tools
+          <p class="mega__cat mega__cat--${c.color}">${c.hub && LANG === "de" ? `<a href="${url(c.hub)}">${esc(c.name)}</a>` : esc(c.name)}</p>
+          <ul>${shown()
             .filter((t) => t.cat === c.id)
             .map((t) => `<li><a href="${url(t.slug)}">${esc(t.name)}</a></li>`)
             .join("")}</ul>
@@ -186,21 +265,34 @@ function megaMenu() {
     .join("\n        ");
 }
 
-function header(activeSlug) {
+function langSwitch(slug) {
+  const items = LANGS.map((l) => {
+    const ok = availableIn(slug, l);
+    const href = ok ? url(slug, l) : url("", l);
+    return `<li><a href="${href}" hreflang="${l}" lang="${l}"${l === LANG ? ' aria-current="true"' : ""} data-lang-link="${l}">${LANG_NAMES[l]}</a></li>`;
+  }).join("");
+  return `<div class="langsw">
+      <button type="button" class="langsw__btn" aria-expanded="false" aria-label="${T("Sprache wählen")}">${LANG.toUpperCase()} ${ICON.chevron}</button>
+      <ul class="langsw__menu" hidden>${items}</ul>
+    </div>`;
+}
+
+function header(activeSlug, slug = activeSlug || "") {
   const quick = ["merge", "compress", "pdf-to-docx", "docx-to-pdf"];
-  return `<a class="skip" href="#inhalt">Zum Inhalt springen</a>
+  return `<a class="skip" href="#inhalt">${T("Zum Inhalt springen")}</a>
 <header class="site-header">
   <div class="wrap site-header__bar">
-    <a href="/" class="brand" aria-label="${config.name} – Startseite">${ICON.logo}<span>PDF Libre</span></a>
-    <nav class="nav" aria-label="Hauptnavigation">
-      <button class="nav__all" type="button" aria-expanded="false" aria-controls="mega">Alle Werkzeuge ${ICON.chevron}</button>
+    <a href="${url("")}" class="brand" aria-label="${config.name} – ${T("Startseite")}">${ICON.logo}<span>PDF Libre</span></a>
+    <nav class="nav" aria-label="${T("Hauptnavigation")}">
+      <button class="nav__all" type="button" aria-expanded="false" aria-controls="mega">${T("Alle Werkzeuge")} ${ICON.chevron}</button>
       ${quick
         .map((s) => `<a href="${url(s)}"${s === activeSlug ? ' aria-current="page"' : ""}>${esc(bySlug[s].name)}</a>`)
         .join("\n      ")}
     </nav>
-    ${FREE ? "" : `<a href="/preise.html" class="nav__pricing">Preise</a>
-    <a href="/anmelden.html" class="nav__account" data-account>Anmelden</a>`}
-    <button class="nav__burger" type="button" aria-expanded="false" aria-controls="mega" aria-label="Menü öffnen">${ICON.menu}</button>
+    ${FREE ? "" : `<a href="/preise.html" class="nav__pricing">${T("Preise")}</a>
+    <a href="/anmelden.html" class="nav__account" data-account>${T("Anmelden")}</a>`}
+    ${langSwitch(slug)}
+    <button class="nav__burger" type="button" aria-expanded="false" aria-controls="mega" aria-label="${T("Menü öffnen")}">${ICON.menu}</button>
   </div>
   <div class="mega" id="mega" hidden>
     <div class="wrap mega__grid">
@@ -215,14 +307,14 @@ function footer() {
   <div class="wrap">
     <div class="site-footer__grid">
       <div class="site-footer__about">
-        <a href="/" class="brand brand--footer">${ICON.logo}<span>PDF Libre</span></a>
-        <p>${tools.filter((t) => !t.pro).length} kostenlose PDF-Werkzeuge ohne Anmeldung${FREE ? "" : ", dazu PDF Libre Pro mit PDF-Editor und KI-Werkzeugen"}. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <a href="${url("")}" class="brand brand--footer">${ICON.logo}<span>PDF Libre</span></a>
+        <p>${T("{n} kostenlose PDF-Werkzeuge ohne Anmeldung", { n: tools.filter((t) => !t.pro).length })}${FREE ? "" : T(", dazu PDF Libre Pro mit PDF-Editor und KI-Werkzeugen")}. ${T("Hochgeladene Dateien werden nach der Verarbeitung gelöscht.")}</p>
       </div>
       ${categories
         .map(
           (c) => `<div>
         <p class="site-footer__head">${esc(c.name)}</p>
-        <ul>${tools
+        <ul>${shown()
           .filter((t) => t.cat === c.id)
           .map((t) => `<li><a href="${url(t.slug)}">${esc(t.name)}</a></li>`)
           .join("")}</ul>
@@ -231,8 +323,8 @@ function footer() {
         .join("\n      ")}
     </div>
     <div class="site-footer__legal">
-      <p>© <span data-year>2026</span> ${config.name} · Entwickelt von <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
-      <p>${FREE ? "" : '<a href="/preise.html">Preise</a>'}<a href="/impressum.html">Impressum</a><a href="/Datenschutz.html">Datenschutz</a>${FREE ? "" : '<a href="/agb.html">AGB</a>'}<a href="#" data-consent-settings>Datenschutzeinstellungen</a></p>
+      <p>© <span data-year>2026</span> ${config.name} · ${T("Entwickelt von")} <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
+      <p>${FREE ? "" : `<a href="/preise.html">${T("Preise")}</a>`}<a href="/impressum.html">${T("Impressum")}</a><a href="/Datenschutz.html">${T("Datenschutz")}</a>${FREE ? "" : `<a href="/agb.html">${T("AGB")}</a>`}<a href="#" data-consent-settings>${T("Datenschutzeinstellungen")}</a></p>
     </div>
   </div>
 </footer>`;
@@ -241,12 +333,12 @@ function footer() {
 function page({ title, description, slug, body, jsonLd, activeSlug, noindex, scripts = "", ads = true }) {
   return `${head({ title, description, slug, jsonLd, noindex, ads })}
 <body>
-${header(activeSlug)}
+${header(activeSlug, slug)}
 <main id="inhalt">
 ${body}
 </main>
 ${footer()}
-<script src="/assets/site.js?v=${BUILD_ID}" defer></script>${scripts}
+${LANG === "de" ? "" : `<script>window.PL_LANG=${JSON.stringify(LANG)};window.PL_T=${JSON.stringify(I18N[LANG].js || {}).replace(/</g, "\\u003c")};</script>\n`}<script src="/assets/site.js?v=${BUILD_ID}" defer></script>${scripts}
 </body>
 </html>
 `;
@@ -259,69 +351,56 @@ function toolCard(t) {
   return `<li class="tcard" data-cat="${t.cat}">
         <a href="${url(t.slug)}">
           ${toolIcon(t)}
-          <span class="tcard__name">${esc(t.name)}${t.pro ? ' <span class="pro-badge">Pro</span>' : t.isNew ? ' <span class="new-badge">Neu</span>' : ""}</span>
+          <span class="tcard__name">${esc(t.name)}${t.pro ? ' <span class="pro-badge">Pro</span>' : t.isNew ? ` <span class="new-badge">${T("Neu")}</span>` : ""}</span>
           <span class="tcard__text">${esc(t.short)}</span>
         </a>
       </li>`;
 }
 
 function homePage() {
+  const list = shown();
   const faq = [
     FREE
-      ? [
-          "Ist PDF Libre kostenlos?",
-          `Ja. Alle ${tools.length} Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.`,
-        ]
+      ? [T("Ist PDF Libre kostenlos?"), T("Ja. Alle {n} Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.", { n: tools.length })]
       : [
-      "Ist PDF Libre kostenlos?",
-      `Fast alles: ${tools.filter((t) => !t.pro).length} Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur ${proNames()} gehören zu PDF Libre Pro: ${config.pricing.trialDays} Tage kostenlos testen, danach ${config.pricing.pro} im Monat oder ${config.pricing.daypass} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.`,
-    ],
-    ["Was passiert mit meinen Dateien?", "Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."],
-    ["Brauche ich ein Programm oder eine App?", "Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."],
-    ["Wie groß dürfen meine Dateien sein?", "Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt."],
+          T("Ist PDF Libre kostenlos?"),
+          T("Fast alles: {n} Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur {pro} gehören zu PDF Libre Pro: {trial} Tage kostenlos testen, danach {price} im Monat oder {day} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.", { n: tools.filter((t) => !t.pro).length, pro: proNames(), trial: config.pricing.trialDays, price: config.pricing.pro, day: config.pricing.daypass }),
+        ],
+    [T("Was passiert mit meinen Dateien?"), T("Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht.")],
+    [T("Brauche ich ein Programm oder eine App?"), T("Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone.")],
+    [T("Wie groß dürfen meine Dateien sein?"), T("Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt.")],
   ];
   const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      name: config.name,
-      url: config.domain + "/",
-      inLanguage: "de-DE",
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: config.name,
-      url: config.domain + "/",
-      logo: config.domain + "/apple-touch-icon.png",
-    },
+    { "@context": "https://schema.org", "@type": "WebSite", name: config.name, url: absUrl(""), inLanguage: { de: "de-DE", en: "en", fr: "fr" }[LANG] },
+    { "@context": "https://schema.org", "@type": "Organization", name: config.name, url: config.domain + "/", logo: config.domain + "/apple-touch-icon.png" },
     faqLd(faq),
   ];
 
   const body = `<section class="home-hero">
   <div class="wrap">
-    <h1>Jedes PDF-Werkzeug, das du im Alltag brauchst.</h1>
-    <p class="home-hero__lead">Zusammenfügen, verkleinern, umwandeln, unterschreiben und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen. ${FREE ? 'Text in PDFs ändern kannst du mit dem <a href="/edit.html">PDF-Editor</a> – ebenfalls kostenlos.' : 'Text in PDFs ändern kannst du mit <a href="/preise.html">PDF Libre Pro</a>.'}</p>
+    <h1>${T("Jedes PDF-Werkzeug, das du im Alltag brauchst.")}</h1>
+    <p class="home-hero__lead">${T("Zusammenfügen, verkleinern, umwandeln, unterschreiben und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen.")} ${FREE ? T('Text in PDFs ändern kannst du mit dem <a href="{href}">PDF-Editor</a> – ebenfalls kostenlos.', { href: url("edit") }) : T('Text in PDFs ändern kannst du mit <a href="/preise.html">PDF Libre Pro</a>.')}</p>
     <ul class="facts">
-      <li>${ICON.device}<span><strong>${tools.filter((t) => t.ui.mode === "client").length} Werkzeuge</strong> laufen komplett in deinem Browser</span></li>
-      <li>${ICON.shield}<span><strong>Automatisch gelöscht</strong> nach der Verarbeitung</span></li>
+      <li>${ICON.device}<span>${T("<strong>{n} Werkzeuge</strong> laufen komplett in deinem Browser", { n: list.filter((t) => t.ui.mode === "client").length })}</span></li>
+      <li>${ICON.shield}<span>${T("<strong>Automatisch gelöscht</strong> nach der Verarbeitung")}</span></li>
     </ul>
   </div>
 </section>
 
 <section class="wrap tools-index" aria-labelledby="alle-werkzeuge">
-  <h2 id="alle-werkzeuge" class="visually-hidden">Alle Werkzeuge</h2>
-  <div class="filters" role="toolbar" aria-label="Werkzeuge filtern">
-    <button type="button" class="chip" aria-pressed="true" data-filter="all">Alle</button>
-    ${categories.map((c) => `<button type="button" class="chip chip--${c.color}" aria-pressed="false" data-filter="${c.id}">${esc(c.short || c.name)}</button>`).join("\n    ")}
+  <h2 id="alle-werkzeuge" class="visually-hidden">${T("Alle Werkzeuge")}</h2>
+  <div class="filters" role="toolbar" aria-label="${T("Werkzeuge filtern")}">
+    <button type="button" class="chip" aria-pressed="true" data-filter="all">${T("Alle")}</button>
+    ${categories.filter((c) => list.some((t) => t.cat === c.id)).map((c) => `<button type="button" class="chip chip--${c.color}" aria-pressed="false" data-filter="${c.id}">${esc(c.short || c.name)}</button>`).join("\n    ")}
   </div>
   ${categories
+    .filter((c) => list.some((t) => t.cat === c.id))
     .map(
       (c) => `<div class="tgroup" data-group="${c.id}">
     <h3 class="tgroup__title tgroup__title--${c.color}">${esc(c.name)}</h3>
     <ul class="tgrid">
-      ${tools.filter((t) => t.cat === c.id).map(toolCard).join("\n      ")}
-    </ul>${c.hub ? `\n    <p class="tgroup__more"><a href="${url(c.hub)}">Alles rund um Bewerbung und Lebenslauf: Ratgeber, Vorlagen und Tipps →</a></p>` : ""}
+      ${list.filter((t) => t.cat === c.id).map(toolCard).join("\n      ")}
+    </ul>${c.hub && LANG === "de" ? `\n    <p class="tgroup__more"><a href="${url(c.hub)}">Alles rund um Bewerbung und Lebenslauf: Ratgeber, Vorlagen und Tipps →</a></p>` : ""}
   </div>`
     )
     .join("\n  ")}
@@ -329,53 +408,52 @@ function homePage() {
 
 ${FREE ? `<section class="wrap pro-band" aria-labelledby="pro-title">
   <div class="pro-band__text">
-    <p class="pro-band__tag">PDF-Editor</p>
-    <h2 id="pro-title">Text in PDFs ändern, Inhalte endgültig löschen, eigene PDFs gestalten.</h2>
-    <p>Mit dem PDF-Editor änderst du vorhandenen Text, fügst Bilder, Formen und deine Unterschrift ein oder gestaltest eine neue PDF. Kostenlos und ohne Konto.</p>
+    <p class="pro-band__tag">${T("PDF-Editor")}</p>
+    <h2 id="pro-title">${T("Text in PDFs ändern, Inhalte endgültig löschen, eigene PDFs gestalten.")}</h2>
+    <p>${T("Mit dem PDF-Editor änderst du vorhandenen Text, fügst Bilder, Formen und deine Unterschrift ein oder gestaltest eine neue PDF. Kostenlos und ohne Konto.")}</p>
   </div>
   <div class="pro-band__actions">
-    <a class="btn btn--primary btn--lg" href="/edit.html">PDF bearbeiten</a>
-    <a class="btn btn--link" href="/create.html">PDF erstellen</a>
+    <a class="btn btn--primary btn--lg" href="${url("edit")}">${T("PDF bearbeiten")}</a>
+    <a class="btn btn--link" href="${url("create")}">${T("PDF erstellen")}</a>
   </div>
 </section>` : `<section class="wrap pro-band" aria-labelledby="pro-title">
   <div class="pro-band__text">
     <p class="pro-band__tag">PDF Libre Pro</p>
-    <h2 id="pro-title">Text in PDFs ändern, Inhalte endgültig löschen, eigene PDFs gestalten.</h2>
-    <p>PDF-Editor, PDF zusammenfassen und PDF übersetzen gehören zu Pro: ${config.pricing.trialDays} Tage kostenlos testen, ohne Zahlungsdaten. Danach ${config.pricing.pro} im Monat (monatlich kündbar) oder ${config.pricing.daypass} für einen Tagespass. Alle anderen Werkzeuge bleiben kostenlos.</p>
+    <h2 id="pro-title">${T("Text in PDFs ändern, Inhalte endgültig löschen, eigene PDFs gestalten.")}</h2>
+    <p>${T("PDF-Editor, PDF zusammenfassen und PDF übersetzen gehören zu Pro: {trial} Tage kostenlos testen, ohne Zahlungsdaten. Danach {price} im Monat (monatlich kündbar) oder {day} für einen Tagespass. Alle anderen Werkzeuge bleiben kostenlos.", { trial: config.pricing.trialDays, price: config.pricing.pro, day: config.pricing.daypass })}</p>
   </div>
   <div class="pro-band__actions">
-    <a class="btn btn--primary btn--lg" href="/edit.html">PDF-Editor ausprobieren</a>
-    <a class="btn btn--link" href="/preise.html">Preise ansehen</a>
+    <a class="btn btn--primary btn--lg" href="${url("edit")}">${T("PDF-Editor ausprobieren")}</a>
+    <a class="btn btn--link" href="/preise.html">${T("Preise ansehen")}</a>
   </div>
 </section>`}
 
 <section class="wrap why">
-  <h2>Warum PDF Libre?</h2>
+  <h2>${T("Warum PDF Libre?")}</h2>
   <div class="why__grid">
     <div>
-      <h3>Deine Dateien bleiben deine</h3>
-      <p>Teilen, drehen, sortieren, Wasserzeichen, Bilder in PDF und mehr passieren direkt in deinem Browser. Für die übrigen Werkzeuge wird die Datei verschlüsselt übertragen und sofort nach dem Download gelöscht.</p>
+      <h3>${T("Deine Dateien bleiben deine")}</h3>
+      <p>${T("Teilen, drehen, sortieren, Wasserzeichen, Bilder in PDF und mehr passieren direkt in deinem Browser. Für die übrigen Werkzeuge wird die Datei verschlüsselt übertragen und sofort nach dem Download gelöscht.")}</p>
     </div>
     <div>
-      <h3>Ohne Konto, ohne Limits pro Tag</h3>
-      <p>Für die kostenlosen Werkzeuge brauchst du weder Konto noch E-Mail-Adresse, und es gibt keine Tageskontingente. Seite öffnen, Datei auswählen, fertig.${FREE ? "" : " Ein Konto brauchst du nur für Pro."}</p>
+      <h3>${T("Ohne Konto, ohne Limits pro Tag")}</h3>
+      <p>${T("Für die kostenlosen Werkzeuge brauchst du weder Konto noch E-Mail-Adresse, und es gibt keine Tageskontingente. Seite öffnen, Datei auswählen, fertig.")}${FREE ? "" : " " + T("Ein Konto brauchst du nur für Pro.")}</p>
     </div>
     <div>
-      <h3>Saubere Ergebnisse</h3>
-      <p>Keine Wasserzeichen, keine Werbung in deinen Dokumenten. Texte bleiben durchsuchbar, Seiten behalten ihr Format.</p>
+      <h3>${T("Saubere Ergebnisse")}</h3>
+      <p>${T("Keine Wasserzeichen, keine Werbung in deinen Dokumenten. Texte bleiben durchsuchbar, Seiten behalten ihr Format.")}</p>
     </div>
   </div>
 </section>
 
 <section class="wrap faq" aria-labelledby="faq-title">
-  <h2 id="faq-title">Häufige Fragen</h2>
+  <h2 id="faq-title">${T("Häufige Fragen")}</h2>
   ${faqHtml(faq)}
 </section>`;
 
   return page({
-    title: "PDF Libre – Kostenlose PDF-Tools online | Ohne Anmeldung",
-    description:
-      `Kostenlose PDF-Werkzeuge: PDF zusammenfügen, komprimieren, teilen, in Word umwandeln, drehen, schützen und mehr – ohne Anmeldung. ${FREE ? "Dazu ein kostenloser PDF-Editor." : "Dazu PDF-Editor mit Pro."}`,
+    title: T("PDF Libre – Kostenlose PDF-Tools online | Ohne Anmeldung"),
+    description: T("Kostenlose PDF-Werkzeuge: PDF zusammenfügen, komprimieren, teilen, in Word umwandeln, drehen, schützen und mehr – ohne Anmeldung.") + " " + (FREE ? T("Dazu ein kostenloser PDF-Editor.") : T("Dazu PDF-Editor mit Pro.")),
     slug: "",
     body,
     jsonLd,
@@ -488,20 +566,20 @@ function workspace(t) {
 
   const P = config.pricing;
   const privacy = t.pro
-    ? `${ICON.shield}<span><strong>Pro-Werkzeug:</strong> Mit Konto ${P.trialDays} Tage gratis, danach ${P.pro}/Monat oder ${P.daypass} Tagespass. <a href="/preise.html">Preise</a> · <a href="/anmelden.html?next=/${t.slug}.html">Anmelden</a></span>`
+    ? `${ICON.shield}<span>${T("<strong>Pro-Werkzeug:</strong> Mit Konto {trial} Tage gratis, danach {price}/Monat oder {day} Tagespass.", { trial: P.trialDays, price: P.pro, day: P.daypass })} <a href="/preise.html">${T("Preise")}</a> · <a href="/anmelden.html?next=/${t.slug}.html">${T("Anmelden")}</a></span>`
     : ui.mode === "client"
-      ? `${ICON.device}<span><strong>Im Browser:</strong> Deine Datei wird nicht hochgeladen.</span>`
-      : `${ICON.shield}<span><strong>Sicher:</strong> Verschlüsselte Übertragung, automatische Löschung nach der Verarbeitung.</span>`;
+      ? `${ICON.device}<span>${T("<strong>Im Browser:</strong> Deine Datei wird nicht hochgeladen.")}</span>`
+      : `${ICON.shield}<span>${T("<strong>Sicher:</strong> Verschlüsselte Übertragung, automatische Löschung nach der Verarbeitung.")}</span>`;
 
   const toolbar = ui.toolbar
     ? `<div class="pages-toolbar">${ui.toolbar.map((b) => `<button type="button" class="btn btn--ghost btn--sm" data-action="${b.action}">${esc(b.label)}</button>`).join("")}</div>`
     : "";
 
   const selectHelp = {
-    remove: "Klicke auf die Seiten, die entfernt werden sollen.",
-    keep: "Klicke auf die Seiten, die du behalten möchtest.",
-    organize: "Ziehe Seiten an eine neue Position. Mit den Symbolen drehst oder löschst du eine Seite.",
-    rotate: "Klicke auf eine Seite, um sie um 90° zu drehen.",
+    remove: T("Klicke auf die Seiten, die entfernt werden sollen."),
+    keep: T("Klicke auf die Seiten, die du behalten möchtest."),
+    organize: T("Ziehe Seiten an eine neue Position. Mit den Symbolen drehst oder löschst du eine Seite."),
+    rotate: T("Klicke auf eine Seite, um sie um 90° zu drehen."),
   }[ui.select];
 
   return `<section class="tool tool--${c}" ${dataAttrs} aria-label="${esc(t.name)}">
@@ -510,11 +588,11 @@ function workspace(t) {
         <div class="drop" data-drop>
           ${toolIcon(t, 56)}
           <label class="btn btn--primary btn--lg drop__btn">
-            ${ICON.upload}<span>${ui.multiple ? "Dateien auswählen" : "Datei auswählen"}</span>
+            ${ICON.upload}<span>${ui.multiple ? T("Dateien auswählen") : T("Datei auswählen")}</span>
             <input type="file" class="visually-hidden" accept="${esc(ui.input.accept)}"${ui.multiple ? " multiple" : ""}>
           </label>
-          <p class="drop__or">oder ${ui.multiple ? "Dateien" : "Datei"} hierher ziehen</p>
-          <p class="drop__hint">${esc(ui.dropHint || (ui.mode === "client" ? "PDF-Datei" : "PDF-Datei, bis zu 50 MB"))}</p>
+          <p class="drop__or">${ui.multiple ? T("oder Dateien hierher ziehen") : T("oder Datei hierher ziehen")}</p>
+          <p class="drop__hint">${esc(ui.dropHint || (ui.mode === "client" ? T("PDF-Datei") : T("PDF-Datei, bis zu 50 MB")))}</p>
         </div>
         <p class="privacy">${privacy}</p>
       </div>
@@ -523,14 +601,14 @@ function workspace(t) {
         <div class="work">
           <div class="work__main">
             ${ui.preview === "pages" ? `${selectHelp ? `<p class="work__help">${selectHelp}</p>` : ""}${toolbar}<div class="pages" data-pages aria-live="polite"></div>` : `<ul class="files" data-files></ul>`}
-            ${ui.multiple ? `<label class="btn btn--ghost btn--sm add-more">+ Weitere hinzufügen<input type="file" class="visually-hidden" accept="${esc(ui.input.accept)}" multiple></label>` : ""}
+            ${ui.multiple ? `<label class="btn btn--ghost btn--sm add-more">${T("+ Weitere hinzufügen")}<input type="file" class="visually-hidden" accept="${esc(ui.input.accept)}" multiple></label>` : ""}
           </div>
           <aside class="work__side">
             <p class="work__summary" data-summary></p>
             ${(ui.options || []).map(optionHtml).join("\n        ")}
             <p class="form-error" data-error role="alert" hidden></p>
             <button type="submit" class="btn btn--primary btn--lg btn--block">${esc(ui.action)}</button>
-            <button type="button" class="btn btn--link" data-action="reset">Andere Datei wählen</button>
+            <button type="button" class="btn btn--link" data-action="reset">${T("Andere Datei wählen")}</button>
           </aside>
         </div>
       </div>
@@ -538,20 +616,21 @@ function workspace(t) {
       <div class="stage stage--busy" hidden aria-live="polite">
         <div class="busy">
           <div class="busy__bar"><span data-progress></span></div>
-          <p data-busy-text>Wird verarbeitet …</p>
+          <p data-busy-text>${T("Wird verarbeitet …")}</p>
         </div>
       </div>
 
       <div class="stage stage--done" hidden>
         <div class="done">
-          <h2 class="done__title" tabindex="-1">Fertig!</h2>
+          <h2 class="done__title" tabindex="-1">${T("Fertig!")}</h2>
           <p class="done__info" data-done-info></p>
           <div class="done__preview" data-done-preview hidden></div>
-          <a class="btn btn--primary btn--lg" data-download href="#">Herunterladen</a>
-          <button type="button" class="btn btn--link" data-action="reset">Noch eine Datei bearbeiten</button>
+          <a class="btn btn--primary btn--lg" data-download href="#">${T("Herunterladen")}</a>
+          <button type="button" class="btn btn--link" data-action="reset">${T("Noch eine Datei bearbeiten")}</button>
           <div class="done__next">
-            <p>Weiter mit:</p>
+            <p>${T("Weiter mit:")}</p>
             <ul>${t.related
+              .filter((s) => LANG === "de" || availableIn(s, LANG))
               .slice(0, 4)
               .map((s) => `<li><a href="${url(s)}">${esc(bySlug[s].name)}</a></li>`)
               .join("")}</ul>
@@ -927,8 +1006,8 @@ function toolPage(t) {
       url: absUrl(t.slug),
       description: t.description,
       applicationCategory: "UtilitiesApplication",
-      operatingSystem: "Alle (Webbrowser)",
-      inLanguage: "de-DE",
+      operatingSystem: T("Alle (Webbrowser)"),
+      inLanguage: { de: "de-DE", en: "en", fr: "fr" }[LANG],
       isAccessibleForFree: true,
       offers: t.pro
         ? [
@@ -941,7 +1020,7 @@ function toolPage(t) {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: config.name, item: config.domain + "/" },
+        { "@type": "ListItem", position: 1, name: config.name, item: absUrl("") },
         ...(t.landingOf ? [{ "@type": "ListItem", position: 2, name: bySlug[t.landingOf].name, item: absUrl(t.landingOf) }] : []),
         { "@type": "ListItem", position: t.landingOf ? 3 : 2, name: t.name, item: absUrl(t.slug) },
       ],
@@ -949,13 +1028,13 @@ function toolPage(t) {
     faqLd(t.faq),
   ];
 
-  const related = t.related.map((s) => bySlug[s]).filter(Boolean);
+  const related = t.related.filter((s) => LANG === "de" || availableIn(s, LANG)).map((s) => bySlug[s]).filter(Boolean);
   // Ratgeber zum selben Werkzeug verlinken (auf der Werkzeugseite und auf den Ratgeberseiten untereinander)
   const home = t.landingOf || t.slug;
-  const guides = landingPages.filter((g) => (g.landingOf === home || g.related.includes(home)) && g.slug !== t.slug && !t.related.includes(g.slug));
+  const guides = LANG !== "de" ? [] : landingPages.filter((g) => (g.landingOf === home || g.related.includes(home)) && g.slug !== t.slug && !t.related.includes(g.slug));
 
   const body = `<div class="tool-head wrap">
-  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span>${
+  <nav class="crumbs" aria-label="${T("Brotkrümelnavigation")}"><a href="${url("")}">${T("Startseite")}</a><span aria-hidden="true">/</span>${
     t.landingOf ? `<a href="${url(t.landingOf)}">${esc(bySlug[t.landingOf].name)}</a><span aria-hidden="true">/</span><span>${esc(t.name)}</span>` : `<span>${esc(cat.name)}</span>`
   }</nav>
   <h1>${esc(t.h1)}</h1>
@@ -968,18 +1047,18 @@ function toolPage(t) {
 ${t.promo ? promoBox(t.promo) : ""}
 
 <section class="wrap howto" aria-labelledby="so-gehts">
-  <h2 id="so-gehts">So geht's: ${esc(t.name)}</h2>
+  <h2 id="so-gehts">${T("So geht's:")} ${esc(t.name)}</h2>
   <ol class="steps">
     ${t.steps.map(([h, p]) => `<li><h3>${esc(h)}</h3><p>${esc(p)}</p></li>`).join("\n    ")}
   </ol>
 </section>
 
-<section class="wrap article">
+<section class="wrap article"${t.article.length ? "" : " hidden"}>
   ${t.article.map((a) => `<h2>${esc(a.h)}</h2>\n  ${a.p.map((p) => `<p>${esc(p)}</p>`).join("\n  ")}`).join("\n  ")}
 </section>
 
 <section class="wrap faq" aria-labelledby="faq-title">
-  <h2 id="faq-title">Häufige Fragen</h2>
+  <h2 id="faq-title">${T("Häufige Fragen")}</h2>
   ${faqHtml(t.faq)}
 </section>
 
@@ -994,7 +1073,7 @@ ${
 `
     : ""
 }<section class="wrap related" aria-labelledby="related-title">
-  <h2 id="related-title">Passende Werkzeuge</h2>
+  <h2 id="related-title">${T("Passende Werkzeuge")}</h2>
   <ul class="tgrid tgrid--compact">
       ${related.map(toolCard).join("\n      ")}
   </ul>
@@ -1481,14 +1560,14 @@ function datenschutz() {
 
 function notFound() {
   return page({
-    title: "Seite nicht gefunden | PDF Libre",
-    description: "Diese Seite gibt es nicht.",
+    title: T("Seite nicht gefunden | PDF Libre"),
+    description: T("Diese Seite gibt es nicht."),
     slug: "404",
     ads: false,
     noindex: true,
     body: `<section class="wrap notfound">
-  <h1>Diese Seite gibt es nicht.</h1>
-  <p>Vielleicht findest du hier, was du gesucht hast:</p>
+  <h1>${T("Diese Seite gibt es nicht.")}</h1>
+  <p>${T("Vielleicht findest du hier, was du gesucht hast:")}</p>
   <ul class="tgrid tgrid--compact">
       ${["merge", "compress", "pdf-to-docx", "docx-to-pdf"].map((s) => toolCard(bySlug[s])).join("\n      ")}
   </ul>
@@ -1501,4 +1580,4 @@ function setBuildId(id) {
   BUILD_ID = id;
 }
 
-module.exports = { setFreeMode, homePage, toolPage, impressum, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, landingPages, bewerbungHub, url, absUrl };
+module.exports = { setFreeMode, homePage, toolPage, impressum, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, landingPages, bewerbungHub, url, absUrl, prepare, LANGS, availableIn, MISSING };

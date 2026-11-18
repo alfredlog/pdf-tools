@@ -6,6 +6,12 @@
  */
 (() => {
   "use strict";
+  // L(): Übersetzung für /en/ und /fr/ – Schlüssel ist der deutsche Text, {name} wird ersetzt
+  const L = (text, vars) => {
+    const d = window.PL_T || {};
+    const out = d[text] != null ? d[text] : text;
+    return vars ? out.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m)) : out;
+  };
 
   const root = document.querySelector(".tool");
   if (!root) return;
@@ -51,7 +57,7 @@
   function formatSize(bytes) {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-    return `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
+    return `${(bytes / 1024 / 1024).toFixed(1).replace(".", window.PL_LANG === "en" ? "." : ",")} MB`;
   }
 
   function baseName(name) {
@@ -91,11 +97,11 @@
     const out = [];
     for (const part of text.split(/[,;\s]+/).filter(Boolean)) {
       const m = part.match(/^(\d+)(?:-(\d*))?$/);
-      if (!m) throw new Error(`„${part}“ ist keine gültige Seitenangabe.`);
+      if (!m) throw new Error(L("„{part}“ ist keine gültige Seitenangabe.", { part }));
       const a = Number(m[1]);
       const b = m[2] === undefined ? a : m[2] === "" ? max : Number(m[2]);
-      if (a < 1 || b < 1 || a > max || b > max) throw new Error(`Die PDF hat nur ${max} Seiten – „${part}“ liegt außerhalb.`);
-      if (a > b) throw new Error(`Im Bereich „${part}“ muss die erste Zahl kleiner sein.`);
+      if (a < 1 || b < 1 || a > max || b > max) throw new Error(L("Die PDF hat nur {max} Seiten – „{part}“ liegt außerhalb.", { max, part }));
+      if (a > b) throw new Error(L("Im Bereich „{part}“ muss die erste Zahl kleiner sein.", { part }));
       for (let i = a; i <= b; i++) out.push(i - 1);
     }
     return out;
@@ -107,7 +113,7 @@
       .map((s) => s.trim())
       .filter(Boolean)
       .map((part) => parsePages(part.replace(/\s+/g, ""), max));
-    if (!ranges.length) throw new Error("Bitte gib mindestens einen Seitenbereich an, z. B. 1-3.");
+    if (!ranges.length) throw new Error(L("Bitte gib mindestens einen Seitenbereich an, z. B. 1-3."));
     return ranges;
   }
 
@@ -182,7 +188,7 @@
     const ok = list.filter(isAccepted);
     const rejected = list.length - ok.length;
     if (!ok.length) {
-      alertInline(`Dieser Dateityp wird hier nicht unterstützt. Erlaubt: ${cfg.accept.split(",").filter((s) => s.startsWith(".")).join(", ")}`);
+      alertInline(L("Dieser Dateityp wird hier nicht unterstützt. Erlaubt: {list}", { list: cfg.accept.split(",").filter((s) => s.startsWith(".")).join(", ") }));
       return;
     }
     if (cfg.multiple !== "true") {
@@ -191,7 +197,7 @@
     }
     for (const file of ok) state.files.push({ id: ++uid, file });
     show("work");
-    if (rejected) showError(`${rejected} Datei(en) wurden übersprungen, weil der Dateityp nicht passt.`);
+    if (rejected) showError(L("{n} Datei(en) wurden übersprungen, weil der Dateityp nicht passt.", { n: rejected }));
 
     if (cfg.preview === "pages") await loadPages(state.files[0].file);
     else renderFileList();
@@ -227,7 +233,7 @@
       const thumb = isImage ? `<img class="file__thumb" alt="" src="${URL.createObjectURL(file)}">` : `<span class="file__thumb" aria-hidden="true">${escapeHtml(file.name.split(".").pop().toUpperCase().slice(0, 4))}</span>`;
       li.innerHTML = `<span class="file__handle">${SVG.handle}</span>${thumb}
         <span class="file__meta"><span class="file__name"></span><span class="file__size">${formatSize(file.size)}</span></span>
-        <button type="button" class="icon-btn" aria-label="Entfernen">${SVG.x}</button>`;
+        <button type="button" class="icon-btn" aria-label="${L("Entfernen")}">${SVG.x}</button>`;
       li.querySelector(".file__name").textContent = file.name;
       li.querySelector(".icon-btn").addEventListener("click", () => {
         state.files = state.files.filter((f) => f.id !== id);
@@ -265,8 +271,8 @@
       state.pdfDoc = await pdfjsLib.getDocument({ data: state.pdfBytes.slice(), isEvalSupported: false }).promise;
     } catch (e) {
       grid.innerHTML = "";
-      if (e && e.name === "PasswordException") return fail("Diese PDF ist passwortgeschützt. Entsperre sie zuerst mit „PDF entsperren“.");
-      return fail("Die PDF konnte nicht geöffnet werden. Ist die Datei beschädigt?");
+      if (e && e.name === "PasswordException") return fail(L("Diese PDF ist passwortgeschützt. Entsperre sie zuerst mit „PDF entsperren“."));
+      return fail(L("Die PDF konnte nicht geöffnet werden. Ist die Datei beschädigt?"));
     }
     state.pageCount = state.pdfDoc.numPages;
     grid.innerHTML = "";
@@ -294,7 +300,7 @@
       if (cfg.select === "organize") {
         const tools = document.createElement("div");
         tools.className = "page__tools";
-        tools.innerHTML = `<button type="button" class="icon-btn" data-page-action="rotate" aria-label="Seite ${i + 1} drehen">${SVG.rotate}</button><button type="button" class="icon-btn" data-page-action="delete" aria-label="Seite ${i + 1} löschen">${SVG.trash}</button>`;
+        tools.innerHTML = `<button type="button" class="icon-btn" data-page-action="rotate" aria-label="${L("Seite {n} drehen", { n: i + 1 })}">${SVG.rotate}</button><button type="button" class="icon-btn" data-page-action="delete" aria-label="${L("Seite {n} löschen", { n: i + 1 })}">${SVG.trash}</button>`;
         el.appendChild(tools);
       }
       p.el = el;
@@ -418,23 +424,23 @@
     const el = $("[data-summary]");
     if (cfg.preview === "pages") {
       const n = state.pageCount;
-      let text = `${n} ${n === 1 ? "Seite" : "Seiten"}`;
+      let text = n === 1 ? L("1 Seite") : L("{n} Seiten", { n });
       if (cfg.select === "remove" || cfg.select === "keep") {
         const s = state.pages.filter((p) => p.selected).length;
         if (s) text += ` · ${s} ausgewählt`;
       }
       if (cfg.select === "rotate") {
         const r = state.pages.filter((p) => p.rotation).length;
-        if (r) text += ` · ${r} gedreht`;
+        if (r) text += " · " + L("{n} gedreht", { n: r });
       }
       if (cfg.select === "organize") {
         const left = visiblePages().length;
-        if (left !== n) text = `${left} von ${n} Seiten`;
+        if (left !== n) text = L("{a} von {b} Seiten", { a: left, b: n });
       }
       el.textContent = text;
     } else {
       const total = state.files.reduce((s, f) => s + f.file.size, 0);
-      el.textContent = `${state.files.length} ${state.files.length === 1 ? "Datei" : "Dateien"} · ${formatSize(total)}`;
+      el.textContent = (state.files.length === 1 ? L("1 Datei") : L("{n} Dateien", { n: state.files.length })) + " · " + formatSize(total);
     }
   }
 
@@ -445,25 +451,25 @@
     e.preventDefault();
     showError("");
     const min = Number(cfg.min || 1);
-    if (state.files.length < min) return showError(`Bitte wähle mindestens ${min} Dateien aus.`);
+    if (state.files.length < min) return showError(L("Bitte wähle mindestens {n} Dateien aus.", { n: min }));
 
     const v = values();
     if (form.elements.password2 && v.password !== v.password2) {
       form.elements.password2.setAttribute("aria-invalid", "true");
-      return showError("Die Passwörter stimmen nicht überein.");
+      return showError(L("Die Passwörter stimmen nicht überein."));
     }
     for (const el of form.elements) {
       if (el.required && !el.closest("[hidden]") && !el.value) {
         el.setAttribute("aria-invalid", "true");
         el.focus();
-        return showError("Bitte fülle alle Pflichtfelder aus.");
+        return showError(L("Bitte fülle alle Pflichtfelder aus."));
       }
     }
 
     try {
       if (cfg.mode === "server") await runServer(v);
       else {
-        startBusy("Wird in deinem Browser verarbeitet …");
+        startBusy(L("Wird in deinem Browser verarbeitet …"));
         await nextFrame();
         const handler = HANDLERS[cfg.tool];
         const result = await handler(v);
@@ -472,7 +478,7 @@
     } catch (err) {
       console.error(err);
       if (err && err.userMessage) return fail(err.userMessage, err.link);
-      fail(err && err.message && !/^[A-Z][a-zA-Z]+Error/.test(err.name || "") ? err.message : "Das hat leider nicht geklappt. Ist die Datei beschädigt?");
+      fail(err && err.message && !/^[A-Z][a-zA-Z]+Error/.test(err.name || "") ? err.message : L("Das hat leider nicht geklappt. Ist die Datei beschädigt?"));
     }
   });
 
@@ -503,18 +509,18 @@
       }
       for (const { file } of state.files) fd.append("file", file, file.name);
 
-      startBusy("Wird hochgeladen …", true);
+      startBusy(L("Wird hochgeladen …"), true);
       const xhr = new XMLHttpRequest();
       xhr.open("POST", cfg.endpoint);
       xhr.responseType = "blob";
       xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100), `Wird hochgeladen … ${Math.round((e.loaded / e.total) * 100)} %`);
+        if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100), L("Wird hochgeladen … {p} %", { p: Math.round((e.loaded / e.total) * 100) }));
       };
-      xhr.upload.onload = () => startBusy("Wird verarbeitet …");
-      xhr.onerror = () => reject(Object.assign(new Error(), { userMessage: "Keine Verbindung zum Server. Prüfe deine Internetverbindung." }));
+      xhr.upload.onload = () => startBusy(L("Wird verarbeitet …"));
+      xhr.onerror = () => reject(Object.assign(new Error(), { userMessage: L("Keine Verbindung zum Server. Prüfe deine Internetverbindung.") }));
       xhr.onload = async () => {
         if (xhr.status !== 200) {
-          let msg = "Bei der Verarbeitung ist ein Fehler aufgetreten.";
+          let msg = L("Bei der Verarbeitung ist ein Fehler aufgetreten.");
           try {
             msg = JSON.parse(await xhr.response.text()).error || msg;
           } catch {
@@ -522,8 +528,8 @@
           }
           // Pro-Werkzeug: Anmelden bzw. Tarif wählen
           let link = null;
-          if (xhr.status === 401) link = { href: `/anmelden.html?next=${encodeURIComponent(location.pathname)}`, label: "Anmelden oder kostenlos registrieren" };
-          if (xhr.status === 402) link = { href: "/preise.html", label: "Tarife ansehen" };
+          if (xhr.status === 401) link = { href: `/anmelden.html?next=${encodeURIComponent(location.pathname)}`, label: L("Anmelden oder kostenlos registrieren") };
+          if (xhr.status === 402) link = { href: "/preise.html", label: L("Tarife ansehen") };
           return reject(Object.assign(new Error(), { userMessage: msg, link }));
         }
         // Ergebnis mit Vorschau (z. B. KI-Zusammenfassung): JSON mit Datei als Base64
@@ -537,11 +543,11 @@
               blob: new Blob([bytes], { type: data.mime || "application/pdf" }),
               filename: data.filename || "ergebnis.pdf",
               preview: data.preview,
-              info: data.truncated ? "Das Dokument war sehr lang – zusammengefasst wurden die ersten rund 60 Seiten." : "",
+              info: data.truncated ? L("Das Dokument war sehr lang – zusammengefasst wurden die ersten rund 60 Seiten.") : "",
             });
             return resolve();
           } catch {
-            return reject(Object.assign(new Error(), { userMessage: "Das Ergebnis konnte nicht gelesen werden. Bitte versuche es erneut." }));
+            return reject(Object.assign(new Error(), { userMessage: L("Das Ergebnis konnte nicht gelesen werden. Bitte versuche es erneut.") }));
           }
         }
         const filename = filenameFromHeader(xhr.getResponseHeader("Content-Disposition")) || "ergebnis.pdf";
@@ -552,13 +558,13 @@
           const saved = Math.round((1 - after / before) * 100);
           info =
             saved > 0
-              ? `Von ${formatSize(before)} auf ${formatSize(after)} verkleinert – <strong>${saved} % gespart</strong>.`
-              : `Diese PDF ist bereits gut optimiert (${formatSize(after)}). Eine stärkere Stufe kann noch etwas bringen.`;
+              ? L("Von {a} auf {b} verkleinert – <strong>{p} % gespart</strong>.", { a: formatSize(before), b: formatSize(after), p: saved })
+              : L("Diese PDF ist bereits gut optimiert ({b}). Eine stärkere Stufe kann noch etwas bringen.", { b: formatSize(after) });
         }
         const resultInfo = xhr.getResponseHeader("X-Result-Info");
         if (!info && resultInfo) {
           const ok = xhr.getResponseHeader("X-Check-Ok") !== "0";
-          info = `<strong>${escapeHtml(decodeURIComponent(resultInfo))}</strong>${ok ? "" : " – Details stehen am Ende der PDF."}`;
+          info = `<strong>${escapeHtml(decodeURIComponent(resultInfo))}</strong>${ok ? "" : L(" – Details stehen am Ende der PDF.")}`;
         }
         finish({ blob: xhr.response, filename, info });
         resolve();
@@ -581,14 +587,14 @@
     const a = $("[data-download]");
     a.href = state.resultUrl;
     a.download = filename;
-    a.textContent = `${filename.toLowerCase().endsWith(".zip") ? "ZIP" : "Datei"} herunterladen (${formatSize(blob.size)})`;
+    a.textContent = filename.toLowerCase().endsWith(".zip") ? L("ZIP herunterladen ({s})", { s: formatSize(blob.size) }) : L("Datei herunterladen ({s})", { s: formatSize(blob.size) });
     $("[data-done-info]").innerHTML = info || escapeHtml(filename);
     const pv = $("[data-done-preview]");
     if (pv) {
       pv.innerHTML = preview || ""; // vom Server aus Markdown erzeugt und maskiert
       pv.hidden = !preview;
     }
-    if (preview) a.textContent = `Als PDF herunterladen (${formatSize(blob.size)})`;
+    if (preview) a.textContent = L("Als PDF herunterladen ({s})", { s: formatSize(blob.size) });
     show("done");
     $(".done__title").focus();
     if (!preview) a.click(); // Download direkt starten (bei einer Vorschau liest man zuerst)
@@ -629,9 +635,9 @@
       return await PDFLib.PDFDocument.load(bytes);
     } catch (e) {
       if (/encrypt/i.test(e.message)) {
-        throw Object.assign(new Error(), { userMessage: "Diese PDF ist verschlüsselt. Entsperre sie zuerst mit „PDF entsperren“." });
+        throw Object.assign(new Error(), { userMessage: L("Diese PDF ist verschlüsselt. Entsperre sie zuerst mit „PDF entsperren“.") });
       }
-      throw Object.assign(new Error(), { userMessage: "Die PDF konnte nicht gelesen werden. Ist die Datei beschädigt?" });
+      throw Object.assign(new Error(), { userMessage: L("Die PDF konnte nicht gelesen werden. Ist die Datei beschädigt?") });
     }
   }
 
@@ -658,7 +664,7 @@
     if (files.length === 1) return { blob: files[0].blob, filename: files[0].name };
     const zip = new JSZip();
     files.forEach((f) => zip.file(f.name, f.blob));
-    const blob = await zip.generateAsync({ type: "blob" }, (m) => setProgress(Math.round(m.percent), "ZIP wird erstellt …"));
+    const blob = await zip.generateAsync({ type: "blob" }, (m) => setProgress(Math.round(m.percent), L("ZIP wird erstellt …")));
     return { blob, filename: zipName };
   }
 
@@ -724,42 +730,42 @@
       const base = baseName(state.files[0].file.name);
       const files = [];
       for (let g = 0; g < groups.length; g++) {
-        setProgress(Math.round((g / groups.length) * 100), `Teil ${g + 1} von ${groups.length} …`);
+        setProgress(Math.round((g / groups.length) * 100), L("Teil {a} von {b} …", { a: g + 1, b: groups.length }));
         const idx = groups[g];
         const label = idx.length === 1 ? `${idx[0] + 1}` : `${idx[0] + 1}-${idx[idx.length - 1] + 1}`;
         files.push({ name: `${base}_Seite_${label}.pdf`, blob: pdfBlob(await pagesToPdf(src, idx)) });
       }
       const res = await zipResult(files, `${base}_geteilt.zip`);
-      return { ...res, info: `${files.length} ${files.length === 1 ? "Datei" : "Dateien"} erstellt.` };
+      return { ...res, info: files.length === 1 ? L("1 Datei erstellt.") : L("{n} Dateien erstellt.", { n: files.length }) };
     },
 
     // ----- Seiten entfernen
     async "remove-pages"(v) {
       const remove = new Set(selectedIndices(v));
-      if (!remove.size) throw Object.assign(new Error(), { userMessage: "Wähle mindestens eine Seite zum Entfernen aus." });
-      if (remove.size >= state.pageCount) throw Object.assign(new Error(), { userMessage: "Du kannst nicht alle Seiten entfernen." });
+      if (!remove.size) throw Object.assign(new Error(), { userMessage: L("Wähle mindestens eine Seite zum Entfernen aus.") });
+      if (remove.size >= state.pageCount) throw Object.assign(new Error(), { userMessage: L("Du kannst nicht alle Seiten entfernen.") });
       const src = await loadPdfLib(await sourceBytes());
       const keep = [...Array(state.pageCount).keys()].filter((i) => !remove.has(i));
       const bytes = await pagesToPdf(src, keep);
       return {
         blob: pdfBlob(bytes),
         filename: `${baseName(state.files[0].file.name)}_bearbeitet.pdf`,
-        info: `${remove.size} ${remove.size === 1 ? "Seite" : "Seiten"} entfernt, ${keep.length} übrig.`,
+        info: L(remove.size === 1 ? "1 Seite entfernt, {k} übrig." : "{n} Seiten entfernt, {k} übrig.", { n: remove.size, k: keep.length }),
       };
     },
 
     // ----- Seiten extrahieren
     async "extract-pages"(v) {
       const idx = selectedIndices(v);
-      if (!idx.length) throw Object.assign(new Error(), { userMessage: "Wähle mindestens eine Seite aus." });
+      if (!idx.length) throw Object.assign(new Error(), { userMessage: L("Wähle mindestens eine Seite aus.") });
       const src = await loadPdfLib(await sourceBytes());
       const base = baseName(state.files[0].file.name);
       if (v.output === "separate") {
         const files = [];
         for (const i of idx) files.push({ name: `${base}_Seite_${i + 1}.pdf`, blob: pdfBlob(await pagesToPdf(src, [i])) });
-        return { ...(await zipResult(files, `${base}_Seiten.zip`)), info: `${idx.length} Seiten extrahiert.` };
+        return { ...(await zipResult(files, `${base}_Seiten.zip`)), info: L("{n} Seiten extrahiert.", { n: idx.length }) };
       }
-      return { blob: pdfBlob(await pagesToPdf(src, idx)), filename: `${base}_Auszug.pdf`, info: `${idx.length} ${idx.length === 1 ? "Seite" : "Seiten"} extrahiert.` };
+      return { blob: pdfBlob(await pagesToPdf(src, idx)), filename: `${base}_Auszug.pdf`, info: idx.length === 1 ? L("1 Seite extrahiert.") : L("{n} Seiten extrahiert.", { n: idx.length }) };
     },
 
     // ----- Organisieren
@@ -768,19 +774,19 @@
       const src = await loadPdfLib(await sourceBytes());
       const rotations = Object.fromEntries(order.map((p) => [p.index, p.rotation]));
       const bytes = await pagesToPdf(src, order.map((p) => p.index), rotations);
-      return { blob: pdfBlob(bytes), filename: `${baseName(state.files[0].file.name)}_organisiert.pdf`, info: `${order.length} Seiten gespeichert.` };
+      return { blob: pdfBlob(bytes), filename: `${baseName(state.files[0].file.name)}_organisiert.pdf`, info: L("{n} Seiten gespeichert.", { n: order.length }) };
     },
 
     // ----- Drehen
     async rotate() {
       const rotated = state.pages.filter((p) => p.rotation);
-      if (!rotated.length) throw Object.assign(new Error(), { userMessage: "Klicke zuerst auf die Seiten, die gedreht werden sollen, oder nutze „Alle nach rechts“." });
+      if (!rotated.length) throw Object.assign(new Error(), { userMessage: L("Klicke zuerst auf die Seiten, die gedreht werden sollen, oder nutze „Alle nach rechts“.") });
       const src = await loadPdfLib(await sourceBytes());
       src.getPages().forEach((page, i) => {
         const extra = state.pages[i].rotation;
         if (extra) page.setRotation(PDFLib.degrees((page.getRotation().angle + extra) % 360));
       });
-      return { blob: pdfBlob(await src.save()), filename: `${baseName(state.files[0].file.name)}_gedreht.pdf`, info: `${rotated.length} ${rotated.length === 1 ? "Seite" : "Seiten"} gedreht.` };
+      return { blob: pdfBlob(await src.save()), filename: `${baseName(state.files[0].file.name)}_gedreht.pdf`, info: rotated.length === 1 ? L("1 Seite gedreht.") : L("{n} Seiten gedreht.", { n: rotated.length }) };
     },
 
     // ----- Bilder in PDF
@@ -788,14 +794,14 @@
       const doc = await PDFLib.PDFDocument.create();
       const margin = Number(v.margin || 0);
       for (let i = 0; i < state.files.length; i++) {
-        setProgress(Math.round((i / state.files.length) * 100), `Bild ${i + 1} von ${state.files.length} …`);
+        setProgress(Math.round((i / state.files.length) * 100), L("Bild {a} von {b} …", { a: i + 1, b: state.files.length }));
         const { file } = state.files[i];
         let img;
         try {
           const e = await imageToEmbeddable(file);
           img = e.type === "png" ? await doc.embedPng(e.bytes) : await doc.embedJpg(e.bytes);
         } catch {
-          throw Object.assign(new Error(), { userMessage: `„${file.name}“ konnte nicht gelesen werden.` });
+          throw Object.assign(new Error(), { userMessage: L("„{name}“ konnte nicht gelesen werden.", { name: file.name }) });
         }
         let pw, ph;
         if (v.pageSize === "fit") {
@@ -816,7 +822,7 @@
         page.drawImage(img, { x: (pw - w) / 2, y: (ph - h) / 2, width: w, height: h });
       }
       const name = state.files.length === 1 ? baseName(state.files[0].file.name) : "Bilder";
-      return { blob: pdfBlob(await doc.save()), filename: `${name}.pdf`, info: `${state.files.length} ${state.files.length === 1 ? "Bild" : "Bilder"} in eine PDF umgewandelt.` };
+      return { blob: pdfBlob(await doc.save()), filename: `${name}.pdf`, info: state.files.length === 1 ? L("1 Bild in eine PDF umgewandelt.") : L("{n} Bilder in eine PDF umgewandelt.", { n: state.files.length }) };
     },
 
     // ----- PDF in Bilder
@@ -828,7 +834,7 @@
       const base = baseName(state.files[0].file.name);
       const files = [];
       for (let i = 1; i <= doc.numPages; i++) {
-        setProgress(Math.round(((i - 1) / doc.numPages) * 100), `Seite ${i} von ${doc.numPages} …`);
+        setProgress(Math.round(((i - 1) / doc.numPages) * 100), L("Seite {a} von {b} …", { a: i, b: doc.numPages }));
         const page = await doc.getPage(i);
         const base1 = page.getViewport({ scale: 1 });
         let scale = dpi / 72;
@@ -846,7 +852,7 @@
         canvas.width = canvas.height = 0; // Speicher freigeben
         files.push({ name: `${base}_Seite_${String(i).padStart(String(doc.numPages).length, "0")}.${ext}`, blob });
       }
-      return { ...(await zipResult(files, `${base}_Bilder.zip`)), info: `${files.length} ${files.length === 1 ? "Bild" : "Bilder"} erstellt.` };
+      return { ...(await zipResult(files, `${base}_Bilder.zip`)), info: files.length === 1 ? L("1 Bild erstellt.") : L("{n} Bilder erstellt.", { n: files.length }) };
     },
 
     // ----- Seitenzahlen
@@ -857,7 +863,7 @@
       const start = parseInt(v.start, 10) || 0;
       const skip = Math.max(0, parseInt(v.skip, 10) || 0);
       const pages = doc.getPages();
-      if (skip >= pages.length) throw Object.assign(new Error(), { userMessage: "Es werden alle Seiten übersprungen – verringere „Erste Seiten ohne Zahl“." });
+      if (skip >= pages.length) throw Object.assign(new Error(), { userMessage: L("Es werden alle Seiten übersprungen – verringere „Erste Seiten ohne Zahl“.") });
       const last = start + (pages.length - skip) - 1;
       const [vert, horiz] = v.position.split("-");
       const margin = 28;
@@ -865,7 +871,7 @@
       pages.forEach((page, i) => {
         if (i < skip) return;
         const n = start + (i - skip);
-        const text = { n: `${n}`, "page-n": `Seite ${n}`, "n-of-total": `${n} / ${last}`, "page-n-of-total": `Seite ${n} von ${last}` }[v.format];
+        const text = { n: `${n}`, "page-n": L("Seite {n}", { n }), "n-of-total": `${n} / ${last}`, "page-n-of-total": L("Seite {n} von {t}", { n, t: last }) }[v.format];
         const tw = font.widthOfTextAtSize(text, size);
         const P = placer(page);
         const vx = horiz === "left" ? margin : horiz === "right" ? P.vw - margin - tw : (P.vw - tw) / 2;
@@ -873,20 +879,20 @@
         const { x, y } = P.map(vx, vy);
         page.drawText(text, { x, y, size, font, color: PDFLib.rgb(0.2, 0.22, 0.28), rotate: PDFLib.degrees(P.rot) });
       });
-      return { blob: pdfBlob(await doc.save()), filename: `${baseName(state.files[0].file.name)}_nummeriert.pdf`, info: `Seitenzahlen auf ${pages.length - skip} Seiten eingefügt.` };
+      return { blob: pdfBlob(await doc.save()), filename: `${baseName(state.files[0].file.name)}_nummeriert.pdf`, info: L("Seitenzahlen auf {n} Seiten eingefügt.", { n: pages.length - skip }) };
     },
 
     // ----- Wasserzeichen
     async watermark(v) {
       const text = (v.text || "").trim();
-      if (!text) throw Object.assign(new Error(), { userMessage: "Bitte gib einen Text für das Wasserzeichen ein." });
+      if (!text) throw Object.assign(new Error(), { userMessage: L("Bitte gib einen Text für das Wasserzeichen ein.") });
       const doc = await loadPdfLib(await sourceBytes());
       const font = await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
       let size = Number(v.size || 56);
       try {
         font.encodeText(text);
       } catch {
-        throw Object.assign(new Error(), { userMessage: "Der Text enthält Zeichen, die nicht unterstützt werden (z. B. Emojis). Erlaubt sind lateinische Buchstaben inkl. Umlaute." });
+        throw Object.assign(new Error(), { userMessage: L("Der Text enthält Zeichen, die nicht unterstützt werden (z. B. Emojis). Erlaubt sind lateinische Buchstaben inkl. Umlaute.") });
       }
       const [r, g, b] = COLORS[v.color] || COLORS.gray;
       const opacity = Number(v.opacity || 20) / 100;
@@ -923,7 +929,7 @@
           drawAt(P.vw / 2, P.vh / 2);
         }
       }
-      return { blob: pdfBlob(await doc.save()), filename: `${baseName(state.files[0].file.name)}_Wasserzeichen.pdf`, info: `Wasserzeichen auf ${pages.length} ${pages.length === 1 ? "Seite" : "Seiten"} eingefügt.` };
+      return { blob: pdfBlob(await doc.save()), filename: `${baseName(state.files[0].file.name)}_Wasserzeichen.pdf`, info: pages.length === 1 ? L("Wasserzeichen auf 1 Seite eingefügt.") : L("Wasserzeichen auf {n} Seiten eingefügt.", { n: pages.length }) };
     },
   };
 })();

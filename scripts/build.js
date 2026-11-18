@@ -42,63 +42,72 @@ for (const f of ["assets/style.css", "assets/site.js", "assets/tool.js", "assets
 }
 T.setBuildId(assetHash.digest("hex").slice(0, 8));
 
+// Seiten für jede Sprache und jede Fassung erzeugen:
+//   public/        Pro-Fassung Deutsch      public/en/, public/fr/        Pro-Fassung Englisch/Französisch
+//   public/_free/  kostenlose Fassung       public/_free/en/, _free/fr/   (der Server liefert _free zuerst, wenn PAYMENTS_ENABLED=false)
+const FREE = path.join(PUBLIC, "_free");
+fs.rmSync(FREE, { recursive: true, force: true });
+for (const l of ["en", "fr"]) fs.rmSync(path.join(PUBLIC, l), { recursive: true, force: true });
+const today = new Date().toISOString().slice(0, 10);
+
+function buildLang(lang, free) {
+  T.prepare({ lang, free });
+  const base = free ? FREE : PUBLIC;
+  const dir = lang === "de" ? "" : lang + "/";
+  const out = (rel, html) => write(dir + rel, html, base);
+  out("index.html", T.homePage());
+  for (const tool of T.tools) if (lang === "de" || T.availableIn(tool.slug, lang)) out(`${tool.slug}.html`, T.toolPage(tool));
+  out("404.html", T.notFound());
+  if (lang !== "de") return;
+  for (const tool of T.landingPages) out(`${tool.slug}.html`, T.toolPage(tool));
+  out("bewerbung.html", T.bewerbungHub());
+  out("impressum.html", T.impressum());
+  out("Datenschutz.html", T.datenschutz());
+  out("passwort-vergessen.html", T.forgotPage());
+  if (!free) {
+    out("preise.html", T.pricingPage());
+    out("agb.html", T.agbPage());
+    out("anmelden.html", T.loginPage());
+    out("konto.html", T.accountPage());
+  }
+}
+
+// Sitemap mit allen Sprachfassungen (hreflang), damit Google jedem Besucher die passende Sprache zeigt
+function sitemap(free) {
+  T.prepare({ lang: "de", free });
+  const slugs = [
+    ["", "1.0"],
+    ...T.tools.map((t) => [t.slug, "0.9"]),
+    ["bewerbung", "0.9"],
+    ...T.landingPages.map((t) => [t.slug, "0.8"]),
+    ...(free ? [] : [["preise", "0.6"], ["agb", "0.2"]]),
+    ["impressum", "0.2"],
+    ["Datenschutz", "0.2"],
+  ];
+  const entries = [];
+  for (const [slug, priority] of slugs) {
+    const langs = T.LANGS.filter((l) => T.availableIn(slug, l) && (l === "de" || !["bewerbung", "preise", "agb", "impressum", "Datenschutz"].includes(slug)) && (l === "de" || !T.landingPages.some((x) => x.slug === slug)));
+    const alt = langs.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${T.absUrl(slug, l)}"/>`).join("\n");
+    for (const l of langs) entries.push(`  <url>\n    <loc>${T.absUrl(slug, l)}</loc>\n${langs.length > 1 ? alt + "\n" : ""}    <lastmod>${today}</lastmod>\n    <priority>${priority}</priority>\n  </url>`);
+  }
+  write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.join("\n")}\n</urlset>\n`, free ? FREE : PUBLIC);
+}
+
 console.log("Seiten:");
-write("index.html", T.homePage());
-for (const tool of [...T.tools, ...T.landingPages]) write(`${tool.slug}.html`, T.toolPage(tool));
-write("bewerbung.html", T.bewerbungHub());
-write("impressum.html", T.impressum());
-write("Datenschutz.html", T.datenschutz());
-write("404.html", T.notFound());
-write("preise.html", T.pricingPage());
-write("agb.html", T.agbPage());
-write("anmelden.html", T.loginPage());
-write("konto.html", T.accountPage());
-write("passwort-vergessen.html", T.forgotPage());
+for (const lang of ["de", "en", "fr"]) buildLang(lang, false);
+console.log("Kostenlose Fassung (public/_free):");
+for (const lang of ["de", "en", "fr"]) buildLang(lang, true);
 
 console.log("SEO:");
-const today = new Date().toISOString().slice(0, 10);
-function sitemap(free, base) {
-  const urls = [
-    { loc: T.absUrl(""), priority: "1.0" },
-    ...T.tools.map((t) => ({ loc: T.absUrl(t.slug), priority: "0.9" })),
-    { loc: T.absUrl("bewerbung"), priority: "0.9" },
-    ...T.landingPages.map((t) => ({ loc: T.absUrl(t.slug), priority: "0.8" })),
-    ...(free ? [] : [{ loc: T.absUrl("preise"), priority: "0.6" }]),
-    { loc: T.absUrl("impressum"), priority: "0.2" },
-    ...(free ? [] : [{ loc: T.absUrl("agb"), priority: "0.2" }]),
-    { loc: T.absUrl("Datenschutz"), priority: "0.2" },
-  ];
-  write(
-    "sitemap.xml",
-    `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>${u.priority}</priority>\n  </url>`).join("\n")}
-</urlset>
-`,
-    base
-  );
-}
-sitemap(false, PUBLIC);
+sitemap(false);
+sitemap(true);
 // sw.js: Der alte Push-Werbe-Service-Worker meldet sich bei Besuchern, die ihn noch haben, selbst ab
 write("sw.js", `self.addEventListener("install", () => self.skipWaiting());\nself.addEventListener("activate", () => self.registration.unregister());\n`);
 // ads.txt: Pflicht für AdSense
 write("ads.txt", config.adsenseClient ? `google.com, ${config.adsenseClient.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n` : "");
 write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);
-
-// Kostenlose Fassung (PAYMENTS_ENABLED=false): nur die Seiten, die sich unterscheiden.
-// Der Server liefert sie vor den Pro-Seiten aus; alles andere kommt weiter aus /public.
-console.log("Kostenlose Fassung (public/_free):");
-const FREE = path.join(PUBLIC, "_free");
-fs.rmSync(FREE, { recursive: true, force: true });
-T.setFreeMode();
-write("index.html", T.homePage(), FREE);
-for (const tool of [...T.tools, ...T.landingPages]) write(`${tool.slug}.html`, T.toolPage(tool), FREE);
-write("bewerbung.html", T.bewerbungHub(), FREE);
-write("impressum.html", T.impressum(), FREE);
-write("Datenschutz.html", T.datenschutz(), FREE);
-write("404.html", T.notFound(), FREE);
-write("passwort-vergessen.html", T.forgotPage(), FREE);
-sitemap(true, FREE);
+if (process.env.I18N_DUMP) require("fs").writeFileSync(process.env.I18N_DUMP, JSON.stringify([...T.MISSING], null, 1));
+if (T.MISSING.size) console.log(`\n⚠ ${T.MISSING.size} Oberflächentexte ohne Übersetzung (werden auf Deutsch angezeigt):\n  ` + [...T.MISSING].slice(0, 40).join("\n  "));
 
 console.log("Bibliotheken:");
 copy("pdf-lib/dist/pdf-lib.min.js", "vendor/pdf-lib.min.js");
