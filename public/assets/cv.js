@@ -377,43 +377,139 @@
   }
 
   // ---------------------------------------------------------------- ATS-Check (im Browser, ohne KI)
+  // Jeder Punkt: erfüllt? Wenn nicht: warum wichtig, was genau fehlt, und Knöpfe, die es beheben
+  let lastPages = 0;
   function atsCheck(pages) {
+    lastPages = pages;
     const p = data.person;
-    const exp = data.sections.find((s) => s.type === "experience");
-    const edu = data.sections.find((s) => s.type === "education");
-    const sum = data.sections.find((s) => s.type === "summary");
+    const secIdx = (type) => data.sections.findIndex((x) => x.type === type);
+    const keyOf = (type) => (secIdx(type) >= 0 ? type + secIdx(type) : "person");
+    const sec = (type) => data.sections[secIdx(type)];
+    const exp = sec("experience"), edu = sec("education"), sum = sec("summary");
     const filled = (s) => s && !s.hidden && (s.items || []).some((i) => i.title || i.org);
-    const entries = data.sections
-      .filter((s) => !s.hidden && ["experience", "education", "projects"].includes(s.type))
-      .flatMap((s) => s.items || [])
-      .filter((i) => i.title || i.org);
-    const bad = entries.find((i) => (i.from && !DATE_OK.test(normalizeDate(i.from))) || (!i.current && i.to && !DATE_OK.test(normalizeDate(i.to))));
-    const badDate = !!bad;
-    const badLabel = bad ? `Datum bei „${bad.title || bad.org}“ prüfen: „${!DATE_OK.test(normalizeDate(bad.from)) && bad.from ? bad.from : bad.to}“ → bitte MM/JJJJ (z. B. 10/2025) oder JJJJ` : "";
-    const bullets = (exp?.items || []).filter((i) => (i.text || "").trim()).length;
-    const keyOf = (type) => {
-      const i = data.sections.findIndex((x) => x.type === type);
-      return i >= 0 ? type + i : "person";
-    };
-    const badSec = bad ? data.sections.findIndex((x) => (x.items || []).includes(bad)) : -1;
+    const name = (i) => i.title || i.org || "Eintrag";
+    const stations = data.sections.flatMap((s, si) => (!s.hidden && ["experience", "education", "projects"].includes(s.type) ? (s.items || []).map((it) => ({ it, key: s.type + si })) : [])).filter((x) => x.it.title || x.it.org);
+    const badDates = [];
+    for (const { it, key } of stations) {
+      if (it.from && !DATE_OK.test(normalizeDate(it.from))) badDates.push({ it, key, val: it.from });
+      if (!it.current && it.to && !DATE_OK.test(normalizeDate(it.to))) badDates.push({ it, key, val: it.to });
+    }
+    const expItems = (exp && !exp.hidden ? exp.items || [] : []).map((it) => ({ it, key: keyOf("experience") })).filter((x) => x.it.title || x.it.org);
+    const noText = expItems.filter((x) => !(x.it.text || "").trim());
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((p.email || "").trim());
+    const missing = [!emailOk && (p.email ? "gültige E-Mail-Adresse" : "E-Mail-Adresse"), !(p.phone || "").trim() && "Telefonnummer"].filter(Boolean);
+    const sumLen = sum && !sum.hidden ? (sum.text || "").trim().length : 0;
+    const go = (key, sel) => () => openCard(key, sel);
+
     const checks = [
-      [!!p.name.trim(), "Name angegeben", () => openCard("person")],
-      [/@/.test(p.email) && !!p.phone.trim(), "E-Mail und Telefon als Text im Lebenslauf", () => openCard("person", 'input[type="email"]')],
-      [!!(sum && !sum.hidden && (sum.text || "").trim().length >= 80), "Kurzprofil mit 2–4 Sätzen", () => openCard(keyOf("summary"))],
-      [filled(exp) || filled(edu), "Berufserfahrung oder Ausbildung eingetragen", () => openCard(keyOf("experience"))],
-      [!badDate, badDate ? badLabel : "Einheitliches Datumsformat (MM/JJJJ oder JJJJ)", () => openCard(badSec >= 0 ? data.sections[badSec].type + badSec : keyOf("experience"), "input.is-bad")],
-      [!filled(exp) || bullets >= Math.min(2, (exp.items || []).length), "Aufgaben und Erfolge bei den Stationen beschrieben", () => openCard(keyOf("experience"), "textarea")],
-      [pages > 0 && pages <= 2, "Höchstens zwei Seiten – tipp: Vorlage „Kompakt“ oder kürzere Stichpunkte", () => setStep("design")],
+      {
+        ok: !!p.name.trim(),
+        title: "Name angegeben",
+        help: "Dein vollständiger Name gehört ganz oben in den Lebenslauf – als Text, nicht als Bild.",
+        actions: [["Name eintragen", go("person")]],
+      },
+      {
+        ok: !missing.length,
+        title: "E-Mail und Telefon als Text im Lebenslauf",
+        help: `Ein ATS liest Kontaktdaten nur, wenn sie als Text dastehen. Es fehlt: ${missing.join(" und ")}.`,
+        actions: [[`${(missing[0] || "Kontaktdaten").replace(/^./, (c) => c.toUpperCase())} eintragen`, go("person", !emailOk ? 'input[type="email"]' : 'input[type="tel"]')]],
+      },
+      {
+        ok: sumLen >= 80,
+        title: "Kurzprofil mit 2–4 Sätzen",
+        help: sum && sum.hidden
+          ? "Dein Profil ist ausgeblendet. Ein kurzes Profil oben im Lebenslauf zeigt Personalern und ATS sofort, wer du bist und was du suchst."
+          : `Schreibe 2–4 Sätze: Wer bist du, was kannst du, was suchst du? ${sumLen ? `Bisher sind es nur ${sumLen} Zeichen.` : "Bisher ist das Profil leer."}`,
+        actions: [
+          ...(sum && sum.hidden ? [["Profil einblenden", () => { sum.hidden = false; openCard(keyOf("summary")); changed(); }]] : [["Selbst schreiben", go(keyOf("summary"), "textarea")]]),
+          ...(stations.length ? [["Vorschlag mit KI", suggestSummary, true]] : []),
+        ],
+      },
+      {
+        ok: filled(exp) || filled(edu),
+        title: "Berufserfahrung oder Ausbildung eingetragen",
+        help: "Ohne Stationen kann ein ATS deinen Werdegang nicht erkennen. Trage mindestens deine Ausbildung oder dein Studium ein – Praktika und Nebenjobs zählen als Berufserfahrung.",
+        actions: [["Berufserfahrung eintragen", go(keyOf("experience"))], ["Ausbildung eintragen", go(keyOf("education"))]],
+      },
+      {
+        ok: !badDates.length,
+        title: "Einheitliches Datumsformat (MM/JJJJ oder JJJJ)",
+        help: `Diese ${badDates.length === 1 ? "Angabe konnte" : "Angaben konnten"} nicht automatisch umgewandelt werden. Schreibe Monat und Jahr, z. B. „10/2025“, oder nur das Jahr, z. B. „2025“. Für eine laufende Station setze das Häkchen „bis heute“.`,
+        actions: badDates.map((b) => [`„${b.val}“ bei ${name(b.it)} ändern`, go(b.key, "input.is-bad")]),
+      },
+      {
+        ok: !expItems.length || expItems.length - noText.length >= Math.min(2, expItems.length),
+        title: "Aufgaben und Erfolge bei den Stationen beschrieben",
+        help: "Beschreibe bei jeder Station in 2–4 Stichpunkten, was du gemacht und erreicht hast – am besten mit Ergebnis, z. B. „- Monatsberichte mit Python automatisiert“. Das sind die Stellen, an denen ein ATS deine Keywords findet.",
+        actions: noText.map((x) => [`${name(x.it)} beschreiben`, () => openCard(x.key, "textarea")]),
+      },
+      {
+        ok: pages > 0 && pages <= 2,
+        title: "Höchstens zwei Seiten",
+        help: `Dein Lebenslauf hat ${pages} Seiten. Personaler lesen meist nur ein bis zwei Seiten – kürze ältere Stationen oder wähle eine kompaktere Vorlage.`,
+        actions: [
+          ...(data.template !== "kompakt" ? [["Vorlage „Kompakt“ verwenden", () => { data.template = "kompakt"; renderForm(); changed(); }, true]] : []),
+          ...(data.photo ? [["Foto entfernen", () => { data.photo = null; renderForm(); changed(); }]] : []),
+          ...data.sections.map((s, si) => (["projects", "extra"].includes(s.type) && !s.hidden && ((s.items || []).length || (s.text || "").trim()) ? [`„${s.title || SECTION_NAMES[s.type]}“ ausblenden`, () => { s.hidden = true; renderForm(); changed(); }] : null)).filter(Boolean),
+        ],
+      },
     ];
+
     const list = $("[data-ats]");
     list.textContent = "";
-    for (const [ok, label, go] of checks)
-      list.append(ok ? h("li", { class: "ok" }, label) : h("li", { class: "todo" }, h("button", { type: "button", onclick: go }, label)));
-    const score = checks.filter((c) => c[0]).length;
+    const open = checks.filter((c) => !c.ok);
+    for (const c of checks) {
+      if (c.ok) {
+        list.append(h("li", { class: "ok" }, c.title));
+        continue;
+      }
+      list.append(
+        h("li", { class: "todo" },
+          h("b", {}, c.title),
+          h("p", { class: "cv-fix__help" }, c.help),
+          c.actions.length ? h("div", { class: "cv-fix__actions" }, c.actions.map(([label, fn, main]) => h("button", { type: "button", class: "btn btn--sm " + (main ? "btn--primary" : "btn--ghost"), onclick: fn }, label))) : null
+        )
+      );
+    }
+    const score = checks.length - open.length;
     $("[data-ats-score]").textContent = `${score} von ${checks.length}`;
+    $("[data-ats-hint]").textContent = open.length ? `Noch ${open.length} ${open.length === 1 ? "Punkt" : "Punkte"} offen – so behebst du ${open.length === 1 ? "ihn" : "sie"}:` : "Alles erfüllt – dein Lebenslauf ist gut für ATS lesbar.";
     const badge = $("[data-ats-badge]");
     badge.textContent = `${score}/${checks.length}`;
     badge.classList.toggle("is-ok", score === checks.length);
+    if (afterImport) {
+      afterImport = false;
+      if (open.length)
+        notice(`Import fertig. ${open.length} ${open.length === 1 ? "Punkt ist" : "Punkte sind"} im ATS-Check noch offen – bitte prüfe außerdem alle Angaben, die KI kann sich beim Zuordnen irren.`, "ok", ["Offene Punkte beheben", () => setStep("optimize")]);
+    }
+  }
+  let afterImport = false;
+
+  // Kurzprofil-Vorschlag aus dem Lebenslauf (KI, nur vorhandene Angaben)
+  async function suggestSummary(ev) {
+    const btn = ev.currentTarget;
+    const s = data.sections.find((x) => x.type === "summary");
+    if (!s) return;
+    btn.disabled = true;
+    btn.textContent = "Wird geschrieben …";
+    try {
+      const j = await aiPost("/api/ai/cv-summary", { cvText: cvText(), lang: data.lang || "de" });
+      const fields = [{ id: "summary", obj: s, key: "text", text: s.text || "" }];
+      $("[data-review-title]").textContent = "Vorschlag für dein Kurzprofil";
+      const chosen = changeList($("[data-changes]"), [{ id: "summary", before: s.text || "", after: j.text }]);
+      const dlg = $("[data-review]");
+      dlg.onclose = () => {
+        if (dlg.returnValue !== "ok") return;
+        s.hidden = false;
+        applyChanges(fields, chosen());
+      };
+      dlg.showModal();
+    } catch (e) {
+      fail(e);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Vorschlag mit KI";
+    }
   }
 
   // ---------------------------------------------------------------- Vorschau
@@ -525,6 +621,7 @@
       renderForm();
       changed();
       notice(j.source === "ai" ? "Import fertig. Bitte prüfe alle Angaben – die KI überträgt nur, was im Lebenslauf steht, kann sich aber beim Zuordnen irren." : "Entwurf geöffnet.", "ok");
+      afterImport = true; // nach der nächsten Vorschau: offene ATS-Punkte nennen
     } catch (e) {
       notice("", "");
       showError(e.message);
@@ -555,9 +652,10 @@
   }
 
   // ---------------------------------------------------------------- Hinweise
-  function notice(msg, kind) {
+  function notice(msg, kind, action) {
     const el = $("[data-notice]");
     el.textContent = msg;
+    if (action) el.append(" ", h("button", { type: "button", class: "btn btn--sm btn--primary", onclick: action[1] }, action[0]));
     el.className = "cv-notice" + (kind ? " cv-notice--" + kind : "");
     el.hidden = !msg;
   }

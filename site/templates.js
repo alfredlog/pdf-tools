@@ -632,8 +632,8 @@ function cvWorkspace(t) {
           <div class="cv-pane" data-pane="optimize" hidden>
             <div class="cv-ats">
               <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
+              <p class="cv-ats__hint" data-ats-hint></p>
               <ul data-ats></ul>
-              <p class="cv-ats__hint">Klicke auf einen offenen Punkt, um direkt zum passenden Feld zu springen.</p>
             </div>
             <h3 class="cv-pane__title">KI-Assistent</h3>
             <div class="cv-aigrid">

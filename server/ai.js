@@ -545,6 +545,30 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
     }
   });
 
+  // Kurzprofil aus dem Lebenslauf vorschlagen (kostenlos wie die Rechtschreibprüfung, mit Stundenlimit)
+  r.post("/cv-summary", ready, cvLimiter, cvJson, async (req, res, next) => {
+    try {
+      const cvText = String(req.body.cvText || "").trim().slice(0, 30000);
+      if (cvText.length < 80) throw new ApiError("Trage zuerst ein paar Stationen ein – das Profil wird daraus geschrieben.");
+      const lang = { de: "Deutsch", en: "Englisch", fr: "Französisch" }[req.body.lang] || "Deutsch";
+      const out = parseJson(
+        await chat(
+          [
+            { role: "system", content: `Schreibe für diesen Lebenslauf ein Kurzprofil auf ${lang}: 2 bis 4 Sätze, 250 bis 450 Zeichen, ohne Ich-Floskeln wie „Ich bin ein motivierter …“. Inhalt: aktuelle Rolle oder Studium, wichtigste Erfahrungen und Kenntnisse, was gesucht wird (nur falls aus dem Lebenslauf erkennbar). ${NO_INVENT} Antworte nur mit JSON: {"text":"…"}` },
+            { role: "user", content: cvText },
+          ],
+          { json: true, maxTokens: 600 }
+        )
+      );
+      const text = str(out.text, 900);
+      const known = new Set(numbersOf(cvText));
+      if (!text || !numbersOf(text).every((n) => known.has(n))) throw new ApiError("Der Vorschlag war nicht verwendbar. Bitte versuche es noch einmal.", 502);
+      res.json({ text });
+    } catch (e) {
+      next(e);
+    }
+  });
+
   // Lebenslauf übersetzen (Deutsch ↔ Englisch)
   r.post("/cv-translate", ready, ...pro, cvLimiter, cvJson, async (req, res, next) => {
     try {

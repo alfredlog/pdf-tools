@@ -807,7 +807,6 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .cv-aicard:hover { border-color: var(--tc); }
 .cv-aicard:disabled { opacity: .6; cursor: wait; }
 .cv-pane .cv-ats { margin-bottom: 18px; }
-.cv-ats li.todo button { border: 0; background: none; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
 .cv-ats__hint { margin: 8px 0 0 !important; font-size: .8rem; color: var(--muted, #5b6478); display: block !important; }
 .cv-dlgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .cv-dlcard { display: grid; gap: 4px; text-align: left; padding: 18px; border: 1px solid var(--line-2); border-radius: 14px; background: #fff; font: inherit; cursor: pointer; text-decoration: none; color: inherit; }
@@ -830,3 +829,10 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 }
 @media (max-width: 560px) { .cv-welcome__cards { grid-template-columns: minmax(0, 1fr); } }
 .cv-trlangs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .cv-trlangs button:disabled { opacity: .4; cursor: default; }
+.cv-ats li.todo { display: grid; gap: 6px; padding: 10px 12px; margin: 4px 0; border: 1px solid #f3d9a4; border-radius: 10px; background: #fffbeb; color: inherit; }
+.cv-ats li.todo::before { display: none; }
+.cv-ats li.todo b { color: #8a5a00; }
+.cv-ats li.todo b::before { content: "○ "; }
+.cv-fix__help { margin: 0 !important; display: block !important; font-size: .9rem; color: #5b4a1f; }
+.cv-fix__actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.cv-notice .btn { margin-left: 8px; vertical-align: middle; }
