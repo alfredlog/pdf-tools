@@ -30,8 +30,13 @@ function T(text, vars) {
   return vars ? out.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m)) : out;
 }
 const BASE_TOOLS = new Map(tools.map((t) => [t.slug, structuredClone(t)]));
+const RAW_LANDINGS = require("./landings").landings;
+// Artikel: [[Überschrift, Absatz, …], …] → [{ h, p: [...] }]
+const toArticle = (a) => (a || []).map((x) => (Array.isArray(x) ? { h: x[0], p: x.slice(1) } : x));
 function availableIn(slug, lang) {
-  if (lang === "de" || slug === "" || slug === "404") return true;
+  if (lang === "de" || slug === "" || slug === "404" || slug === "bewerbung") return true;
+  const land = RAW_LANDINGS.find((l) => l.slug === slug);
+  if (land) return !!(I18N[lang].landings || {})[slug] && availableIn(land.base, lang);
   const b = BASE_TOOLS.get(slug);
   return !!(b && I18N[lang].tools[slug] && !NOT_YET.has(b.ui.mode));
 }
@@ -44,7 +49,7 @@ const absUrl = (slug, lang = LANG) => config.domain + url(slug, lang);
 const bySlug = Object.fromEntries(tools.map((t) => [t.slug, t]));
 
 // Ratgeber-Seiten (site/landings.js): gleiche Oberfläche wie das Basis-Werkzeug, eigene Texte für Google
-const landingPages = require("./landings").landings.map((l) => {
+function buildLanding(l) {
   const base = bySlug[l.base];
   if (!base) throw new Error(`Ratgeber ${l.slug}: Werkzeug ${l.base} fehlt`);
   const ui = { ...base.ui };
@@ -57,8 +62,22 @@ const landingPages = require("./landings").landings.map((l) => {
     });
   }
   return { ...base, ...l, ui, short: l.guide, isNew: false, landingOf: base.slug, promo: base.promo };
-});
+}
+// Ratgeber in der aktuellen Sprache: deutsches Original + Übersetzung (gleiche Objekte, damit bySlug stimmt)
+function localLanding(raw) {
+  const tr = LANG === "de" ? null : (I18N[LANG].landings || {})[raw.slug];
+  if (!tr) return raw;
+  return { ...raw, ...tr, article: toArticle(tr.article) };
+}
+const landingPages = RAW_LANDINGS.map((l) => buildLanding(l));
 for (const l of landingPages) bySlug[l.slug] = l;
+function refreshLandings() {
+  RAW_LANDINGS.forEach((raw, i) => {
+    const fresh = buildLanding(localLanding(raw));
+    for (const k of Object.keys(landingPages[i])) delete landingPages[i][k];
+    Object.assign(landingPages[i], fresh);
+  });
+}
 const catById = Object.fromEntries(categories.map((c) => [c.id, c]));
 
 /** „A“, „B“ und „C“ – die Namen aller Pro-Werkzeuge (für Texte) */
@@ -90,7 +109,7 @@ function applyTranslation(t, tr) {
   for (const b of t.ui.toolbar || []) if (tr.toolbar && tr.toolbar[b.action]) b.label = tr.toolbar[b.action];
   if (tr.steps) t.steps = tr.steps;
   if (tr.faq) t.faq = tr.faq;
-  t.article = tr.article || []; // lange SEO-Texte folgen in Phase 2
+  t.article = toArticle(tr.article || (I18N[LANG].articles || {})[t.slug]);
   if (t.promo && tr.promo) t.promo = { ...t.promo, ...tr.promo };
   t.free = tr.free || (t.free ? {} : undefined);
 }
@@ -106,7 +125,7 @@ function prepare({ lang = "de", free = false } = {}) {
   categories.forEach((c, i) => {
     Object.assign(c, BASE_CATS[i], lang === "de" ? {} : I18N[lang].cats[c.id] || {});
   });
-  if (!free) return;
+  if (free)
   for (const t of tools) {
     if (!t.pro && !t.free) continue;
     t.pro = false;
@@ -116,6 +135,7 @@ function prepare({ lang = "de", free = false } = {}) {
     t.steps = t.steps.map((st, i) => (f.steps && f.steps[i]) || st);
     t.faq = t.faq.map((q, i) => (f.faq && f.faq[i]) || q);
   }
+  refreshLandings();
 }
 function setFreeMode() {
   prepare({ lang: LANG, free: true });
@@ -255,7 +275,7 @@ function megaMenu() {
   return categories
     .map(
       (c) => `<div class="mega__col">
-          <p class="mega__cat mega__cat--${c.color}">${c.hub && LANG === "de" ? `<a href="${url(c.hub)}">${esc(c.name)}</a>` : esc(c.name)}</p>
+          <p class="mega__cat mega__cat--${c.color}">${c.hub ? `<a href="${url(c.hub)}">${esc(c.name)}</a>` : esc(c.name)}</p>
           <ul>${shown()
             .filter((t) => t.cat === c.id)
             .map((t) => `<li><a href="${url(t.slug)}">${esc(t.name)}</a></li>`)
@@ -400,7 +420,7 @@ function homePage() {
     <h3 class="tgroup__title tgroup__title--${c.color}">${esc(c.name)}</h3>
     <ul class="tgrid">
       ${list.filter((t) => t.cat === c.id).map(toolCard).join("\n      ")}
-    </ul>${c.hub && LANG === "de" ? `\n    <p class="tgroup__more"><a href="${url(c.hub)}">Alles rund um Bewerbung und Lebenslauf: Ratgeber, Vorlagen und Tipps →</a></p>` : ""}
+    </ul>${c.hub ? `\n    <p class="tgroup__more"><a href="${url(c.hub)}">${T("Alles rund um Bewerbung und Lebenslauf: Ratgeber, Vorlagen und Tipps →")}</a></p>` : ""}
   </div>`
     )
     .join("\n  ")}
@@ -924,72 +944,72 @@ function promoBox(p) {
 // Übersichtsseite „Bewerbung & Lebenslauf“: alle Werkzeuge und Ratgeber an einem Ort (stärkt die Seiten gegenseitig)
 function bewerbungHub() {
   const own = tools.filter((t) => t.cat === "bewerbung");
-  const more = ["merge", "compress", "jpg-to-pdf", "heic-to-pdf", "docx-to-pdf", "ocr"].map((s) => bySlug[s]).filter(Boolean);
-  const guides = (re) => landingPages.filter((g) => re.test(g.slug));
+  const more = ["merge", "compress", "jpg-to-pdf", "heic-to-pdf", "docx-to-pdf", "ocr"].map((s) => bySlug[s]).filter((t) => t && availableIn(t.slug, LANG));
+  const guides = (re) => landingPages.filter((g) => re.test(g.slug) && availableIn(g.slug, LANG));
   const guideList = (list) => `<ul class="hub-guides">${list.map((g) => `<li><a href="${url(g.slug)}"><b>${esc(g.guide)}</b><span>${esc(g.description)}</span></a></li>`).join("")}</ul>`;
   const faq = [
-    ["Was gehört in eine vollständige Bewerbung?", "Anschreiben, Lebenslauf und die passenden Nachweise: Arbeitszeugnisse, Abschlusszeugnisse, Zertifikate. Ein Deckblatt ist optional. Online wird alles meist als eine einzige PDF verschickt."],
-    ["Ist ein Lebenslauf mit PDF Libre ATS-freundlich?", "Ja. Die Vorlagen sind einspaltig, enthalten echten Text mit eingebetteten Schriften und übliche Überschriften, sodass Bewerbermanagementsysteme alle Angaben richtig lesen."],
-    ["Was kostet das?", FREE ? "Alle Werkzeuge für die Bewerbung sind kostenlos und ohne Anmeldung nutzbar." : "Lebenslauf, Anschreiben, Bewerbungsmappe und alle PDF-Werkzeuge sind kostenlos. Nur einige KI-Funktionen (Formulierungen verbessern, Abgleich mit der Stellenanzeige, KI-Anschreiben, Übersetzung) gehören zu PDF Libre Pro."],
-    ["Werden meine Bewerbungsunterlagen gespeichert?", "Nein. Dateien und Angaben werden nur verarbeitet und direkt danach gelöscht. Dein Lebenslauf-Entwurf bleibt nur in deinem Browser."],
+    [T("Was gehört in eine vollständige Bewerbung?"), T("Anschreiben, Lebenslauf und die passenden Nachweise: Arbeitszeugnisse, Abschlusszeugnisse, Zertifikate. Ein Deckblatt ist optional. Online wird alles meist als eine einzige PDF verschickt.")],
+    [T("Ist ein Lebenslauf mit PDF Libre ATS-freundlich?"), T("Ja. Die Vorlagen sind einspaltig, enthalten echten Text mit eingebetteten Schriften und übliche Überschriften, sodass Bewerbermanagementsysteme alle Angaben richtig lesen.")],
+    [T("Was kostet das?"), FREE ? T("Alle Werkzeuge für die Bewerbung sind kostenlos und ohne Anmeldung nutzbar.") : T("Lebenslauf, Anschreiben, Bewerbungsmappe und alle PDF-Werkzeuge sind kostenlos. Nur einige KI-Funktionen (Formulierungen verbessern, Abgleich mit der Stellenanzeige, KI-Anschreiben, Übersetzung) gehören zu PDF Libre Pro.")],
+    [T("Werden meine Bewerbungsunterlagen gespeichert?"), T("Nein. Dateien und Angaben werden nur verarbeitet und direkt danach gelöscht. Dein Lebenslauf-Entwurf bleibt nur in deinem Browser.")],
   ];
   const jsonLd = [
-    { "@context": "https://schema.org", "@type": "CollectionPage", name: "Bewerbung & Lebenslauf – " + config.name, url: absUrl("bewerbung"), inLanguage: "de-DE" },
-    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: config.name, item: config.domain + "/" }, { "@type": "ListItem", position: 2, name: "Bewerbung & Lebenslauf", item: absUrl("bewerbung") }] },
+    { "@context": "https://schema.org", "@type": "CollectionPage", name: catById.bewerbung.name + " – " + config.name, url: absUrl("bewerbung"), inLanguage: LOCALES[LANG].replace("_", "-") },
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: config.name, item: absUrl("") }, { "@type": "ListItem", position: 2, name: catById.bewerbung.name, item: absUrl("bewerbung") }] },
     faqLd(faq),
   ];
   const body = `<div class="tool-head wrap">
-  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>Bewerbung &amp; Lebenslauf</span></nav>
-  <h1>Bewerbung &amp; Lebenslauf – alles an einem Ort</h1>
-  <p class="tool-head__lead">Lebenslauf erstellen, an die Stellenanzeige anpassen, Anschreiben schreiben und alles zu einer Bewerbungsmappe zusammenfügen – kostenlos, ohne Anmeldung und ATS-freundlich.</p>
+  <nav class="crumbs" aria-label="${T("Brotkrümelnavigation")}"><a href="${url("")}">${T("Startseite")}</a><span aria-hidden="true">/</span><span>${esc(catById.bewerbung.name)}</span></nav>
+  <h1>${T("Bewerbung &amp; Lebenslauf – alles an einem Ort")}</h1>
+  <p class="tool-head__lead">${T("Lebenslauf erstellen, an die Stellenanzeige anpassen, Anschreiben schreiben und alles zu einer Bewerbungsmappe zusammenfügen – kostenlos, ohne Anmeldung und ATS-freundlich.")}</p>
 </div>
 
 <section class="wrap" aria-labelledby="hub-tools">
-  <h2 id="hub-tools" class="visually-hidden">Werkzeuge für die Bewerbung</h2>
+  <h2 id="hub-tools" class="visually-hidden">${T("Werkzeuge für die Bewerbung")}</h2>
   <ol class="hub-flow">
     ${own
       .slice()
       .sort((a, b) => ["lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe"].indexOf(a.slug) - ["lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe"].indexOf(b.slug))
       .map((t, i) => `<li><a href="${url(t.slug)}" class="hub-step"><span class="hub-step__n">${i + 1}</span>${toolIcon(t, 40)}<b>${esc(t.name)}</b><span>${esc(t.short)}</span></a></li>`)
       .join("\n    ")}
-  </ol>
+  </ol>${LANG === "de" ? "" : `\n  <p class="hub-note">${T("Der Lebenslauf-Generator und das Anschreiben-Werkzeug haben im Moment eine deutsche Oberfläche – sie erstellen aber schon Lebensläufe auf Deutsch und Französisch. Englisch und Französisch als Oberfläche folgen bald.")}</p>`}
 </section>
 
 <section class="wrap article">
-  <h2>In vier Schritten zur fertigen Bewerbung</h2>
-  <p>Eine überzeugende Bewerbung besteht heute fast immer aus einer einzigen PDF-Datei: Anschreiben, Lebenslauf und Zeugnisse – sauber sortiert, gut lesbar und klein genug für jedes Bewerbungsportal. Mit PDF Libre erstellst du zuerst deinen <a href="${url("lebenslauf-erstellen")}">Lebenslauf</a> (oder importierst deinen alten), <a href="${url("lebenslauf-anpassen")}">passt ihn an die Stellenanzeige an</a>, schreibst das <a href="${url("anschreiben-erstellen")}">Anschreiben</a> im gleichen Design und fügst zum Schluss alles mit der <a href="${url("bewerbungsmappe")}">Bewerbungsmappe</a> zusammen – automatisch unter 5 MB.</p>
-  <p>Egal ob Ausbildung, Praktikum, Werkstudentenjob, Minijob, duales Studium, Berufseinstieg oder Jobwechsel: Die Werkzeuge funktionieren am PC, am Mac und auf dem Handy und erzeugen Unterlagen, die sowohl Personaler als auch Bewerbermanagementsysteme (ATS) gut lesen können.</p>
+  <h2>${T("In vier Schritten zur fertigen Bewerbung")}</h2>
+  <p>${T('Eine überzeugende Bewerbung besteht heute fast immer aus einer einzigen PDF-Datei: Anschreiben, Lebenslauf und Zeugnisse – sauber sortiert, gut lesbar und klein genug für jedes Bewerbungsportal. Mit PDF Libre erstellst du zuerst deinen <a href="{cv}">Lebenslauf</a> (oder importierst deinen alten), <a href="{fit}">passt ihn an die Stellenanzeige an</a>, schreibst das <a href="{letter}">Anschreiben</a> im gleichen Design und fügst zum Schluss alles mit der <a href="{mappe}">Bewerbungsmappe</a> zusammen – automatisch unter 5 MB.', { cv: url("lebenslauf-erstellen"), fit: url("lebenslauf-anpassen"), letter: url("anschreiben-erstellen"), mappe: url("bewerbungsmappe") })}</p>
+  <p>${T("Egal ob Ausbildung, Praktikum, Werkstudentenjob, Minijob, duales Studium, Berufseinstieg oder Jobwechsel: Die Werkzeuge funktionieren am PC, am Mac und auf dem Handy und erzeugen Unterlagen, die sowohl Personaler als auch Bewerbermanagementsysteme (ATS) gut lesen können.")}</p>
 
-  <h2>Ratgeber: Lebenslauf</h2>
+  <h2>${T("Ratgeber: Lebenslauf")}</h2>
   ${guideList(guides(/^lebenslauf-(vorlage|ats|latex|werkstudent|pdf)$/))}
 
-  <h2>Ratgeber: Bewerbungsunterlagen</h2>
+  <h2>${T("Ratgeber: Bewerbungsunterlagen")}</h2>
   ${guideList(guides(/^(bewerbung-|zeugnisse)/))}
 
-  <h2>Checkliste vor dem Absenden</h2>
+  <h2>${T("Checkliste vor dem Absenden")}</h2>
   <ul>
-    <li>Lebenslauf auf die Stelle angepasst, wichtigste Erfahrung oben, Daten einheitlich (MM/JJJJ).</li>
-    <li>Anschreiben mit Namen des Ansprechpartners, richtiger Stelle und Referenznummer.</li>
-    <li>Alle Unterlagen in einer PDF, in der richtigen Reihenfolge, gut lesbar und unter der Größengrenze.</li>
-    <li>Sinnvoller Dateiname, z. B. „Bewerbung_Max_Mustermann.pdf“.</li>
-    <li>Rechtschreibung geprüft – am besten zusätzlich von einer zweiten Person.</li>
+    <li>${T("Lebenslauf auf die Stelle angepasst, wichtigste Erfahrung oben, Daten einheitlich (MM/JJJJ).")}</li>
+    <li>${T("Anschreiben mit Namen des Ansprechpartners, richtiger Stelle und Referenznummer.")}</li>
+    <li>${T("Alle Unterlagen in einer PDF, in der richtigen Reihenfolge, gut lesbar und unter der Größengrenze.")}</li>
+    <li>${T("Sinnvoller Dateiname, z. B. „Bewerbung_Max_Mustermann.pdf“.")}</li>
+    <li>${T("Rechtschreibung geprüft – am besten zusätzlich von einer zweiten Person.")}</li>
   </ul>
 </section>
 
 <section class="wrap faq" aria-labelledby="faq-title">
-  <h2 id="faq-title">Häufige Fragen</h2>
+  <h2 id="faq-title">${T("Häufige Fragen")}</h2>
   ${faqHtml(faq)}
 </section>
 
 <section class="wrap related" aria-labelledby="related-title">
-  <h2 id="related-title">Weitere hilfreiche Werkzeuge</h2>
+  <h2 id="related-title">${T("Weitere hilfreiche Werkzeuge")}</h2>
   <ul class="tgrid tgrid--compact">
       ${more.map(toolCard).join("\n      ")}
   </ul>
 </section>`;
   return page({
-    title: "Bewerbung & Lebenslauf – kostenlos online erstellen | PDF Libre",
-    description: "Alles für deine Bewerbung: Lebenslauf erstellen (ATS-freundlich), an die Stellenanzeige anpassen, Anschreiben schreiben und Bewerbungsmappe als PDF zusammenfügen. Kostenlos, ohne Anmeldung.",
+    title: T("Bewerbung & Lebenslauf – kostenlos online erstellen | PDF Libre"),
+    description: T("Alles für deine Bewerbung: Lebenslauf erstellen (ATS-freundlich), an die Stellenanzeige anpassen, Anschreiben schreiben und Bewerbungsmappe als PDF zusammenfügen. Kostenlos, ohne Anmeldung."),
     slug: "bewerbung",
     body,
     jsonLd,
@@ -1031,7 +1051,7 @@ function toolPage(t) {
   const related = t.related.filter((s) => LANG === "de" || availableIn(s, LANG)).map((s) => bySlug[s]).filter(Boolean);
   // Ratgeber zum selben Werkzeug verlinken (auf der Werkzeugseite und auf den Ratgeberseiten untereinander)
   const home = t.landingOf || t.slug;
-  const guides = LANG !== "de" ? [] : landingPages.filter((g) => (g.landingOf === home || g.related.includes(home)) && g.slug !== t.slug && !t.related.includes(g.slug));
+  const guides = landingPages.filter((g) => availableIn(g.slug, LANG) && (g.landingOf === home || g.related.includes(home)) && g.slug !== t.slug && !t.related.includes(g.slug));
 
   const body = `<div class="tool-head wrap">
   <nav class="crumbs" aria-label="${T("Brotkrümelnavigation")}"><a href="${url("")}">${T("Startseite")}</a><span aria-hidden="true">/</span>${
@@ -1065,7 +1085,7 @@ ${t.promo ? promoBox(t.promo) : ""}
 ${
   guides.length
     ? `<section class="wrap article guides" aria-labelledby="guides-title">
-  <h2 id="guides-title">Ratgeber</h2>
+  <h2 id="guides-title">${T("Ratgeber")}</h2>
   <ul>
     ${guides.map((g) => `<li><a href="${url(g.slug)}">${esc(g.guide)}</a></li>`).join("\n    ")}
   </ul>

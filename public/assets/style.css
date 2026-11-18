@@ -860,3 +860,4 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .langhint .wrap { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
 .langhint a { color: #fff; font-weight: 700; text-decoration: underline; }
 .langhint button { margin-left: auto; background: none; border: 0; color: #fff; font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 2px 6px; }
+.hub-note { margin-top: 14px; font-size: .95rem; color: var(--muted, #556); background: var(--bg); border-left: 3px solid var(--brand); padding: 10px 14px; border-radius: 6px; }

@@ -1,6 +1,7 @@
 // Français : textes de l'interface. Clé = texte allemand d'origine, valeur = traduction. Les {variables} restent.
 module.exports = {
   ui: {
+    ...require("./fr-hub"),
     "Ist PDF Libre kostenlos?": "PDF Libre est-il gratuit ?",
     "und": "et",
     "Fast alles: {n} Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur {pro} gehören zu PDF Libre Pro: {trial} Tage kostenlos testen, danach {price} im Monat oder {day} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.": "Presque tout : {n} outils comme fusionner, compresser, signer et convertir sont gratuits et sans inscription. Seuls {pro} font partie de PDF Libre Pro : {trial} jours d’essai gratuit, puis {price} par mois ou {day} pour un pass journée. Aucune publicité ni filigrane n’est jamais ajouté à vos fichiers.",
@@ -98,6 +99,8 @@ module.exports = {
     erechnung: { name: "Facture électronique", short: "E-facture" },
   },
   tools: require("./fr-tools"),
+  articles: require("./fr-articles"),
+  landings: require("./fr-landings"),
   js: {
     " – Details stehen am Ende der PDF.": " – les détails figurent à la fin du PDF.",
     "1 Bild erstellt.": "1 image créée.",

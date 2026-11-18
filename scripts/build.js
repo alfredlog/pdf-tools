@@ -58,9 +58,9 @@ function buildLang(lang, free) {
   out("index.html", T.homePage());
   for (const tool of T.tools) if (lang === "de" || T.availableIn(tool.slug, lang)) out(`${tool.slug}.html`, T.toolPage(tool));
   out("404.html", T.notFound());
-  if (lang !== "de") return;
-  for (const tool of T.landingPages) out(`${tool.slug}.html`, T.toolPage(tool));
+  for (const tool of T.landingPages) if (T.availableIn(tool.slug, lang)) out(`${tool.slug}.html`, T.toolPage(tool));
   out("bewerbung.html", T.bewerbungHub());
+  if (lang !== "de") return;
   out("impressum.html", T.impressum());
   out("Datenschutz.html", T.datenschutz());
   out("passwort-vergessen.html", T.forgotPage());
@@ -86,7 +86,7 @@ function sitemap(free) {
   ];
   const entries = [];
   for (const [slug, priority] of slugs) {
-    const langs = T.LANGS.filter((l) => T.availableIn(slug, l) && (l === "de" || !["bewerbung", "preise", "agb", "impressum", "Datenschutz"].includes(slug)) && (l === "de" || !T.landingPages.some((x) => x.slug === slug)));
+    const langs = T.LANGS.filter((l) => T.availableIn(slug, l) && (l === "de" || !["preise", "agb", "impressum", "Datenschutz"].includes(slug)));
     const alt = langs.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${T.absUrl(slug, l)}"/>`).join("\n");
     for (const l of langs) entries.push(`  <url>\n    <loc>${T.absUrl(slug, l)}</loc>\n${langs.length > 1 ? alt + "\n" : ""}    <lastmod>${today}</lastmod>\n    <priority>${priority}</priority>\n  </url>`);
   }
