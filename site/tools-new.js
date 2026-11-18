@@ -664,7 +664,7 @@ module.exports = [
     lead: "Fülle das Formular aus, wähle eine Vorlage und sieh sofort, wie dein Lebenslauf aussieht. Die PDF ist so aufgebaut, dass Bewerbermanagementsysteme (ATS) jede Angabe richtig lesen.",
     ui: { mode: "cv", endpoint: "/api/cv/pdf" },
     steps: [
-      ["Angaben eintragen", "Name, Kontaktdaten, Berufserfahrung, Ausbildung, Kenntnisse und Sprachen – oder „Beispiel laden“ und anpassen."],
+      ["Angaben eintragen oder importieren", "Fülle das Formular aus, lade ein Beispiel – oder importiere deinen bisherigen Lebenslauf als PDF oder Word-Datei. Die KI überträgt alle Angaben automatisch ins Formular."],
       ["Vorlage wählen", "Modern, Klassisch, Akademisch im LaTeX-Stil oder Kompakt. Farbe und Sprache (Deutsch/Englisch) stellst du oben ein."],
       ["Vorschau prüfen", "Rechts siehst du live die fertige PDF und einen ATS-Check mit Hinweisen, was noch fehlt."],
       ["PDF herunterladen", "Lade den Lebenslauf herunter. Mit „Entwurf speichern“ bekommst du zusätzlich eine kleine Datei, mit der du ihn später weiterbearbeitest."],
@@ -691,6 +691,13 @@ module.exports = [
         ],
       },
       {
+        h: "Alten Lebenslauf importieren und mit KI korrigieren",
+        p: [
+          "Du hast schon einen Lebenslauf in Word, als PDF oder aus einem anderen Generator? Klicke auf „Lebenslauf importieren“: Der Text wird ausgelesen – bei Scans sogar per Texterkennung – und von der KI in die richtigen Felder übertragen. Die KI übernimmt dabei nur, was in deinem Lebenslauf steht, und erfindet nichts dazu. So bringst du einen alten Lebenslauf in wenigen Minuten in ein modernes, ATS-freundliches Design.",
+          "Mit „Rechtschreibung prüfen (KI)“ findet die KI Tipp-, Rechtschreib- und Grammatikfehler. Jede Korrektur wird dir vorher angezeigt – rot das Original, grün der Vorschlag – und du entscheidest einzeln, was übernommen wird.",
+        ],
+      },
+      {
         h: "Lebenslauf mit oder ohne Foto?",
         p: [
           "Ein Bewerbungsfoto ist in Deutschland freiwillig. Viele Arbeitgeber und ATS-Systeme bevorzugen Lebensläufe ohne Foto, um fair auszuwählen; in manchen Branchen ist ein professionelles Foto aber weiterhin üblich. Mit PDF Libre entscheidest du selbst: Foto hinzufügen oder einfach weglassen.",
@@ -711,6 +718,8 @@ module.exports = [
       ["Wie bearbeite ich meinen Lebenslauf später?", "Speichere mit „Entwurf speichern“ die Entwurfsdatei und öffne sie später über „Entwurf öffnen“. Alle Angaben werden wieder ins Formular übernommen. Im selben Browser bleibt dein Entwurf auch so erhalten."],
       ["Enthält die PDF versteckte Daten?", "Nein. Die PDF für deine Bewerbung enthält nur den sichtbaren Lebenslauf – keine Anhänge und keine ausgeblendeten Abschnitte."],
       ["Werden meine Daten gespeichert?", "Nein. Deine Angaben werden nur zum Erstellen der PDF an den Server geschickt und sofort wieder gelöscht. Der Entwurf liegt ausschließlich in deinem Browser."],
+      ["Kann ich meinen alten Lebenslauf übernehmen?", "Ja. Über „Lebenslauf importieren“ lädst du eine PDF oder Word-Datei hoch; die KI überträgt alle Angaben ins Formular. Prüfe danach kurz, ob alles richtig zugeordnet ist."],
+      ["Verändert die Rechtschreibprüfung meine Inhalte?", "Nein. Sie korrigiert nur Rechtschreibung, Grammatik und Zeichensetzung. Du siehst jede Änderung vorher und entscheidest selbst."],
       ["Wie füge ich Anschreiben und Zeugnisse hinzu?", "Lade den fertigen Lebenslauf zusammen mit Anschreiben und Zeugnissen in „Bewerbungsmappe erstellen“ – dort wird alles zu einer PDF zusammengefügt."],
     ],
     related: ["bewerbungsmappe", "bewerbung-pdf-zusammenfuegen", "lebenslauf-pdf", "bewerbung-deckblatt"],

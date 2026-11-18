@@ -121,6 +121,7 @@ const EXT = {
   mappe: [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".odt", ".rtf"],
   einvoice: [".xml", ".pdf"],
   photos: [".heic", ".heif", ".jpg", ".jpeg", ".png", ".webp"],
+  cvdoc: [".pdf", ".doc", ".docx", ".odt", ".rtf"],
 };
 
 function uploader(kind, { multiple = false } = {}) {
@@ -850,7 +851,7 @@ app.get("/api/health", async (req, res) => {
 app.use("/api/auth", auth.router());
 app.use("/api/billing", billing.router());
 app.use("/api/pro", apiLimiter, editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_MB }));
-app.use("/api/ai", aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile }));
+app.use("/api/ai", aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert }));
 
 // Agenten-API (Bezahlung pro Aufruf in BSV, siehe server/agent-api.js) – nur wenn AGENT_API_ENABLED=true
 if (agentApi.enabled) {

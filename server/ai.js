@@ -119,7 +119,69 @@ Wenn das Dokument Fristen, Termine, Beträge oder Aufgaben für den Leser enthä
 Erfinde nichts, was nicht im Dokument steht.`;
 }
 
-module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile }) {
+// ------------------------------------------------------------------ Lebenslauf
+const CV_IMPORT_PROMPT = `Du überträgst einen bestehenden Lebenslauf in ein Formular. Antworte nur mit JSON in genau diesem Format:
+{"lang":"de"|"en",
+ "person":{"name":"","headline":"","email":"","phone":"","location":"","links":""},
+ "summary":"",
+ "experience":[{"title":"","org":"","place":"","from":"","to":"","current":false,"text":""}],
+ "education":[{"title":"","org":"","place":"","from":"","to":"","current":false,"text":""}],
+ "projects":[{"title":"","org":"","from":"","to":"","text":""}],
+ "skills":[{"label":"","value":""}],
+ "languages":[{"label":"","value":""}],
+ "extra":{"title":"","text":""}}
+Regeln:
+- Übernimm ausschließlich, was im Lebenslauf steht. Erfinde, ergänze oder verbessere nichts. Lass Felder leer, wenn die Angabe fehlt.
+- Übernimm Texte wörtlich; repariere nur Zeilenumbrüche und Silbentrennung, die durch das Auslesen der PDF entstanden sind.
+- headline: Berufsbezeichnung oder Wunschposition unter dem Namen, falls vorhanden.
+- links: LinkedIn, GitHub, Website – eine pro Zeile, ohne "https://".
+- Daten im Format MM/JJJJ oder JJJJ. "heute", "bis jetzt", "present" → current: true und to leer.
+- experience umfasst Berufserfahrung, Praktika, Werkstudenten- und Nebenjobs. title = Position, org = Unternehmen.
+- education: title = Abschluss/Studiengang, org = Schule/Hochschule.
+- text: Aufgaben und Erfolge als Stichpunkte, jede Zeile beginnt mit "- ".
+- skills: Gruppen wie {"label":"Programmierung","value":"Python, SQL"}. Ohne Gruppen: label leer.
+- languages: {"label":"Deutsch","value":"C1"}.
+- extra: Ehrenamt, Interessen, Führerschein, Publikationen usw. – mit passender Überschrift.
+- Reihenfolge der Einträge wie im Original (meist neueste zuerst).
+- lang: Sprache des Lebenslaufs.`;
+
+const CV_PROOFREAD_PROMPT = `Du bist Korrektor für Lebensläufe. Du bekommst eine Liste von Textfeldern eines Lebenslaufs.
+Korrigiere NUR Rechtschreibung, Grammatik, Zeichensetzung und offensichtliche Tippfehler – in der Sprache des jeweiligen Textes.
+Ändere NICHT den Inhalt, den Stil oder die Wortwahl, füge nichts hinzu und lass nichts weg. Behalte Zeilenumbrüche, Stichpunkte ("- "), Zahlen, Namen, Firmennamen, Fachbegriffe und Abkürzungen bei.
+Antworte nur mit JSON: {"items":[{"id":"…","text":"…"}]} – für jedes Feld, auch wenn nichts zu korrigieren ist (dann unverändert).`;
+
+const str = (v, max = 400) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+function normalizeCv(j) {
+  const entry = (e) => ({
+    title: str(e.title, 200),
+    org: str(e.org, 200),
+    place: str(e.place, 120),
+    from: str(e.from, 20),
+    to: e.current ? "" : str(e.to, 20),
+    current: e.current === true,
+    text: str(e.text, 3000),
+  });
+  const list = (a, fn, n = 30) => (Array.isArray(a) ? a.filter((x) => x && typeof x === "object").slice(0, n).map(fn) : []);
+  const pair = (e) => ({ label: str(e.label, 120), value: str(e.value, 600) });
+  const p = j.person || {};
+  const extra = j.extra && typeof j.extra === "object" ? j.extra : {};
+  return {
+    v: 1,
+    lang: j.lang === "en" ? "en" : "de",
+    person: { name: str(p.name, 120), headline: str(p.headline, 200), email: str(p.email, 200), phone: str(p.phone, 60), location: str(p.location, 120), links: str(p.links, 600) },
+    sections: [
+      { type: "summary", text: str(j.summary, 3000) },
+      { type: "experience", items: list(j.experience, entry) },
+      { type: "education", items: list(j.education, entry) },
+      { type: "projects", items: list(j.projects, entry) },
+      { type: "skills", items: list(j.skills, pair) },
+      { type: "languages", items: list(j.languages, pair) },
+      { type: "extra", title: str(extra.title, 120), text: str(extra.text, 3000) },
+    ],
+  };
+}
+
+module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert }) {
   const r = express.Router();
   const script = path.join(__dirname, "..", "pdf_ai.py");
 
@@ -248,6 +310,92 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
       await fsp.writeFile(trFile, JSON.stringify({ blocks }));
       await run(PYTHON, [script, "apply", file.path, trFile, out]);
       await sendFile(res, out, outName(file.originalname, `_${target.toUpperCase()}`, ".pdf"));
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // ------------------------------------------------------------------ Lebenslauf importieren
+  // Bestehenden Lebenslauf (PDF oder Word) lesen und von der KI ins Formular übertragen lassen
+  const cvLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    limit: Number(process.env.AI_CV_RATE_LIMIT) || 20,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { error: "Du hast die KI in der letzten Stunde oft genutzt. Bitte warte etwas und versuche es dann erneut." },
+  });
+  const cvScript = path.join(__dirname, "..", "cv_pdf.py");
+  const moreScript = path.join(__dirname, "..", "pdf_more.py");
+
+  // Schritt 1: Datei annehmen, Word → PDF; ältere PDF-Libre-Lebensläufe enthalten ihre Daten selbst (ohne KI)
+  async function cvFile(req, res, next) {
+    try {
+      const [file] = requireFiles(req);
+      req.cvPdf = /\.pdf$/i.test(file.path) ? file.path : await sofficeConvert(file.path, req.jobDir, "pdf");
+      try {
+        const { stdout } = await run(PYTHON, [cvScript, "extract", req.cvPdf], { maxBuffer: 10 * 1024 * 1024 });
+        return res.json({ data: JSON.parse(stdout), source: "pdflibre" });
+      } catch {
+        next(); // keine eingebetteten Daten – weiter mit der KI
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+  const cvReady = (req, res, next) => (enabled ? next() : next(new ApiError("Das Importieren mit KI ist auf diesem Server gerade nicht eingerichtet.", 503)));
+
+  r.post("/cv-import", jobDir, uploader("cvdoc"), cvFile, cvReady, cvLimiter, async (req, res, next) => {
+    try {
+      const pdf = req.cvPdf;
+      // 2) Text auslesen – bei gescannten Lebensläufen vorher Texterkennung
+      const textFile = path.join(req.jobDir, "text.json");
+      let { pages } = await pythonJson(["text", pdf, textFile], textFile);
+      let text = pages.slice(0, 5).join("\n\n").replace(/[ \t]+/g, " ").trim();
+      if (text.replace(/\s/g, "").length < 80) {
+        const ocr = path.join(req.jobDir, "ocr.pdf");
+        try {
+          await run(PYTHON, [moreScript, "ocr", pdf, ocr, "deu+eng"]);
+          ({ pages } = await pythonJson(["text", ocr, textFile], textFile));
+          text = pages.slice(0, 5).join("\n\n").replace(/[ \t]+/g, " ").trim();
+        } catch {
+          /* OCR nicht möglich */
+        }
+      }
+      if (text.replace(/\s/g, "").length < 80) throw new ApiError("In dieser Datei wurde kaum Text gefunden. Ist der Lebenslauf ein Foto oder Scan in schlechter Qualität?", 422);
+      const content = await chat([{ role: "system", content: CV_IMPORT_PROMPT }, { role: "user", content: text.slice(0, 20000) }], { json: true, maxTokens: 4000 });
+      let parsed;
+      try {
+        parsed = JSON.parse(content);
+      } catch {
+        throw new ApiError("Der Lebenslauf konnte nicht gelesen werden. Bitte versuche es noch einmal.", 502);
+      }
+      res.json({ data: normalizeCv(parsed), source: "ai" });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // ------------------------------------------------------------------ Lebenslauf korrigieren
+  r.post("/cv-proofread", ready, cvLimiter, express.json({ limit: "300kb" }), async (req, res, next) => {
+    try {
+      const items = (Array.isArray(req.body.items) ? req.body.items : [])
+        .filter((i) => i && typeof i.id === "string" && typeof i.text === "string" && i.text.trim())
+        .slice(0, 120)
+        .map((i) => ({ id: i.id.slice(0, 40), text: i.text.slice(0, 3000) }));
+      if (!items.length) throw new ApiError("Es gibt noch keinen Text zum Prüfen.");
+      if (items.reduce((n, i) => n + i.text.length, 0) > 30000) throw new ApiError("Der Lebenslauf ist zu lang für eine Prüfung auf einmal.", 413);
+      const content = await chat([{ role: "system", content: CV_PROOFREAD_PROMPT }, { role: "user", content: JSON.stringify({ items }) }], { json: true, maxTokens: 6000 });
+      let out = [];
+      try {
+        out = JSON.parse(content).items || [];
+      } catch {
+        throw new ApiError("Die Prüfung ist fehlgeschlagen. Bitte versuche es noch einmal.", 502);
+      }
+      const byId = new Map(items.map((i) => [i.id, i.text]));
+      const changes = out
+        .filter((o) => o && byId.has(o.id) && typeof o.text === "string" && o.text.trim() && o.text.trim() !== byId.get(o.id).trim())
+        .map((o) => ({ id: o.id, before: byId.get(o.id), after: o.text.trim() }));
+      res.json({ changes });
     } catch (e) {
       next(e);
     }

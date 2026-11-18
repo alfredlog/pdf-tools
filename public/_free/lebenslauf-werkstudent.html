@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=1c330fba">
+  <link rel="stylesheet" href="/assets/style.css?v=f283392f">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Lebenslauf für Werkstudenten – PDF Libre","url":"https://pdf-libre.de/lebenslauf-werkstudent.html","description":"Lebenslauf für Werkstudentenstelle, Praktikum oder Ausbildung erstellen: Muster mit Studium, Projekten und Kenntnissen, ATS-freundlich als PDF. Kostenlos und ohne Anmeldung.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"Lebenslauf erstellen","item":"https://pdf-libre.de/lebenslauf-erstellen.html"},{"@type":"ListItem","position":3,"name":"Lebenslauf für Werkstudenten","item":"https://pdf-libre.de/lebenslauf-werkstudent.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie lang darf der Lebenslauf eines Studenten sein?","acceptedAnswer":{"@type":"Answer","text":"Eine Seite ist ideal, zwei Seiten sind in Ordnung, wenn du viele relevante Projekte oder Jobs hast."}},{"@type":"Question","name":"Gehört das Abitur in den Lebenslauf?","acceptedAnswer":{"@type":"Answer","text":"Ja, mit Note, solange du noch studierst oder gerade erst fertig bist."}},{"@type":"Question","name":"Sollte ich die Wochenstunden angeben?","acceptedAnswer":{"@type":"Answer","text":"Für Werkstudentenstellen ja – zum Beispiel im Profil: „verfügbar für 15–20 Stunden pro Woche“."}}]}</script>
@@ -105,10 +105,22 @@
           <select data-lang><option value="de">Deutsch</option><option value="en">Englisch</option></select>
         </label>
         <button type="button" class="btn btn--link" data-sample>Beispiel laden</button>
-        <label class="btn btn--link">Entwurf öffnen<input type="file" accept=".json,application/json,.pdf,application/pdf" class="visually-hidden" data-import></label>
+        <label class="btn btn--link" title="Bestehenden Lebenslauf (PDF oder Word) übernehmen oder einen gespeicherten Entwurf öffnen">Lebenslauf importieren<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
         <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
       </div>
     </div>
+    <p class="cv-notice" data-notice hidden></p>
+    <dialog class="cv-dialog" data-review>
+      <form method="dialog">
+        <h3>Vorschläge der Rechtschreibprüfung</h3>
+        <p class="cv-dialog__hint">Rot = vorher, grün = korrigiert. Wähle aus, was übernommen werden soll.</p>
+        <div data-changes></div>
+        <div class="cv-dialog__actions">
+          <button value="cancel" class="btn btn--ghost">Abbrechen</button>
+          <button value="ok" class="btn btn--primary" data-apply>Ausgewählte übernehmen</button>
+        </div>
+      </form>
+    </dialog>
     <div class="cv-work">
       <div class="cv-form" data-form></div>
       <aside class="cv-side">
@@ -116,6 +128,7 @@
         <p class="cv-info" data-info></p>
         <p class="form-error" data-error role="alert" hidden></p>
         <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
+        <button type="button" class="btn btn--ghost btn--block" data-proofread>Rechtschreibung prüfen (KI)</button>
         <button type="button" class="btn btn--ghost btn--block" data-save-draft>Entwurf speichern (zum späteren Bearbeiten)</button>
         <div class="cv-ats">
           <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
@@ -131,7 +144,7 @@
 <section class="wrap howto" aria-labelledby="so-gehts">
   <h2 id="so-gehts">So geht's: Lebenslauf für Werkstudenten</h2>
   <ol class="steps">
-    <li><h3>Angaben eintragen</h3><p>Name, Kontaktdaten, Berufserfahrung, Ausbildung, Kenntnisse und Sprachen – oder „Beispiel laden“ und anpassen.</p></li>
+    <li><h3>Angaben eintragen oder importieren</h3><p>Fülle das Formular aus, lade ein Beispiel – oder importiere deinen bisherigen Lebenslauf als PDF oder Word-Datei. Die KI überträgt alle Angaben automatisch ins Formular.</p></li>
     <li><h3>Vorlage wählen</h3><p>Modern, Klassisch, Akademisch im LaTeX-Stil oder Kompakt. Farbe und Sprache (Deutsch/Englisch) stellst du oben ein.</p></li>
     <li><h3>Vorschau prüfen</h3><p>Rechts siehst du live die fertige PDF und einen ATS-Check mit Hinweisen, was noch fehlt.</p></li>
     <li><h3>PDF herunterladen</h3><p>Lade den Lebenslauf herunter. Mit „Entwurf speichern“ bekommst du zusätzlich eine kleine Datei, mit der du ihn später weiterbearbeitest.</p></li>
@@ -264,7 +277,7 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=1c330fba" defer></script>
-<script src="/assets/cv.js?v=1c330fba" defer></script>
+<script src="/assets/site.js?v=f283392f" defer></script>
+<script src="/assets/cv.js?v=f283392f" defer></script>
 </body>
 </html>

@@ -259,7 +259,7 @@
     timer = setTimeout(preview, 600);
   }
 
-  async function preview() {
+  async function preview(retry = true) {
     const my = ++seq;
     const box = $("[data-preview]");
     box.classList.add("is-busy");
@@ -274,7 +274,9 @@
       atsCheck(j.pages.length);
       showError("");
     } catch (e) {
-      if (my === seq) showError(e.message);
+      if (my !== seq) return;
+      if (retry) return void setTimeout(() => preview(false), 1200); // kurzer Aussetzer: einmal still wiederholen
+      showError(e.message);
     } finally {
       if (my === seq) box.classList.remove("is-busy");
     }
@@ -330,16 +332,21 @@
       }
       return;
     }
+    if (hasContent() && !confirm("Dein aktueller Lebenslauf im Formular wird durch den importierten ersetzt. Fortfahren?")) return;
     const fd = new FormData();
     fd.append("file", f);
+    notice("Dein Lebenslauf wird gelesen … das dauert etwa 10–30 Sekunden.", "busy");
     try {
-      const res = await fetch("/api/cv/import", { method: "POST", body: fd });
+      const res = await fetch("/api/ai/cv-import", { method: "POST", body: fd });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(j.error || "Die Datei konnte nicht gelesen werden.");
-      data = { ...empty(), ...j.data };
+      // Design, Farbe und Foto bleiben wie eingestellt – nur die Inhalte kommen aus der Datei
+      data = { ...empty(), ...j.data, template: data.template, accent: data.accent, photo: j.data.photo || data.photo };
       renderForm();
       changed();
+      notice(j.source === "ai" ? "Import fertig. Bitte prüfe alle Angaben – die KI überträgt nur, was im Lebenslauf steht, kann sich aber beim Zuordnen irren." : "Entwurf geöffnet.", "ok");
     } catch (e) {
+      notice("", "");
       showError(e.message);
     }
   });
@@ -358,6 +365,93 @@
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    } catch (e) {
+      showError(e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  });
+
+  // ---------------------------------------------------------------- Hinweise
+  function notice(msg, kind) {
+    const el = $("[data-notice]");
+    el.textContent = msg;
+    el.className = "cv-notice" + (kind ? " cv-notice--" + kind : "");
+    el.hidden = !msg;
+  }
+
+  // ---------------------------------------------------------------- Rechtschreibprüfung (KI)
+  // Alle Fließtexte mit einer ID sammeln, korrigieren lassen, Änderungen einzeln bestätigen
+  function textFields() {
+    const out = [];
+    const add = (id, obj, key) => (obj[key] || "").trim() && out.push({ id, obj, key, text: obj[key] });
+    add("p.headline", data.person, "headline");
+    data.sections.forEach((sec, si) => {
+      if (sec.hidden) return;
+      if (sec.type === "summary" || sec.type === "extra") add(`s${si}.text`, sec, "text");
+      if (["experience", "education", "projects"].includes(sec.type))
+        (sec.items || []).forEach((it, ii) => {
+          add(`s${si}.i${ii}.title`, it, "title");
+          add(`s${si}.i${ii}.text`, it, "text");
+        });
+    });
+    return out;
+  }
+
+  function diffHtml(a, b) {
+    // Wort-Diff (LCS): entfernte Wörter rot, neue grün
+    const A = a.split(/(\s+)/), B = b.split(/(\s+)/);
+    const n = A.length, m = B.length;
+    const L = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\n/g, "<br>");
+    let i = 0, j = 0, out = "";
+    while (i < n && j < m) {
+      if (A[i] === B[j]) { out += esc(A[i]); i++; j++; }
+      else if (L[i + 1][j] >= L[i][j + 1]) out += `<del>${esc(A[i++])}</del>`;
+      else out += `<ins>${esc(B[j++])}</ins>`;
+    }
+    while (i < n) out += `<del>${esc(A[i++])}</del>`;
+    while (j < m) out += `<ins>${esc(B[j++])}</ins>`;
+    return out;
+  }
+
+  $("[data-proofread]").addEventListener("click", async (ev) => {
+    const btn = ev.currentTarget;
+    const fields = textFields();
+    if (!fields.length) return showError("Es gibt noch keinen Text zum Prüfen.");
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Wird geprüft …";
+    showError("");
+    try {
+      const res = await fetch("/api/ai/cv-proofread", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: fields.map(({ id, text }) => ({ id, text })) }) });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error || "Die Prüfung ist fehlgeschlagen.");
+      if (!j.changes.length) return notice("Keine Fehler gefunden – sehr gut!", "ok");
+      const list = $("[data-changes]");
+      list.textContent = "";
+      j.changes.forEach((c, k) => {
+        const row = h("label", { class: "cv-change" }, h("input", { type: "checkbox", checked: true, "data-k": k }));
+        const box = h("div", { class: "cv-change__diff" });
+        box.innerHTML = diffHtml(c.before, c.after);
+        row.append(box);
+        list.append(row);
+      });
+      const dlg = $("[data-review]");
+      dlg.onclose = () => {
+        if (dlg.returnValue !== "ok") return;
+        const byId = new Map(fields.map((f) => [f.id, f]));
+        let n = 0;
+        list.querySelectorAll("input[data-k]").forEach((cb) => {
+          const c = j.changes[+cb.dataset.k];
+          const f = byId.get(c.id);
+          if (cb.checked && f) { f.obj[f.key] = c.after; n++; }
+        });
+        if (n) { renderForm(); changed(); notice(`${n} ${n === 1 ? "Korrektur" : "Korrekturen"} übernommen.`, "ok"); }
+      };
+      dlg.showModal();
     } catch (e) {
       showError(e.message);
     } finally {

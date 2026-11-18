@@ -9,6 +9,9 @@ module.exports = {
   email: "info@pdf-libre.de",
   address: ["Am Kiefernwald 4", "64297 Darmstadt", "Deutschland"],
 
+  // KI-Anbieter (für die Datenschutzerklärung) – muss zu AI_BASE_URL in der .env passen
+  aiProvider: "OpenAI Ireland Ltd., 1st Floor, The Liffey Trust Centre, 117–126 Sheriff Street Upper, Dublin 1, Irland",
+
   // Google Analytics (leer lassen zum Deaktivieren)
   analyticsId: "G-MD8R6SK1YW",
 

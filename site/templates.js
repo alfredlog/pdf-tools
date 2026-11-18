@@ -580,10 +580,22 @@ function cvWorkspace(t) {
           <select data-lang><option value="de">Deutsch</option><option value="en">Englisch</option></select>
         </label>
         <button type="button" class="btn btn--link" data-sample>Beispiel laden</button>
-        <label class="btn btn--link">Entwurf öffnen<input type="file" accept=".json,application/json,.pdf,application/pdf" class="visually-hidden" data-import></label>
+        <label class="btn btn--link" title="Bestehenden Lebenslauf (PDF oder Word) übernehmen oder einen gespeicherten Entwurf öffnen">Lebenslauf importieren<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
         <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
       </div>
     </div>
+    <p class="cv-notice" data-notice hidden></p>
+    <dialog class="cv-dialog" data-review>
+      <form method="dialog">
+        <h3>Vorschläge der Rechtschreibprüfung</h3>
+        <p class="cv-dialog__hint">Rot = vorher, grün = korrigiert. Wähle aus, was übernommen werden soll.</p>
+        <div data-changes></div>
+        <div class="cv-dialog__actions">
+          <button value="cancel" class="btn btn--ghost">Abbrechen</button>
+          <button value="ok" class="btn btn--primary" data-apply>Ausgewählte übernehmen</button>
+        </div>
+      </form>
+    </dialog>
     <div class="cv-work">
       <div class="cv-form" data-form></div>
       <aside class="cv-side">
@@ -591,6 +603,7 @@ function cvWorkspace(t) {
         <p class="cv-info" data-info></p>
         <p class="form-error" data-error role="alert" hidden></p>
         <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
+        <button type="button" class="btn btn--ghost btn--block" data-proofread>Rechtschreibung prüfen (KI)</button>
         <button type="button" class="btn btn--ghost btn--block" data-save-draft>Entwurf speichern (zum späteren Bearbeiten)</button>
         <div class="cv-ats">
           <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
@@ -1236,6 +1249,10 @@ function datenschutz() {
   <h3>Werkzeuge, die auf dem Server laufen</h3>
   <p>Bei allen anderen Werkzeugen wird deine Datei über eine verschlüsselte Verbindung (HTTPS) an unseren Server übertragen, dort verarbeitet und unmittelbar nach dem Download automatisch gelöscht. Nicht abgeschlossene Aufträge werden spätestens nach 30 Minuten gelöscht. Wir sehen uns deine Dateien nicht an, werten sie nicht aus und geben sie nicht weiter. Passwörter, die du bei „PDF schützen“ oder „PDF entsperren“ eingibst, werden nur für diesen Vorgang verwendet und nicht gespeichert.</p>
   <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung des von dir angefragten Dienstes).</p>
+  <h3>Lebenslauf erstellen</h3>
+  <p>Beim Lebenslauf-Generator werden deine Eingaben zum Erstellen der Vorschau und der PDF an unseren Server übertragen und direkt danach gelöscht. Dein Entwurf wird zusätzlich nur lokal in deinem Browser (localStorage) gespeichert; du kannst ihn jederzeit mit „Neu beginnen“ löschen. Die heruntergeladene PDF enthält nur den sichtbaren Lebenslauf.</p>
+  <h3>KI-Funktionen</h3>
+  <p>Bei den KI-Funktionen (PDF zusammenfassen, PDF übersetzen, Lebenslauf importieren, Rechtschreibprüfung) wird der Text deines Dokuments bzw. deiner Eingaben an einen KI-Dienst übermittelt, der ihn in unserem Auftrag verarbeitet (Auftragsverarbeitung nach Art. 28 DSGVO): ${esc(config.aiProvider || "")}. Der Anbieter verwendet die Daten nach seinen Bedingungen für API-Kunden nicht zum Training seiner Modelle. Eine Übermittlung in Drittländer (z. B. USA) kann nicht ausgeschlossen werden; sie erfolgt auf Grundlage von EU-Standardvertragsklauseln bzw. des EU-US Data Privacy Framework. Wir speichern weder den Text noch das Ergebnis. Nutze die KI-Funktionen nicht, wenn du das nicht möchtest – alle anderen Werkzeuge funktionieren ohne KI.</p>
 
   <h2>Server-Logdateien</h2>
   <p>Beim Aufruf der Website werden technisch notwendige Daten wie IP-Adresse, Datum und Uhrzeit, aufgerufene Seite und Browsertyp verarbeitet, um die Website auszuliefern und vor Missbrauch zu schützen (Art. 6 Abs. 1 lit. f DSGVO).</p>
