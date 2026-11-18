@@ -98,19 +98,44 @@
   // Datumsangaben vereinheitlichen: „2.2025“, „02-2025“, „Feb. 2025“, „2025-02“ → „02/2025“
   const MONTHS = { jan: 1, feb: 2, fév: 2, fev: 2, mär: 3, mar: 3, maer: 3, apr: 4, avr: 4, mai: 5, may: 5, jun: 6, juin: 6, jul: 7, juil: 7, aug: 8, aoû: 8, aou: 8, sep: 9, okt: 10, oct: 10, nov: 11, dez: 12, dec: 12, déc: 12 };
   const DATE_OK = /^((0[1-9]|1[0-2])\/)?(19|20)\d{2}$/;
+  const MONTH_RE = "[a-zäöüéèêûôîç]{3,}";
+  const fullYear = (y) => {
+    if (y.length === 4) return y;
+    const n = +y, now = new Date().getFullYear() % 100;
+    return String(n <= now + 1 ? 2000 + n : 1900 + n); // „23“ → 2023, „98“ → 1998
+  };
+  const monthOf = (w) => MONTHS[w.toLowerCase().slice(0, 4)] || MONTHS[w.toLowerCase().slice(0, 3)];
   function normalizeDate(v) {
-    const t = String(v || "").trim();
+    // aufräumen: Leerzeichen, Punkt am Ende, verschiedene Striche und Schrägstriche
+    let t = String(v || "").replace(/[   ]/g, " ").replace(/[⁄∕／]/g, "/").replace(/\s+/g, " ").trim().replace(/[.,;:]+$/, "");
     if (!t || DATE_OK.test(t)) return t;
     let m;
     const mm = (n) => String(n).padStart(2, "0");
-    if ((m = t.match(/^(\d{1,2})\s*[./-]\s*((?:19|20)\d{2})$/)) && +m[1] >= 1 && +m[1] <= 12) return `${mm(m[1])}/${m[2]}`;
+    // 10/2023, 10.2023, 10-2023, 10 / 2023, 10/23
+    if ((m = t.match(/^(\d{1,2})\s*[./-]\s*(\d{4}|\d{2})$/)) && +m[1] >= 1 && +m[1] <= 12) return `${mm(m[1])}/${fullYear(m[2])}`;
+    // 2023-10, 2023/10
     if ((m = t.match(/^((?:19|20)\d{2})\s*[./-]\s*(\d{1,2})$/)) && +m[2] >= 1 && +m[2] <= 12) return `${mm(m[2])}/${m[1]}`;
-    if ((m = t.toLowerCase().match(/^([a-zäöüéèêûôîç]{3,})\.?\s*((?:19|20)\d{2})$/))) {
-      const n = MONTHS[m[1].slice(0, 4)] || MONTHS[m[1].slice(0, 3)];
-      if (n) return `${mm(n)}/${m[2]}`;
-    }
-    if ((m = t.match(/^(?:seit|ab|since|depuis)\s+(.+)$/i))) return normalizeDate(m[1]);
+    // 01.10.2023 (mit Tag) → 10/2023
+    if ((m = t.match(/^\d{1,2}\s*[./-]\s*(\d{1,2})\s*[./-]\s*(\d{4}|\d{2})$/)) && +m[1] >= 1 && +m[1] <= 12) return `${mm(m[1])}/${fullYear(m[2])}`;
+    // Okt. 2023, Oktober 2023, Okt 23, févr. 2024
+    if ((m = t.match(new RegExp(`^(${MONTH_RE})\\.?\\s*'?(\\d{4}|\\d{2})$`, "i"))) && monthOf(m[1])) return `${mm(monthOf(m[1]))}/${fullYear(m[2])}`;
+    // Semester: WS 2025/26, WiSe 2025, SS 2025, SoSe 25
+    if ((m = t.match(/^(WS|WiSe|Wintersemester)\s*(\d{4}|\d{2})/i))) return `10/${fullYear(m[2])}`;
+    if ((m = t.match(/^(SS|SoSe|Sommersemester)\s*(\d{4}|\d{2})/i))) return `04/${fullYear(m[2])}`;
+    // „seit 10/2025“, „ab Oktober 2025“, „depuis 2024“
+    if ((m = t.match(/^(?:seit|ab|since|from|depuis|von)\s+(.+)$/i))) return normalizeDate(m[1]);
     return t;
+  }
+  // „10/2023 – 04/2024“ oder „2016-2019“ in einem Feld → [von, bis]
+  function splitRange(v) {
+    const t = String(v || "").trim();
+    const m = t.match(/^(.+?)\s*(?:–|—|-|bis|to|until|à|au)\s*(.+)$/i);
+    if (!m) return null;
+    const a = normalizeDate(m[1]);
+    if (!DATE_OK.test(a)) return null;
+    if (isNow(m[2])) return [a, "", true];
+    const b = normalizeDate(m[2]);
+    return DATE_OK.test(b) ? [a, b, false] : null;
   }
   const isNow = (v) => /^(heute|aktuell|jetzt|bis heute|present|today|now|current|aujourd.hui|actuel|actuellement|en cours)$/i.test(String(v || "").trim());
 
@@ -139,12 +164,16 @@
 
   // bekannte Datumsformate in allen Stationen vereinheitlichen (z. B. nach Import oder aus älteren Entwürfen)
   function normalizeAll() {
+    const before = JSON.stringify(data.sections);
     for (const sec of data.sections || [])
       for (const it of sec.items || []) {
+        const range = splitRange(it.from);
+        if (range && !it.to) [it.from, it.to, it.current] = range;
         if (it.from) it.from = normalizeDate(it.from);
         if (isNow(it.to)) { it.to = ""; it.current = true; }
         else if (it.to) it.to = normalizeDate(it.to);
       }
+    if (JSON.stringify(data.sections) !== before) save(); // korrigierte Daten sofort merken
   }
 
   // ---------------------------------------------------------------- Karten einklappen + Sprungleiste
@@ -275,6 +304,14 @@
           for (const [box, key] of [[from, "from"], [to, "to"]]) {
             const inp = box.querySelector("input");
             inp.addEventListener("change", () => {
+              const range = splitRange(inp.value);
+              if (range) {
+                // beide Daten in ein Feld geschrieben → auf „Von“ und „Bis“ verteilen
+                [it.from, it.to, it.current] = range;
+                renderForm();
+                changed();
+                return;
+              }
               if (key === "to" && isNow(inp.value)) {
                 it.to = "";
                 it.current = true;
