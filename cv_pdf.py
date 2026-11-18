@@ -221,8 +221,11 @@ def render(d):
     name = str((d.get("person") or {}).get("name") or "").strip()
     L = LABELS.get(d.get("lang"), LABELS["de"])
     doc.set_metadata({"title": f"{L['cv']} {name}".strip(), "author": name, "creator": "PDF Libre – Lebenslauf erstellen", "producer": "PDF Libre"})
-    data = {k: v for k, v in d.items() if not k.startswith("_")}
-    doc.embfile_add(DATA_NAME, json.dumps(data, ensure_ascii=False).encode("utf-8"), filename=DATA_NAME, desc="Lebenslauf-Daten zum erneuten Bearbeiten auf pdf-libre.de")
+    if d.get("embed"):
+        # nur auf Wunsch – und nur, was auch sichtbar im Lebenslauf steht (ausgeblendete Abschnitte bleiben draußen)
+        data = {k: v for k, v in d.items() if not k.startswith("_")}
+        data["sections"] = [sec for sec in data.get("sections") or [] if not sec.get("hidden")]
+        doc.embfile_add(DATA_NAME, json.dumps(data, ensure_ascii=False).encode("utf-8"), filename=DATA_NAME, desc="Lebenslauf-Daten zum erneuten Bearbeiten auf pdf-libre.de")
     # Schriften auf die benutzten Zeichen verkleinern – aber nur, wenn der Text danach exakt gleich lesbar bleibt
     # (bei manchen OTF-Schriften geht sonst die Unicode-Zuordnung verloren und ein ATS liest falsche Zeichen)
     before = [pg.get_text() for pg in doc]

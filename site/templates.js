@@ -580,7 +580,7 @@ function cvWorkspace(t) {
           <select data-lang><option value="de">Deutsch</option><option value="en">Englisch</option></select>
         </label>
         <button type="button" class="btn btn--link" data-sample>Beispiel laden</button>
-        <label class="btn btn--link">Lebenslauf öffnen (PDF)<input type="file" accept=".pdf,application/pdf" class="visually-hidden" data-import></label>
+        <label class="btn btn--link">Entwurf öffnen<input type="file" accept=".json,application/json,.pdf,application/pdf" class="visually-hidden" data-import></label>
         <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
       </div>
     </div>
@@ -591,6 +591,7 @@ function cvWorkspace(t) {
         <p class="cv-info" data-info></p>
         <p class="form-error" data-error role="alert" hidden></p>
         <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
+        <button type="button" class="btn btn--ghost btn--block" data-save-draft>Entwurf speichern (zum späteren Bearbeiten)</button>
         <div class="cv-ats">
           <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
           <ul data-ats></ul>

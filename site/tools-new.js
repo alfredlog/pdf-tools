@@ -667,7 +667,7 @@ module.exports = [
       ["Angaben eintragen", "Name, Kontaktdaten, Berufserfahrung, Ausbildung, Kenntnisse und Sprachen – oder „Beispiel laden“ und anpassen."],
       ["Vorlage wählen", "Modern, Klassisch, Akademisch im LaTeX-Stil oder Kompakt. Farbe und Sprache (Deutsch/Englisch) stellst du oben ein."],
       ["Vorschau prüfen", "Rechts siehst du live die fertige PDF und einen ATS-Check mit Hinweisen, was noch fehlt."],
-      ["PDF herunterladen", "Lade den Lebenslauf herunter. Später kannst du dieselbe PDF hier wieder öffnen und weiterbearbeiten."],
+      ["PDF herunterladen", "Lade den Lebenslauf herunter. Mit „Entwurf speichern“ bekommst du zusätzlich eine kleine Datei, mit der du ihn später weiterbearbeitest."],
     ],
     article: [
       {
@@ -699,7 +699,8 @@ module.exports = [
       {
         h: "Lebenslauf später bearbeiten – ohne Konto",
         p: [
-          "Dein Entwurf wird automatisch in deinem Browser gespeichert. Zusätzlich steckt in jeder heruntergeladenen PDF eine Kopie deiner Angaben. Öffne die Datei einfach über „Lebenslauf öffnen (PDF)“ wieder – alle Felder sind sofort ausgefüllt, auch auf einem anderen Gerät. So passt du deinen Lebenslauf schnell an jede neue Bewerbung an.",
+          "Dein Entwurf wird automatisch in deinem Browser gespeichert. Mit „Entwurf speichern“ lädst du zusätzlich eine kleine Entwurfsdatei herunter. Öffne sie später über „Entwurf öffnen“ – alle Felder sind sofort ausgefüllt, auch auf einem anderen Gerät. So passt du deinen Lebenslauf schnell an jede neue Bewerbung an.",
+          "Die PDF, die du an Unternehmen schickst, enthält dagegen nur das, was man sieht: keine versteckten Daten, keine Anhänge, keine ausgeblendeten Abschnitte.",
         ],
       },
     ],
@@ -707,7 +708,8 @@ module.exports = [
       ["Ist der Lebenslauf-Generator kostenlos?", "Ja. Alle Vorlagen, die Live-Vorschau, der ATS-Check und der PDF-Download sind kostenlos, ohne Anmeldung und ohne Wasserzeichen."],
       ["Ist der Lebenslauf ATS-freundlich?", "Ja. Er ist einspaltig, enthält echten Text mit eingebetteten Schriften und verwendet übliche Überschriften. Bewerbermanagementsysteme können Name, Kontaktdaten, Stationen und Kenntnisse zuverlässig auslesen."],
       ["Kann ich den Lebenslauf auf Englisch erstellen?", "Ja. Stelle oben die Sprache auf Englisch – Überschriften wie „Experience“, „Education“ und „Skills“ werden automatisch angepasst. Deine Texte schreibst du selbst in der gewünschten Sprache."],
-      ["Wie bearbeite ich meinen Lebenslauf später?", "Lade die mit PDF Libre erstellte PDF über „Lebenslauf öffnen (PDF)“ hoch. Alle Angaben werden wieder ins Formular übernommen."],
+      ["Wie bearbeite ich meinen Lebenslauf später?", "Speichere mit „Entwurf speichern“ die Entwurfsdatei und öffne sie später über „Entwurf öffnen“. Alle Angaben werden wieder ins Formular übernommen. Im selben Browser bleibt dein Entwurf auch so erhalten."],
+      ["Enthält die PDF versteckte Daten?", "Nein. Die PDF für deine Bewerbung enthält nur den sichtbaren Lebenslauf – keine Anhänge und keine ausgeblendeten Abschnitte."],
       ["Werden meine Daten gespeichert?", "Nein. Deine Angaben werden nur zum Erstellen der PDF an den Server geschickt und sofort wieder gelöscht. Der Entwurf liegt ausschließlich in deinem Browser."],
       ["Wie füge ich Anschreiben und Zeugnisse hinzu?", "Lade den fertigen Lebenslauf zusammen mit Anschreiben und Zeugnissen in „Bewerbungsmappe erstellen“ – dort wird alles zu einer PDF zusammengefügt."],
     ],

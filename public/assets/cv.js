@@ -316,9 +316,22 @@
     const f = imp.files[0];
     imp.value = "";
     if (!f) return;
+    showError("");
+    if (/\.json$/i.test(f.name)) {
+      // Entwurfsdatei: direkt im Browser lesen, nichts wird hochgeladen
+      try {
+        const j = JSON.parse(await f.text());
+        if (!j || !j.person || !Array.isArray(j.sections)) throw new Error();
+        data = { ...empty(), ...j };
+        renderForm();
+        changed();
+      } catch {
+        showError("Diese Datei ist kein Lebenslauf-Entwurf von PDF Libre.");
+      }
+      return;
+    }
     const fd = new FormData();
     fd.append("file", f);
-    showError("");
     try {
       const res = await fetch("/api/cv/import", { method: "POST", body: fd });
       const j = await res.json().catch(() => ({}));
@@ -351,6 +364,16 @@
       btn.disabled = false;
       btn.textContent = label;
     }
+  });
+
+  // Entwurf als eigene Datei speichern – getrennt vom Lebenslauf, der an Firmen geht
+  $("[data-save-draft]").addEventListener("click", () => {
+    const n = (data.person.name || "").trim().replace(/\s+/g, "_").replace(/[^\p{L}\p{N}_-]/gu, "");
+    const a = h("a", { href: URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: "application/json" })), download: `Lebenslauf-Entwurf${n ? "_" + n : ""}.json` });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
   });
 
   renderForm();
