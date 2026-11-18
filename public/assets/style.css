@@ -732,3 +732,4 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .cv-letter__preview { background: #e9ecf2; border-radius: 10px; padding: 10px; max-height: 70vh; overflow: auto; }
 @media (max-width: 860px) { .cv-letter { grid-template-columns: 1fr; } }
 .cv-change del + ins, .cv-change ins + del { margin-left: 3px; }
+.cv-field input.is-bad { border-color: #d97706; background: #fffbeb; }

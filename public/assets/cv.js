@@ -95,6 +95,25 @@
     return el;
   };
 
+  // Datumsangaben vereinheitlichen: „2.2025“, „02-2025“, „Feb. 2025“, „2025-02“ → „02/2025“
+  const MONTHS = { jan: 1, feb: 2, mär: 3, mar: 3, maer: 3, apr: 4, mai: 5, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, okt: 10, oct: 10, nov: 11, dez: 12, dec: 12 };
+  const DATE_OK = /^((0[1-9]|1[0-2])\/)?(19|20)\d{2}$/;
+  function normalizeDate(v) {
+    const t = String(v || "").trim();
+    if (!t || DATE_OK.test(t)) return t;
+    let m;
+    const mm = (n) => String(n).padStart(2, "0");
+    if ((m = t.match(/^(\d{1,2})\s*[./-]\s*((?:19|20)\d{2})$/)) && +m[1] >= 1 && +m[1] <= 12) return `${mm(m[1])}/${m[2]}`;
+    if ((m = t.match(/^((?:19|20)\d{2})\s*[./-]\s*(\d{1,2})$/)) && +m[2] >= 1 && +m[2] <= 12) return `${mm(m[2])}/${m[1]}`;
+    if ((m = t.toLowerCase().match(/^([a-zäöü]{3,})\.?\s*((?:19|20)\d{2})$/))) {
+      const n = MONTHS[m[1].slice(0, 3).replace("ä", "ä")] || MONTHS[m[1].slice(0, 4)];
+      if (n) return `${mm(n)}/${m[2]}`;
+    }
+    if ((m = t.match(/^(?:seit|ab|since)\s+(.+)$/i))) return normalizeDate(m[1]);
+    return t;
+  }
+  const isNow = (v) => /^(heute|aktuell|jetzt|bis heute|present|today|now|current)$/i.test(String(v || "").trim());
+
   function field(label, obj, key, { textarea = false, placeholder = "", type = "text", rows = 3, wide = false } = {}) {
     const id = "cv-" + Math.random().toString(36).slice(2, 9);
     const input = textarea ? h("textarea", { id, rows, placeholder }) : h("input", { id, type, placeholder });
@@ -118,7 +137,18 @@
     changed();
   }
 
+  // bekannte Datumsformate in allen Stationen vereinheitlichen (z. B. nach Import oder aus älteren Entwürfen)
+  function normalizeAll() {
+    for (const sec of data.sections || [])
+      for (const it of sec.items || []) {
+        if (it.from) it.from = normalizeDate(it.from);
+        if (isNow(it.to)) { it.to = ""; it.current = true; }
+        else if (it.to) it.to = normalizeDate(it.to);
+      }
+  }
+
   function renderForm() {
+    normalizeAll();
     const form = $("[data-form]");
     form.textContent = "";
     const p = data.person;
@@ -179,6 +209,26 @@
           current.checked = !!it.current;
           current.addEventListener("change", () => { it.current = current.checked; to.querySelector("input").disabled = current.checked; changed(); });
           const to = field("Bis", it, "to", { placeholder: "MM/JJJJ" });
+          const from = field("Von", it, "from", { placeholder: "MM/JJJJ" });
+          // beim Verlassen des Feldes: Datum vereinheitlichen, „heute“ → Häkchen „bis heute“
+          for (const [box, key] of [[from, "from"], [to, "to"]]) {
+            const inp = box.querySelector("input");
+            inp.addEventListener("change", () => {
+              if (key === "to" && isNow(inp.value)) {
+                it.to = "";
+                it.current = true;
+                current.checked = true;
+                inp.value = "";
+                inp.disabled = true;
+              } else {
+                it[key] = normalizeDate(inp.value);
+                inp.value = it[key];
+              }
+              inp.classList.toggle("is-bad", !!it[key] && !DATE_OK.test(it[key]));
+              changed();
+            });
+            inp.classList.toggle("is-bad", !!it[key] && !DATE_OK.test(it[key]));
+          }
           to.querySelector("input").disabled = !!it.current;
           card.append(
             h("div", { class: "cv-entry" },
@@ -191,7 +241,7 @@
                 field(L.title, it, "title"),
                 field(L.org, it, "org"),
                 L.place ? field(L.place, it, "place") : null,
-                h("div", { class: "cv-dates" }, field("Von", it, "from", { placeholder: "MM/JJJJ" }), to, h("label", { class: "cv-check" }, current, " bis heute")),
+                h("div", { class: "cv-dates" }, from, to, h("label", { class: "cv-check" }, current, " bis heute")),
                 field(L.text, it, "text", { textarea: true, rows: 3, wide: true, placeholder: sec.type === "education" ? "" : "- Was hast du erreicht? Mit Zahlen, wenn möglich" })
               )
             )
@@ -232,15 +282,20 @@
     const edu = data.sections.find((s) => s.type === "education");
     const sum = data.sections.find((s) => s.type === "summary");
     const filled = (s) => s && !s.hidden && (s.items || []).some((i) => i.title || i.org);
-    const entries = [...(exp?.items || []), ...(edu?.items || [])].filter((i) => i.title || i.org);
-    const badDate = entries.some((i) => (i.from && !/^(\d{2}\/)?\d{4}$/.test(i.from.trim())) || (!i.current && i.to && !/^(\d{2}\/)?\d{4}$/.test(i.to.trim())));
+    const entries = data.sections
+      .filter((s) => !s.hidden && ["experience", "education", "projects"].includes(s.type))
+      .flatMap((s) => s.items || [])
+      .filter((i) => i.title || i.org);
+    const bad = entries.find((i) => (i.from && !DATE_OK.test(normalizeDate(i.from))) || (!i.current && i.to && !DATE_OK.test(normalizeDate(i.to))));
+    const badDate = !!bad;
+    const badLabel = bad ? `Datum bei „${bad.title || bad.org}“ prüfen: „${!DATE_OK.test(normalizeDate(bad.from)) && bad.from ? bad.from : bad.to}“ → bitte MM/JJJJ (z. B. 10/2025) oder JJJJ` : "";
     const bullets = (exp?.items || []).filter((i) => (i.text || "").trim()).length;
     const checks = [
       [!!p.name.trim(), "Name angegeben"],
       [/@/.test(p.email) && !!p.phone.trim(), "E-Mail und Telefon als Text im Lebenslauf"],
       [!!(sum && !sum.hidden && (sum.text || "").trim().length >= 80), "Kurzprofil mit 2–4 Sätzen"],
       [filled(exp) || filled(edu), "Berufserfahrung oder Ausbildung eingetragen"],
-      [!badDate, "Einheitliches Datumsformat (MM/JJJJ oder JJJJ)"],
+      [!badDate, badDate ? badLabel : "Einheitliches Datumsformat (MM/JJJJ oder JJJJ)"],
       [!filled(exp) || bullets >= Math.min(2, (exp.items || []).length), "Aufgaben und Erfolge bei den Stationen beschrieben"],
       [pages > 0 && pages <= 2, "Höchstens zwei Seiten"],
     ];
