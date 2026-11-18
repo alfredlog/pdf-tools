@@ -55,6 +55,7 @@ function setFreeMode() {
 // Icons
 // ---------------------------------------------------------------------------
 const GLYPHS = {
+  cv: '<circle cx="9" cy="8.5" r="2.5"/><path d="M5 14.5c.6-1.8 2.1-2.8 4-2.8s3.4 1 4 2.8M15 7h4M15 10.5h4M5 18h14"/>',
   ocr: '<path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><path d="M8 9h8M8 12h8M8 15h5"/>',
   redact: '<path d="M5 6h9M5 18h11"/><rect x="5" y="9.5" width="14" height="5" rx="1" fill="#fff"/>',
   archive: '<rect x="4" y="5" width="16" height="4" rx="1"/><path d="M5.5 9v9.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V9M10 13h4"/>',
@@ -461,6 +462,7 @@ function optionHtml(o) {
 function workspace(t) {
   if (t.ui.mode === "editor") return editorWorkspace(t);
   if (t.ui.mode === "slides") return slidesWorkspace(t);
+  if (t.ui.mode === "cv") return cvWorkspace(t);
   const ui = t.ui;
   const c = catById[t.cat].color;
   const data = {
@@ -555,6 +557,47 @@ function workspace(t) {
         </div>
       </div>
     </form>
+  </section>`;
+}
+
+// Lebenslauf erstellen: Formular links, Live-Vorschau rechts (Logik: public/assets/cv.js)
+function cvWorkspace(t) {
+  const c = catById[t.cat].color;
+  const tpls = [
+    ["modern", "Modern", "Klar und farbig"],
+    ["klassisch", "Klassisch", "Seriös, Serifenschrift"],
+    ["akademisch", "Akademisch", "LaTeX-Stil"],
+    ["kompakt", "Kompakt", "Viel Inhalt, eine Seite"],
+  ];
+  return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" aria-label="${esc(t.name)}">
+    <div class="cv-bar">
+      <div class="cv-tpls" role="group" aria-label="Vorlage">
+        ${tpls.map(([id, n, d]) => `<button type="button" class="cv-tpl cv-tpl--${id}" data-tpl="${id}"><span class="cv-tpl__mini" aria-hidden="true"><i></i><i></i><i></i></span><b>${n}</b><small>${d}</small></button>`).join("")}
+      </div>
+      <div class="cv-bar__opts">
+        <label class="cv-inline">Farbe <input type="color" data-accent value="#1f4fa3"></label>
+        <label class="cv-inline">Sprache
+          <select data-lang><option value="de">Deutsch</option><option value="en">Englisch</option></select>
+        </label>
+        <button type="button" class="btn btn--link" data-sample>Beispiel laden</button>
+        <label class="btn btn--link">Lebenslauf öffnen (PDF)<input type="file" accept=".pdf,application/pdf" class="visually-hidden" data-import></label>
+        <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
+      </div>
+    </div>
+    <div class="cv-work">
+      <div class="cv-form" data-form></div>
+      <aside class="cv-side">
+        <div class="cv-preview" data-preview aria-live="polite"><p class="cv-preview__empty">Vorschau wird geladen …</p></div>
+        <p class="cv-info" data-info></p>
+        <p class="form-error" data-error role="alert" hidden></p>
+        <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
+        <div class="cv-ats">
+          <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
+          <ul data-ats></ul>
+        </div>
+        <p class="privacy">${ICON.shield}<span>Deine Angaben werden nur zum Erstellen der PDF übertragen und nicht gespeichert. Der Entwurf bleibt in deinem Browser.</span></p>
+      </aside>
+    </div>
   </section>`;
 }
 
@@ -744,6 +787,9 @@ ${
       .map((s) => `\n<script src="${s}" defer></script>`)
       .join("");
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts, ads: false });
+  }
+  if (t.ui.mode === "cv") {
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/cv.js?v=${BUILD_ID}" defer></script>` });
   }
   if (t.ui.mode === "slides") {
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/slides.js?v=${BUILD_ID}" defer></script>` });

@@ -270,7 +270,16 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Zu viele Anfragen. Bitte warte ein paar Minuten." },
   // Schriftdateien für die Editor-Vorschau zählen nicht mit (werden vom Browser zwischengespeichert)
-  skip: (req) => req.method === "GET" && (req.path.startsWith("/sysfont/") || req.originalUrl.startsWith("/api/slides/")),
+  skip: (req) =>
+    (req.method === "GET" && (req.path.startsWith("/sysfont/") || req.originalUrl.startsWith("/api/slides/"))) ||
+    req.originalUrl.startsWith("/api/cv/preview"), // Live-Vorschau hat ein eigenes, großzügigeres Limit
+});
+const cvPreviewLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 400,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: { error: "Zu viele Vorschau-Anfragen. Bitte warte kurz." },
 });
 
 const api = express.Router();
@@ -455,6 +464,64 @@ api.post(
       throw e;
     }
     await sendFile(res, out, outName(file.originalname, "", ".xlsx"));
+  })
+);
+
+// Lebenslauf erstellen (cv_pdf.py) ---------------------------------------------------
+// Der Browser schickt die Formulardaten als JSON; der Server setzt daraus die PDF (gleiche Datei für Vorschau und Download).
+const CV = path.join(__dirname, "cv_pdf.py");
+const cvJson = express.json({ limit: "3mb" }); // inkl. optionalem Bewerbungsfoto
+
+async function renderCv(req, preview) {
+  const data = req.body && typeof req.body.data === "object" ? req.body.data : null;
+  if (!data) throw new UserError("Keine Lebenslauf-Daten erhalten.");
+  const input = path.join(req.jobDir, "cv.json");
+  const out = path.join(req.jobDir, "lebenslauf.pdf");
+  await fsp.writeFile(input, JSON.stringify(data));
+  const { stdout } = await run(PYTHON, [CV, "render", input, out, ...(preview ? ["--preview"] : [])], { maxBuffer: 40 * 1024 * 1024 });
+  return { out, stdout, data };
+}
+
+api.post(
+  "/cv/preview",
+  cvPreviewLimiter,
+  cvJson,
+  wrap(async (req, res) => {
+    const { stdout, out } = await renderCv(req, true);
+    const size = (await fsp.stat(out)).size;
+    const line = stdout.trim().split("\n").pop(); // nur die letzte Zeile ist das Ergebnis
+    res.json({ ...JSON.parse(line), size });
+  })
+);
+
+api.post(
+  "/cv/pdf",
+  cvJson,
+  wrap(async (req, res) => {
+    const { out, data } = await renderCv(req, false);
+    const name = String((data.person && data.person.name) || "").trim().replace(/\s+/g, "_");
+    const ascii = name
+      .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/Ä/g, "Ae").replace(/Ö/g, "Oe").replace(/Ü/g, "Ue").replace(/ß/g, "ss")
+      .normalize("NFKD").replace(/[\u0300-\u036f]/g, ""); // Dateiname nur mit ASCII-Zeichen (sicher für alle Browser)
+    const file = (ascii ? `Lebenslauf_${ascii}` : "Lebenslauf").replace(/[^A-Za-z0-9_-]+/g, "_").slice(0, 80);
+    await sendFile(res, out, `${file}.pdf`);
+  })
+);
+
+// Mit PDF Libre erstellten Lebenslauf wieder öffnen (die Formulardaten stecken als Anhang in der PDF)
+api.post(
+  "/cv/import",
+  uploader("pdf"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    try {
+      const { stdout } = await run(PYTHON, [CV, "extract", file.path], { maxBuffer: 10 * 1024 * 1024 });
+      res.json({ data: JSON.parse(stdout) });
+    } catch (e) {
+      if (/no-data/.test(e.stderr || ""))
+        throw new UserError("Diese PDF wurde nicht mit dem Lebenslauf-Generator von PDF Libre erstellt. Bald kannst du auch andere Lebensläufe importieren.", 422);
+      throw e;
+    }
   })
 );
 

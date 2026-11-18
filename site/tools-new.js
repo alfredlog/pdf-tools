@@ -648,4 +648,69 @@ module.exports = [
     ],
     related: ["jpg-to-pdf", "zeugnisse-als-pdf", "compress", "merge"],
   },
+  // ------------------------------------------------------------------ LEBENSLAUF ERSTELLEN
+  {
+    slug: "lebenslauf-erstellen",
+    name: "Lebenslauf erstellen",
+    short: "ATS-freundlicher Lebenslauf als PDF – mit Vorlagen und Live-Vorschau.",
+    cat: "organize",
+    isNew: true,
+    badge: "CV",
+    glyph: "cv",
+    title: "Lebenslauf erstellen – kostenlos, ATS-freundlich, als PDF | PDF Libre",
+    description:
+      "Lebenslauf online erstellen: Formular ausfüllen, Vorlage wählen (Modern, Klassisch, LaTeX-Stil, Kompakt) und als ATS-freundliche PDF herunterladen. Mit Live-Vorschau und ATS-Check. Kostenlos, ohne Anmeldung.",
+    h1: "Lebenslauf erstellen – ATS-freundlich und kostenlos",
+    lead: "Fülle das Formular aus, wähle eine Vorlage und sieh sofort, wie dein Lebenslauf aussieht. Die PDF ist so aufgebaut, dass Bewerbermanagementsysteme (ATS) jede Angabe richtig lesen.",
+    ui: { mode: "cv", endpoint: "/api/cv/pdf" },
+    steps: [
+      ["Angaben eintragen", "Name, Kontaktdaten, Berufserfahrung, Ausbildung, Kenntnisse und Sprachen – oder „Beispiel laden“ und anpassen."],
+      ["Vorlage wählen", "Modern, Klassisch, Akademisch im LaTeX-Stil oder Kompakt. Farbe und Sprache (Deutsch/Englisch) stellst du oben ein."],
+      ["Vorschau prüfen", "Rechts siehst du live die fertige PDF und einen ATS-Check mit Hinweisen, was noch fehlt."],
+      ["PDF herunterladen", "Lade den Lebenslauf herunter. Später kannst du dieselbe PDF hier wieder öffnen und weiterbearbeiten."],
+    ],
+    article: [
+      {
+        h: "Was bedeutet ATS-freundlich?",
+        p: [
+          "Viele Unternehmen – vom Konzern bis zum Mittelständler – lesen Bewerbungen zuerst mit einem Bewerbermanagementsystem (Applicant Tracking System, ATS) ein. Die Software zieht Name, Kontaktdaten, Stationen und Kenntnisse aus der PDF und sortiert nach Stichworten. Lebensläufe mit mehreren Spalten, Text in Grafiken, Icons statt Wörtern oder exotischen Schriften werden dabei oft falsch oder gar nicht gelesen.",
+          "Die Vorlagen von PDF Libre sind deshalb einspaltig, verwenden echten, markierbaren Text mit sauber eingebetteten Schriften, übliche Überschriften wie „Berufserfahrung“, „Ausbildung“ und „Kenntnisse“ und ein einheitliches Datumsformat. So sieht dein Lebenslauf für Menschen gut aus und ist für Maschinen eindeutig lesbar.",
+        ],
+      },
+      {
+        h: "Lebenslauf-Vorlagen: Modern, Klassisch, LaTeX-Stil und Kompakt",
+        p: [
+          "„Modern“ wirkt frisch mit einer Akzentfarbe deiner Wahl – gut für IT, Marketing, Start-ups und Werkstudentenstellen. „Klassisch“ mit Serifenschrift passt zu Banken, Verwaltung, Recht und Industrie. „Akademisch“ setzt deinen Lebenslauf in der Schrift Latin Modern, die man aus LaTeX kennt – ideal für Wissenschaft, Promotion, Stipendien und technische Studiengänge, ganz ohne LaTeX-Kenntnisse. „Kompakt“ bringt viel Inhalt auf eine Seite.",
+        ],
+      },
+      {
+        h: "Tabellarischer Lebenslauf: Aufbau und Reihenfolge",
+        p: [
+          "In Deutschland ist der tabellarische Lebenslauf in umgekehrt chronologischer Reihenfolge üblich: die aktuellste Station zuerst. Ein guter Aufbau: Kontaktdaten, kurzes Profil, Berufserfahrung (inklusive Praktika und Werkstudentenjobs), Ausbildung und Studium, Projekte, Kenntnisse, Sprachen, Ehrenamt und Interessen. Für Berufseinsteiger, Schüler und Studierende darf die Ausbildung auch vor der Berufserfahrung stehen – die Reihenfolge der Abschnitte kannst du mit den Pfeilen ändern.",
+          "Beschreibe bei jeder Station kurz, was du gemacht und erreicht hast – am besten mit Zahlen („Berichte automatisiert, spart 6 Stunden pro Woche“). Ein bis zwei Seiten reichen fast immer.",
+        ],
+      },
+      {
+        h: "Lebenslauf mit oder ohne Foto?",
+        p: [
+          "Ein Bewerbungsfoto ist in Deutschland freiwillig. Viele Arbeitgeber und ATS-Systeme bevorzugen Lebensläufe ohne Foto, um fair auszuwählen; in manchen Branchen ist ein professionelles Foto aber weiterhin üblich. Mit PDF Libre entscheidest du selbst: Foto hinzufügen oder einfach weglassen.",
+        ],
+      },
+      {
+        h: "Lebenslauf später bearbeiten – ohne Konto",
+        p: [
+          "Dein Entwurf wird automatisch in deinem Browser gespeichert. Zusätzlich steckt in jeder heruntergeladenen PDF eine Kopie deiner Angaben. Öffne die Datei einfach über „Lebenslauf öffnen (PDF)“ wieder – alle Felder sind sofort ausgefüllt, auch auf einem anderen Gerät. So passt du deinen Lebenslauf schnell an jede neue Bewerbung an.",
+        ],
+      },
+    ],
+    faq: [
+      ["Ist der Lebenslauf-Generator kostenlos?", "Ja. Alle Vorlagen, die Live-Vorschau, der ATS-Check und der PDF-Download sind kostenlos, ohne Anmeldung und ohne Wasserzeichen."],
+      ["Ist der Lebenslauf ATS-freundlich?", "Ja. Er ist einspaltig, enthält echten Text mit eingebetteten Schriften und verwendet übliche Überschriften. Bewerbermanagementsysteme können Name, Kontaktdaten, Stationen und Kenntnisse zuverlässig auslesen."],
+      ["Kann ich den Lebenslauf auf Englisch erstellen?", "Ja. Stelle oben die Sprache auf Englisch – Überschriften wie „Experience“, „Education“ und „Skills“ werden automatisch angepasst. Deine Texte schreibst du selbst in der gewünschten Sprache."],
+      ["Wie bearbeite ich meinen Lebenslauf später?", "Lade die mit PDF Libre erstellte PDF über „Lebenslauf öffnen (PDF)“ hoch. Alle Angaben werden wieder ins Formular übernommen."],
+      ["Werden meine Daten gespeichert?", "Nein. Deine Angaben werden nur zum Erstellen der PDF an den Server geschickt und sofort wieder gelöscht. Der Entwurf liegt ausschließlich in deinem Browser."],
+      ["Wie füge ich Anschreiben und Zeugnisse hinzu?", "Lade den fertigen Lebenslauf zusammen mit Anschreiben und Zeugnissen in „Bewerbungsmappe erstellen“ – dort wird alles zu einer PDF zusammengefügt."],
+    ],
+    related: ["bewerbungsmappe", "bewerbung-pdf-zusammenfuegen", "lebenslauf-pdf", "bewerbung-deckblatt"],
+  },
 ];

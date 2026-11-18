@@ -20,7 +20,7 @@ const categories = [
 
 // Reihenfolge der Werkzeuge innerhalb der Kategorien (beliebteste zuerst)
 const ORDER = [
-  "merge", "bewerbungsmappe", "split", "organize", "rotate", "remove-pages", "extract-pages",
+  "merge", "lebenslauf-erstellen", "bewerbungsmappe", "split", "organize", "rotate", "remove-pages", "extract-pages",
   "compress", "merge-compress",
   "edit", "sign", "ocr", "create", "page-numbers", "watermark",
   "docx-to-pdf", "jpg-to-pdf", "heic-to-pdf", "excel-to-pdf", "ppt-to-pdf", "pdfa",

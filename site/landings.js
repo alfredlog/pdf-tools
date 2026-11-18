@@ -270,6 +270,138 @@ const landings = [
     ],
     related: ["bewerbungsmappe", "bewerbung-pdf-verkleinern", "compress", "merge"],
   },
+  // ------------------------------------------------------------------ LEBENSLAUF
+  {
+    slug: "lebenslauf-vorlage",
+    base: "lebenslauf-erstellen",
+    guide: "Lebenslauf-Vorlage kostenlos (Word-Alternative als PDF)",
+    name: "Lebenslauf-Vorlage",
+    title: "Lebenslauf-Vorlage kostenlos – modern, klassisch & als PDF | PDF Libre",
+    description:
+      "Kostenlose Lebenslauf-Vorlagen: Modern, Klassisch, LaTeX-Stil und Kompakt. Online ausfüllen statt Word-Vorlage anpassen – als ATS-freundliche PDF herunterladen. Ohne Anmeldung.",
+    h1: "Lebenslauf-Vorlage kostenlos – ausfüllen und als PDF speichern",
+    lead: "Keine Lust, in Word mit Tabellen und Tabstopps zu kämpfen? Wähle eine Vorlage, trage deine Daten ein – das Layout passt sich automatisch an.",
+    article: [
+      {
+        h: "Vorlage online ausfüllen statt Word-Datei anpassen",
+        p: [
+          "Klassische Lebenslauf-Vorlagen für Word oder Google Docs verrutschen schnell: Eine Zeile mehr, und die Tabelle springt auf die nächste Seite. Hier trägst du nur Inhalte ein – Abstände, Schriften und Seitenumbrüche setzt PDF Libre automatisch. Überschriften, die allein unten auf einer Seite stehen würden, rutschen von selbst auf die nächste Seite.",
+        ],
+      },
+      {
+        h: "Welche Lebenslauf-Vorlage passt zu mir?",
+        p: [
+          "Für IT, Marketing, Start-ups, Werkstudenten- und Praktikumsstellen: „Modern“. Für Banken, Behörden, Versicherungen, Kanzleien und die Industrie: „Klassisch“. Für Forschung, Promotion, Stipendien und technische Fächer: „Akademisch“ im LaTeX-Stil. Für viel Berufserfahrung auf einer Seite: „Kompakt“. Du kannst jederzeit wechseln, ohne etwas neu einzugeben.",
+        ],
+      },
+    ],
+    faq: [
+      ["Kostet die Lebenslauf-Vorlage etwas?", "Nein. Alle Vorlagen sind kostenlos und ohne Wasserzeichen."],
+      ["Kann ich die Vorlage als Word-Datei bekommen?", "Der Lebenslauf wird als PDF erstellt – das Format, das Personaler und Bewerbungsportale erwarten. Wenn du trotzdem Word brauchst, wandle die PDF mit „PDF in Word“ um."],
+      ["Kann ich zwischen Vorlagen wechseln?", "Ja, jederzeit. Deine Angaben bleiben erhalten, nur das Design ändert sich."],
+    ],
+    related: ["lebenslauf-erstellen", "lebenslauf-ats", "lebenslauf-latex", "bewerbungsmappe"],
+  },
+  {
+    slug: "lebenslauf-ats",
+    base: "lebenslauf-erstellen",
+    guide: "ATS-freundlicher Lebenslauf: so lesen Bewerbermanagementsysteme richtig",
+    name: "ATS-Lebenslauf",
+    title: "ATS-Lebenslauf erstellen – ATS-freundliche Vorlage kostenlos | PDF Libre",
+    description:
+      "ATS-freundlichen Lebenslauf erstellen: einspaltig, echter Text, Standard-Überschriften und ATS-Check mit Hinweisen. So kommt deine Bewerbung durch Bewerbermanagementsysteme. Kostenlos als PDF.",
+    h1: "ATS-freundlichen Lebenslauf erstellen",
+    lead: "Damit deine Bewerbung nicht schon an der Software scheitert: Vorlagen, die jedes Bewerbermanagementsystem lesen kann – mit ATS-Check direkt neben der Vorschau.",
+    article: [
+      {
+        h: "Woran Lebensläufe im ATS scheitern",
+        p: [
+          "Mehrspaltige Layouts, bei denen die Software Spalten vermischt; Kontaktdaten in der Kopfzeile oder als Bild; Icons statt Wörtern („📞“ statt „Telefon“); kreative Überschriften wie „Meine Reise“ statt „Berufserfahrung“; Diagramme für Sprachkenntnisse; Schriften ohne saubere Unicode-Zuordnung, bei denen das ATS Zeichensalat liest. All das vermeiden die Vorlagen von PDF Libre.",
+        ],
+      },
+      {
+        h: "Keywords aus der Stellenanzeige übernehmen",
+        p: [
+          "Ein ATS vergleicht deinen Lebenslauf mit den Anforderungen der Stelle. Verwende deshalb die Begriffe aus der Anzeige, sofern sie auf dich zutreffen – zum Beispiel „Python“, „SQL“, „Projektmanagement“ oder „Kundenservice“ – in deinen Kenntnissen und in der Beschreibung deiner Stationen. Schreibe Abkürzungen einmal aus („Customer Relationship Management (CRM)“). Erfinde aber nichts: Im Gespräch wird jede Angabe geprüft.",
+        ],
+      },
+      {
+        h: "Der ATS-Check von PDF Libre",
+        p: [
+          "Neben der Vorschau prüft PDF Libre, ob Name und Kontaktdaten als Text vorhanden sind, ob es ein Kurzprofil gibt, ob alle Daten im gleichen Format stehen, ob deine Stationen beschrieben sind und ob der Lebenslauf höchstens zwei Seiten lang ist.",
+        ],
+      },
+    ],
+    faq: [
+      ["Was ist ein ATS?", "Ein Applicant Tracking System (Bewerbermanagementsystem) ist eine Software, mit der Unternehmen Bewerbungen sammeln, auslesen und sortieren – zum Beispiel Workday, SAP SuccessFactors, Personio oder Softgarden."],
+      ["Darf ein ATS-Lebenslauf ein Foto haben?", "Ja, das Foto stört das Auslesen nicht. Es ist in Deutschland aber freiwillig."],
+      ["Ist eine PDF für ein ATS geeignet?", "Ja, wenn sie echten Text enthält – wie die PDFs von PDF Libre. Eingescannte Lebensläufe oder Bilder als PDF kann ein ATS dagegen nicht lesen."],
+    ],
+    related: ["lebenslauf-erstellen", "lebenslauf-vorlage", "bewerbung-pdf-zusammenfuegen", "ocr"],
+  },
+  {
+    slug: "lebenslauf-latex",
+    base: "lebenslauf-erstellen",
+    defaults: { template: "akademisch" },
+    guide: "Lebenslauf im LaTeX-Stil – ohne LaTeX",
+    name: "Lebenslauf im LaTeX-Stil",
+    title: "LaTeX-Lebenslauf ohne LaTeX – moderncv-Stil online erstellen | PDF Libre",
+    description:
+      "Lebenslauf im LaTeX-Look erstellen, ganz ohne LaTeX: Latin-Modern-Schrift, klare Struktur wie moderncv, Live-Vorschau und PDF-Download. Ideal für Studium, Wissenschaft und Promotion. Kostenlos.",
+    h1: "Lebenslauf im LaTeX-Stil – ganz ohne LaTeX",
+    lead: "Der typische LaTeX-Look mit Latin-Modern-Schrift, ohne Overleaf, ohne Pakete und ohne Kompilierfehler. Wähle oben die Vorlage „Akademisch“ und fülle das Formular aus.",
+    article: [
+      {
+        h: "Warum ein Lebenslauf im LaTeX-Stil?",
+        p: [
+          "In Mathematik, Informatik, Physik und der Forschung sind Lebensläufe aus LaTeX (zum Beispiel mit moderncv oder altacv) weit verbreitet: ruhige Typografie, perfekte Abstände, seriöse Wirkung. Der Nachteil: Man muss LaTeX beherrschen, und jede Änderung heißt neu kompilieren. Die Vorlage „Akademisch“ setzt deinen Lebenslauf in Latin Modern – der Standardschrift von LaTeX – mit derselben klaren Struktur.",
+        ],
+      },
+      {
+        h: "Für Bewerbungen an Uni, Institut und Forschung",
+        p: [
+          "Ob HiWi-Stelle, Werkstudentenjob am Institut, Masterbewerbung, Promotion, Stipendium oder Bewerbung bei einem Forschungsinstitut wie Fraunhofer oder Max-Planck: Ein akademischer Lebenslauf zeigt neben Ausbildung und Berufserfahrung auch Projekte, Abschlussarbeit, Lehrerfahrung und Publikationen. Lege dafür einfach eigene Abschnitte über „Projekte“ oder „Weitere Angaben“ an und benenne sie um.",
+        ],
+      },
+    ],
+    faq: [
+      ["Brauche ich LaTeX oder Overleaf?", "Nein. Du füllst nur das Formular aus, die PDF wird automatisch gesetzt."],
+      ["Ist der LaTeX-Stil ATS-freundlich?", "Ja. Anders als manche LaTeX-Vorlagen mit Spalten und Icons ist die Vorlage einspaltig und enthält sauber auslesbaren Text."],
+      ["Kann ich Publikationen angeben?", "Ja. Benenne den Abschnitt „Weitere Angaben“ in „Publikationen“ um und trage sie dort ein – eine pro Zeile."],
+    ],
+    related: ["lebenslauf-erstellen", "lebenslauf-vorlage", "lebenslauf-ats", "bewerbungsmappe"],
+  },
+  {
+    slug: "lebenslauf-werkstudent",
+    base: "lebenslauf-erstellen",
+    guide: "Lebenslauf für Werkstudenten, Praktikum und Ausbildung",
+    name: "Lebenslauf für Werkstudenten",
+    title: "Lebenslauf Werkstudent & Praktikum – Muster und Vorlage kostenlos | PDF Libre",
+    description:
+      "Lebenslauf für Werkstudentenstelle, Praktikum oder Ausbildung erstellen: Muster mit Studium, Projekten und Kenntnissen, ATS-freundlich als PDF. Kostenlos und ohne Anmeldung.",
+    h1: "Lebenslauf für Werkstudenten, Praktikum und Ausbildung",
+    lead: "Wenig Berufserfahrung? Kein Problem: Mit Studium, Projekten, Nebenjobs und Kenntnissen wird dein Lebenslauf trotzdem stark. Klicke auf „Beispiel laden“, um ein Muster zu sehen.",
+    article: [
+      {
+        h: "Was gehört in einen Lebenslauf für Studierende?",
+        p: [
+          "Ein kurzes Profil (welches Studium, welche Stärken, wie viele Stunden pro Woche), das Studium mit Schwerpunkten, Praktika, Nebenjobs und Werkstudententätigkeiten, Uni- und eigene Projekte (zum Beispiel auf GitHub), Kenntnisse wie Programmiersprachen, Tools und Software, Sprachen mit Niveau (A1–C2) sowie Ehrenamt. Auch Nebenjobs außerhalb deines Fachs zeigen Zuverlässigkeit und gehören hinein.",
+        ],
+      },
+      {
+        h: "Projekte statt Berufserfahrung",
+        p: [
+          "Gerade für Werkstudentenstellen in IT, Data Science und Ingenieurwesen sind Projekte oft wichtiger als lange Berufserfahrung. Beschreibe kurz, was du gebaut hast, mit welchen Technologien und was dabei herauskam – und verlinke es, wenn möglich.",
+        ],
+      },
+    ],
+    faq: [
+      ["Wie lang darf der Lebenslauf eines Studenten sein?", "Eine Seite ist ideal, zwei Seiten sind in Ordnung, wenn du viele relevante Projekte oder Jobs hast."],
+      ["Gehört das Abitur in den Lebenslauf?", "Ja, mit Note, solange du noch studierst oder gerade erst fertig bist."],
+      ["Sollte ich die Wochenstunden angeben?", "Für Werkstudentenstellen ja – zum Beispiel im Profil: „verfügbar für 15–20 Stunden pro Woche“."],
+    ],
+    related: ["lebenslauf-erstellen", "bewerbungsmappe", "bewerbung-per-email", "lebenslauf-ats"],
+  },
 ];
 
 module.exports = { landings };
