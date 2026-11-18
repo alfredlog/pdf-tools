@@ -1281,8 +1281,12 @@ function signatureDialog() {
             <button type="button" class="sig__color" data-sig-color="#111827" aria-pressed="true" aria-label="Schwarz" style="--c:#111827"></button>
             <button type="button" class="sig__color" data-sig-color="#1d3fb8" aria-pressed="false" aria-label="Blau" style="--c:#1d3fb8"></button>
           </span>
-          <button type="button" class="btn btn--link" data-sig-clear>Löschen</button>
+          <span class="sig__tools">
+            <button type="button" class="btn btn--link" data-sig-clear>Löschen</button>
+            <button type="button" class="btn btn--ghost btn--sm sig__fullbtn" data-sig-full aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span data-sig-full-label>Großes Feld</span></button>
+          </span>
         </div>
+        <p class="sig__turn" data-sig-turn hidden>Tipp: Handy quer drehen – dann hast du noch mehr Platz.</p>
         <p class="sig__hint" data-sig-hint>Mit der Maus: <b>einmal klicken</b>, dann einfach die Maus bewegen – erneut klicken, um den Stift abzusetzen. Gedrückt halten und ziehen geht auch, ebenso Finger und Stift.</p>
       </div>
       <div class="sig__panel" data-sig-panel="type" hidden>

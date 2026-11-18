@@ -874,3 +874,17 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .sig__pad.is-pen { border-color: var(--brand); border-style: solid; }
 .sig__tabs button { white-space: nowrap; }
 .btn[hidden] { display: none; }
+
+/* Unterschrift: großes Feld (Vollbild), vor allem fürs Handy */
+.sig__tools { display: flex; align-items: center; gap: 6px; }
+.sig__fullbtn { display: inline-flex; align-items: center; gap: 6px; }
+.sig__fullbtn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.sig__turn { margin: 4px 0 0; font-size: .85rem; color: var(--ink-3); text-align: center; }
+.sig.sig--full { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); border-radius: 0; display: flex; flex-direction: column; }
+.sig--full h2, .sig--full .sig__tabs, .sig--full .sig__hint, .sig--full .check, .sig--full [data-sig-saved] { display: none; }
+.sig--full .sig__panel[data-sig-panel="draw"] { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.sig--full .sig__pad { flex: 1; min-height: 0; aspect-ratio: auto; height: auto; }
+.sig--full .sig__actions { margin-top: 8px; }
+.sig--full .modal__close { top: 16px; right: 18px; z-index: 2; }
+.sig--full .sig__row { padding-right: 48px; }
+@media (max-width: 700px) { .sig__fullbtn { background: var(--brand); border-color: var(--brand); color: #fff; } }

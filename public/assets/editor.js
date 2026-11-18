@@ -1331,7 +1331,7 @@
     const dot = (p) => {
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.6, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 2.6 * inkScale(), 0, Math.PI * 2);
       ctx.fill();
     };
     const setPen = (on) => {
@@ -1361,7 +1361,7 @@
       // geglättete Linie durch die Mittelpunkte
       const [a, b, c] = pts.slice(-3);
       ctx.strokeStyle = color;
-      ctx.lineWidth = 5.2;
+      ctx.lineWidth = 5.2 * inkScale();
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       ctx.beginPath();
@@ -1388,6 +1388,63 @@
     sig.addEventListener("keydown", (e) => {
       if (penDown && (e.key === "Escape" || e.key === " ")) { e.preventDefault(); setPen(false); }
     });
+
+    // Großes Feld: das Zeichenfeld füllt den ganzen Bildschirm (Handy). Die Leinwand bekommt dabei
+    // die neue Größe in echten Pixeln; was schon gezeichnet ist, wird mitskaliert (Seitenverhältnis bleibt).
+    const NORMAL = { w: 900, h: 300 };
+    const inkScale = () => pad.width / NORMAL.w; // Strichstärke wächst mit der Leinwand → gleiches Ergebnis
+    const fullBtn = sig.querySelector("[data-sig-full]");
+    const turnHint = sig.querySelector("[data-sig-turn]");
+    let full = false;
+    function resizePad(w, h) {
+      w = Math.round(w);
+      h = Math.round(h);
+      if (w < 10 || h < 10 || (w === pad.width && h === pad.height)) return;
+      const old = document.createElement("canvas");
+      old.width = pad.width;
+      old.height = pad.height;
+      old.getContext("2d").drawImage(pad, 0, 0);
+      pad.width = w;
+      pad.height = h;
+      if (strokes) {
+        const k = Math.min(w / old.width, h / old.height);
+        ctx.drawImage(old, (w - old.width * k) / 2, (h - old.height * k) / 2, old.width * k, old.height * k);
+      }
+      pts = [];
+    }
+    function fitFull() {
+      if (!full) return;
+      const r = pad.getBoundingClientRect();
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      let w = r.width * dpr, h = r.height * dpr;
+      const cap = 2000 / Math.max(w, h); // nicht unnötig riesig
+      if (cap < 1) { w *= cap; h *= cap; }
+      // gleiche Strichstärke wie im normalen Feld, bezogen auf die Breite
+      resizePad(w, h);
+      turnHint.hidden = !(window.innerHeight > window.innerWidth);
+    }
+    async function setFull(on) {
+      full = on;
+      setPen(false);
+      sig.classList.toggle("sig--full", on);
+      fullBtn.setAttribute("aria-pressed", String(on));
+      sig.querySelector("[data-sig-full-label]").textContent = on ? "Fertig" : "Großes Feld";
+      if (on) {
+        // Echtes Vollbild + Querformat, wo der Browser es erlaubt (Android). iPhone: nur das große Feld.
+        try { if (sig.requestFullscreen && !document.fullscreenElement) await sig.requestFullscreen({ navigationUI: "hide" }); } catch (_) {}
+        try { await screen.orientation.lock("landscape"); } catch (_) {}
+        requestAnimationFrame(fitFull);
+      } else {
+        try { screen.orientation.unlock(); } catch (_) {}
+        try { if (document.fullscreenElement) await document.exitFullscreen(); } catch (_) {}
+        turnHint.hidden = true;
+        resizePad(NORMAL.w, NORMAL.h);
+      }
+    }
+    fullBtn.addEventListener("click", () => setFull(!full));
+    window.addEventListener("resize", () => full && requestAnimationFrame(fitFull));
+    document.addEventListener("fullscreenchange", () => { if (full && !document.fullscreenElement) requestAnimationFrame(fitFull); });
+    sig.addEventListener("close", () => { if (full) setFull(false); });
 
     // Getippte Unterschrift: Name in einer Handschrift auf eine Leinwand schreiben
     const nameInput = sig.querySelector("[data-sig-name]");
@@ -1460,6 +1517,7 @@
     function setTab(name) {
       tab = name;
       if (typeof setPen === "function") setPen(false);
+      if (name !== "draw" && typeof setFull === "function" && full) setFull(false);
       sig.querySelectorAll("[data-sig-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.sigTab === name)));
       sig.querySelectorAll("[data-sig-panel]").forEach((p) => (p.hidden = p.dataset.sigPanel !== name));
     }
@@ -1540,6 +1598,7 @@
       sig.querySelector("[data-sig-preview]").hidden = true;
       sig.querySelector("[data-sig-saved]").hidden = !savedSig();
       setPen(false);
+      if (full) setFull(false);
       refreshFonts();
       setTab("draw");
       sig.showModal();
