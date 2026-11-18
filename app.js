@@ -14,6 +14,7 @@ const express = require("express");
 const multer = require("multer");
 const compression = require("compression");
 const { rateLimit } = require("express-rate-limit");
+const i18n = require("./server/i18n"); // Fehlermeldungen und Dateinamen für /en/ und /fr/
 const fs = require("fs");
 const fsp = require("fs/promises");
 const os = require("os");
@@ -160,6 +161,7 @@ function requireFiles(req) {
 
 async function sendFile(res, filePath, downloadName, extraHeaders = {}) {
   for (const [k, v] of Object.entries(extraHeaders)) res.setHeader(k, String(v));
+  downloadName = i18n.fileName(res.req.lang || "de", downloadName);
   await new Promise((resolve, reject) =>
     res.download(filePath, downloadName, (err) => (err && !res.headersSent ? reject(err) : resolve()))
   );
@@ -215,6 +217,7 @@ app.disable("x-powered-by");
 // Ohne TRUST_PROXY wird nur ein Proxy auf demselben Server (127.0.0.1) vertraut – das ist immer sicher.
 app.set("trust proxy", process.env.TRUST_PROXY ? Number(process.env.TRUST_PROXY) || 1 : "loopback");
 app.use(compression());
+app.use(i18n.middleware); // muss vor allen Routen stehen, damit jede Fehlermeldung übersetzt wird
 
 // Stripe-Webhook braucht den unveränderten Rohtext – deshalb ganz vorne
 app.post("/api/stripe/webhook", ...billing.webhook());
@@ -770,7 +773,7 @@ api.post(
     for (const [k, v] of Object.entries(cover || {})) cover[k] = String(v || "").slice(0, 120);
     const spec = path.join(req.jobDir, "mappe.json");
     const out = path.join(req.jobDir, "Bewerbung.pdf");
-    await fsp.writeFile(spec, JSON.stringify({ files: parts, cover, pageNumbers: b.pageNumbers === "yes", maxMb: Number(b.maxMb) || 0 }));
+    await fsp.writeFile(spec, JSON.stringify({ files: parts, cover, pageNumbers: b.pageNumbers === "yes", maxMb: Number(b.maxMb) || 0, lang: req.lang }));
     try {
       await run(PYTHON, [path.join(__dirname, "bewerbungsmappe.py"), spec, out]);
     } catch (e) {

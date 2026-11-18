@@ -1,10 +1,6 @@
 // Textes français des outils (phase 1 : tout sauf les longs articles SEO)
 const PDF_PRIVATE = "Non, tout se passe dans votre navigateur.";
 module.exports = {
-  // Nur Name und Kurztext: die Oberfläche dieser Werkzeuge folgt in Phase 3 (Links führen bis dahin zur deutschen Seite)
-  "lebenslauf-erstellen": { name: "Créer un CV", short: "CV compatible ATS en allemand ou en français – importez l’ancien, mettez en page, téléchargez en PDF." },
-  "lebenslauf-anpassen": { name: "Adapter son CV à une offre", short: "Comparez votre CV à une offre d’emploi et adaptez-le – avec les mots-clés manquants." },
-  "anschreiben-erstellen": { name: "Rédiger une lettre de motivation", short: "Lettre de motivation au même design que votre CV – éventuellement rédigée avec l’IA." },
   bewerbungsmappe: {
     name: "Dossier de candidature PDF",
     short: "Lettre de motivation, CV et certificats en un seul PDF – avec page de garde et moins de 5 Mo.",

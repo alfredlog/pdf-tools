@@ -2,6 +2,7 @@
 module.exports = {
   ui: {
     ...require("./en-hub"),
+    ...require("./en-cvui"),
     "Ist PDF Libre kostenlos?": "Is PDF Libre free?",
     "und": "and",
     "Fast alles: {n} Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur {pro} gehören zu PDF Libre Pro: {trial} Tage kostenlos testen, danach {price} im Monat oder {day} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.": "Almost everything: {n} tools such as merge, compress, sign and convert are free and work without sign-up. Only {pro} are part of PDF Libre Pro: try it free for {trial} days, then {price} per month or {day} for a day pass. No ads or watermarks are ever added to your files.",
@@ -98,10 +99,11 @@ module.exports = {
     security: { name: "Security", short: "Security" },
     erechnung: { name: "E-invoicing", short: "E-invoice" },
   },
-  tools: require("./en-tools"),
+  tools: { ...require("./en-tools"), ...require("./en-cvtools") },
   articles: require("./en-articles"),
   landings: require("./en-landings"),
   js: {
+    ...require("./en-cvjs"),
     " – Details stehen am Ende der PDF.": " – details are at the end of the PDF.",
     "1 Bild erstellt.": "1 image created.",
     "1 Bild in eine PDF umgewandelt.": "1 image converted to PDF.",

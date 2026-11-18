@@ -4,7 +4,7 @@ module.exports = {
     guide: "Réunir ses documents de candidature en un seul PDF",
     name: "Candidature en un seul PDF",
     title: "Réunir sa candidature en un seul PDF – lettre, CV et diplômes | PDF Libre",
-    description: "Fusionnez vos documents de candidature en un PDF en ligne : lettre de motivation, CV et diplômes dans le bon ordre, avec page de garde et sous 5 Mo – comme l’attendent les employeurs allemands. Gratuit, sans inscription.",
+    description: "Fusionnez vos documents de candidature en un PDF en ligne : lettre de motivation, CV et diplômes dans le bon ordre, avec page de garde et sous 5 Mo – comme l’attendent les recruteurs. Gratuit, sans inscription.",
     h1: "Réunir ses documents de candidature en un seul PDF",
     lead: "Lettre de motivation, CV, certificats de travail et diplômes dans un seul PDF – trié, avec sommaire et assez léger pour tous les portails de candidature et tous les e-mails.",
     steps: [
@@ -13,13 +13,13 @@ module.exports = {
       ["Télécharger le PDF de candidature", "Cliquez sur « Créer le dossier PDF ». Vous obtenez un fichier PDF à déposer directement ou à envoyer par e-mail."],
     ],
     article: [
-      ["Pourquoi les recruteurs préfèrent un seul PDF", "Pour une candidature en ligne, mieux vaut envoyer un seul PDF que dix pièces jointes. Les RH peuvent l’ouvrir, le transférer et l’imprimer d’un clic – et rien ne se perd. Beaucoup d’entreprises, notamment en Allemagne, l’écrivent explicitement dans l’annonce : « Merci d’envoyer vos documents en un seul fichier PDF. »", "Avec PDF Libre, vous réunissez gratuitement vos documents, sans logiciel et sans compte. Les fichiers Word comme votre lettre ou votre CV sont convertis en PDF automatiquement, les photos de diplômes sont placées sur des pages A4."],
-      ["Le bon ordre des documents de candidature", "En Allemagne, l’ordre habituel est : page de garde (facultative), lettre de motivation (Anschreiben), CV (Lebenslauf), certificats de travail (Arbeitszeugnisse, le plus récent d’abord), diplôme universitaire ou professionnel, bulletin scolaire, puis attestations, formations et exemples de travaux. Pour un apprentissage ou un stage, les derniers bulletins et attestations de stage viennent juste après le CV."],
-      ["Pour un job étudiant, un apprentissage ou une candidature spontanée", "Apprentissage (Ausbildung), stage, poste de Werkstudent, mini-job ou candidature spontanée : le principe est toujours le même. Tous les documents vont dans un seul fichier clair avec un nom parlant, par exemple « Candidature_Marie_Dupont.pdf »."],
+      ["Pourquoi les recruteurs préfèrent un seul PDF", "Pour une candidature en ligne, mieux vaut envoyer un seul PDF que dix pièces jointes. Les RH peuvent l’ouvrir, le transférer et l’imprimer d’un clic – et rien ne se perd. Beaucoup d’entreprises l’écrivent explicitement dans l’annonce : « Merci d’envoyer vos documents en un seul fichier PDF. »", "Avec PDF Libre, vous réunissez gratuitement vos documents, sans logiciel et sans compte. Les fichiers Word comme votre lettre ou votre CV sont convertis en PDF automatiquement, les photos de diplômes sont placées sur des pages A4."],
+      ["Le bon ordre des documents de candidature", "Un ordre qui a fait ses preuves : page de garde (facultative), lettre de motivation, CV, certificats de travail ou attestations d’emploi (le plus récent d’abord), diplôme universitaire ou professionnel, bulletin scolaire, puis attestations, formations et exemples de travaux. Pour un apprentissage ou un stage, les derniers bulletins et attestations de stage viennent juste après le CV."],
+      ["Pour un job étudiant, un apprentissage ou une candidature spontanée", "Apprentissage, stage, job étudiant, temps partiel ou candidature spontanée : le principe est toujours le même. Tous les documents vont dans un seul fichier clair avec un nom parlant, par exemple « Candidature_Marie_Dupont.pdf »."],
     ],
     faq: [
       ["Puis-je mélanger fichiers Word et PDF ?", "Oui. Vous pouvez importer ensemble PDF, Word (DOC, DOCX), ODT et photos (JPG, PNG). Tout est converti en PDF automatiquement et fusionné."],
-      ["Comment nommer mon PDF de candidature ?", "Avec le contenu et votre nom, par exemple « Candidature_Marie_Dupont.pdf » ou « Bewerbung_Werkstudent_Marie_Dupont.pdf ». Évitez accents et espaces pour que tous les portails acceptent le fichier."],
+      ["Comment nommer mon PDF de candidature ?", "Avec le contenu et votre nom, par exemple « Candidature_Marie_Dupont.pdf » ou « Candidature_Stage_Marie_Dupont.pdf ». Évitez accents et espaces pour que tous les portails acceptent le fichier."],
       ["La candidature doit-elle tenir en un seul fichier ?", "Pas toujours, mais c’est généralement mieux. Si un portail propose des champs séparés pour la lettre et le CV, déposez-les séparément – sinon, envoyez un seul PDF."],
       ["La fusion est-elle gratuite ?", "Oui, entièrement gratuite, sans inscription et sans filigrane. Vos fichiers sont supprimés juste après la création."],
     ],
@@ -52,7 +52,7 @@ module.exports = {
     guide: "Créer une page de garde pour sa candidature",
     name: "Page de garde de candidature",
     title: "Créer une page de garde de candidature – gratuit en PDF | PDF Libre",
-    description: "Créez en ligne une page de garde (Deckblatt) pour votre candidature : nom, poste, entreprise, coordonnées et sommaire automatique – directement dans votre dossier PDF. Gratuit.",
+    description: "Créez en ligne une page de garde pour votre candidature : nom, poste, entreprise, coordonnées et sommaire automatique – directement dans votre dossier PDF. Gratuit.",
     h1: "Créer une page de garde pour sa candidature",
     lead: "Indiquez votre nom, le poste et l’entreprise – PDF Libre place une page de garde sobre et professionnelle, avec sommaire, devant vos documents.",
     steps: [
@@ -61,14 +61,14 @@ module.exports = {
       ["Télécharger avec page de garde", "La page de garde est placée automatiquement au début, avec un sommaire tiré des noms de vos fichiers."],
     ],
     article: [
-      ["Une candidature a-t-elle besoin d’une page de garde ?", "En Allemagne, la page de garde (Deckblatt) n’est pas obligatoire, mais elle fait soigné et montre d’un coup d’œil qui postule à quel poste. Elle est particulièrement utile pour un dossier PDF avec beaucoup d’annexes, car le sommaire indique ce qu’il contient. Pour une candidature très courte – par exemple seulement lettre et CV – vous pouvez vous en passer."],
-      ["Que mettre sur la page de garde ?", "En général : le mot « Candidature » (Bewerbung), le poste (ex. « Werkstudent Data Science » ou « apprentissage d’assistant(e) de gestion »), l’entreprise, votre nom complet et vos coordonnées. La photo est facultative. Le sommaire liste la lettre, le CV et toutes les annexes."],
+      ["Une candidature a-t-elle besoin d’une page de garde ?", "La page de garde n’est pas obligatoire, mais elle fait soigné et montre d’un coup d’œil qui postule à quel poste. Elle est particulièrement utile pour un dossier PDF avec beaucoup d’annexes, car le sommaire indique ce qu’il contient. Pour une candidature très courte – par exemple seulement lettre et CV – vous pouvez vous en passer."],
+      ["Que mettre sur la page de garde ?", "En général : le mot « Candidature », le poste (ex. « Stage Data Science » ou « Alternance assistant(e) de gestion »), l’entreprise, votre nom complet et vos coordonnées. La photo est facultative. Le sommaire liste la lettre, le CV et toutes les annexes."],
       ["Sobre plutôt que coloré", "Une bonne page de garde est calme et lisible : beaucoup d’espace blanc, une police claire, pas de cadres colorés. C’est exactement ainsi qu’est conçue celle de PDF Libre – elle s’accorde avec tous les CV et tous les secteurs."],
     ],
     faq: [
       ["Le sommaire est-il créé automatiquement ?", "Oui, à partir des noms de vos fichiers. « Certificat_Exemple_SAS.pdf » devient « Certificat Exemple SAS ». Donnez donc des noms parlants à vos fichiers avant."],
       ["Dois-je indiquer téléphone et adresse ?", "Non, ces champs sont facultatifs. Nom, poste et entreprise suffisent pour une page de garde complète."],
-      ["Puis-je mettre une photo sur la page de garde ?", "Pas pour l’instant. Importez la photo comme page séparée ou placez-la dans votre CV – en Allemagne, la photo de candidature est de toute façon facultative."],
+      ["Puis-je mettre une photo sur la page de garde ?", "Pas pour l’instant. Importez la photo comme page séparée ou placez-la dans votre CV – dans beaucoup de pays, la photo est facultative."],
       ["La page de garde est-elle payante ?", "Non. La page de garde et tout le dossier de candidature sont gratuits et sans inscription."],
     ],
   },
@@ -85,7 +85,7 @@ module.exports = {
       ["Envoyer en pièce jointe", "Téléchargez le PDF et joignez-le à votre e-mail."],
     ],
     article: [
-      ["À quoi ressemble une bonne candidature par e-mail", "Objet : « Candidature au poste de [poste] – [référence] » (en Allemagne : « Bewerbung als … »). Le corps de l’e-mail tient en quelques phrases : qui vous êtes, à quel poste vous postulez et que vos documents sont en pièce jointe. La lettre de motivation elle-même va dans le PDF – pas en double dans l’e-mail. Terminez par une signature complète avec votre numéro de téléphone."],
+      ["À quoi ressemble une bonne candidature par e-mail", "Objet : « Candidature au poste de [poste] – [référence] ». Le corps de l’e-mail tient en quelques phrases : qui vous êtes, à quel poste vous postulez et que vos documents sont en pièce jointe. La lettre de motivation elle-même va dans le PDF – pas en double dans l’e-mail. Terminez par une signature complète avec votre numéro de téléphone."],
       ["Une seule pièce jointe : nom et taille du fichier", "Envoyez une seule pièce jointe PDF avec un nom clair, par exemple « Candidature_Marie_Dupont.pdf ». Restez sous 5 Mo, idéalement sous 3 Mo – certaines boîtes mail d’entreprise refusent les pièces jointes plus lourdes sans que vous le sachiez. Ne joignez jamais directement un fichier Word : il s’affiche souvent différemment ailleurs et peut être modifié."],
       ["Liste de vérification avant l’envoi", "Bon interlocuteur dans la lettre ? Poste et entreprise corrects partout ? Toutes les pages dans le bon ordre et lisibles ? Fichier sous la limite de taille ? Adresse d’expéditeur sérieuse (prenom.nom@…) ? Alors votre candidature peut partir."],
     ],
@@ -111,7 +111,7 @@ module.exports = {
     article: [
       ["Pourquoi envoyer son CV en PDF", "Un CV Word s’affiche différemment sur chaque ordinateur : s’il manque une police, tableaux, traits et photo se décalent. En PDF, votre CV reste exactement tel que vous l’avez conçu – que le recruteur le lise sur PC, Mac ou téléphone. Et un PDF ne peut pas être modifié par erreur."],
       ["Modèle de CV Word ou Canva ?", "Que vous ayez rédigé votre CV avec un modèle Word, dans LibreOffice ou dans Google Docs : enregistrez-le en DOCX et convertissez-le ici en PDF. Depuis Canva ou Pages, exportez plutôt directement en PDF – vous pourrez ensuite le réunir avec votre lettre et vos diplômes grâce à notre outil de dossier de candidature."],
-      ["Conseils pour un bon CV en PDF", "Une à deux pages, antichronologique (expérience la plus récente en premier), des titres clairs comme « Expérience professionnelle », « Formation », « Compétences » et « Langues ». En Allemagne, le CV sous forme de tableau (tabellarischer Lebenslauf) est la norme. Nommez le fichier avec votre nom, par exemple « CV_Marie_Dupont.pdf » – le recruteur le retrouvera tout de suite."],
+      ["Conseils pour un bon CV en PDF", "Une à deux pages, antichronologique (expérience la plus récente en premier), des titres clairs comme « Expérience professionnelle », « Formation », « Compétences » et « Langues ». Nommez le fichier avec votre nom, par exemple « CV_Marie_Dupont.pdf » – le recruteur le retrouvera tout de suite."],
     ],
     faq: [
       ["Ma photo est-elle conservée dans le PDF ?", "Oui. Photos, tableaux, traits et colonnes sont repris dans le PDF."],
@@ -134,7 +134,7 @@ module.exports = {
     ],
     article: [
       ["Bien photographier ses diplômes", "Posez le document sur un fond sombre et uni, photographiez-le bien droit par-dessus, à la lumière du jour et sans flash. Veillez à ce que les quatre coins soient visibles et qu’aucune ombre ne tombe sur le texte. Notes, tampons et signature resteront ainsi bien lisibles."],
-      ["Diplômes pour candidature, inscription universitaire et reconnaissance", "Certificat de travail, baccalauréat, licence, certificat de langue (Goethe, TestDaF, DSH, DELF…) ou attestation de stage : beaucoup de portails – des entreprises à uni-assist en passant par les administrations allemandes – exigent les justificatifs en PDF. Vous pouvez regrouper plusieurs diplômes dans un fichier ou créer un PDF par document."],
+      ["Diplômes pour candidature, inscription universitaire et reconnaissance", "Certificat de travail, baccalauréat, licence, certificat de langue (TOEIC, IELTS, DELF, Goethe…) ou attestation de stage : beaucoup de portails – entreprises, universités, administrations – exigent les justificatifs en PDF. Vous pouvez regrouper plusieurs diplômes dans un fichier ou créer un PDF par document."],
       ["Ajouter les diplômes au dossier de candidature", "Le PDF de vos diplômes peut être réuni directement avec la lettre et le CV dans un dossier de candidature. Le fichier y est aussi réduit automatiquement sous 5 Mo si les photos sont très lourdes."],
     ],
     faq: [
@@ -142,6 +142,93 @@ module.exports = {
       ["Combien de diplômes puis-je mettre dans un PDF ?", "Autant que vous voulez. Chaque image devient une page."],
       ["Le PDF est trop lourd – que faire ?", "Ajoutez-le au dossier de candidature en choisissant une taille cible, ou utilisez « Compresser PDF »."],
       ["Mes diplômes sont-ils conservés ?", "Non. La conversion se fait directement dans votre navigateur, vos photos ne quittent pas votre appareil."],
+    ],
+  },
+  "lebenslauf-vorlage": {
+    guide: "Modèle de CV gratuit (alternative à Word, en PDF)",
+    name: "Modèle de CV",
+    title: "Modèle de CV gratuit – moderne, classique et en PDF | PDF Libre",
+    description: "Modèles de CV gratuits : Moderne, Classique, style LaTeX et Compact. Remplissez-les en ligne au lieu de batailler avec un modèle Word – téléchargez un PDF compatible ATS. Sans inscription.",
+    h1: "Modèle de CV gratuit – à remplir et enregistrer en PDF",
+    lead: "Marre de vous battre avec les tableaux et les tabulations dans Word ? Choisissez un modèle, saisissez vos informations – la mise en page s’adapte automatiquement.",
+    article: [
+      ["Remplir un modèle en ligne plutôt que modifier un fichier Word", "Les modèles de CV classiques pour Word ou Google Docs se décalent vite : une ligne de plus et le tableau saute à la page suivante. Ici, vous saisissez seulement le contenu – espacements, polices et sauts de page sont gérés par PDF Libre. Un titre qui se retrouverait seul en bas de page passe automatiquement à la page suivante."],
+      ["Quel modèle de CV me correspond ?", "Pour l’informatique, le marketing, les start-up, les jobs étudiants et les stages : « Moderne ». Pour la banque, l’administration, l’assurance, les cabinets et l’industrie : « Classique ». Pour la recherche, le doctorat, les bourses et les filières techniques : « Académique » style LaTeX. Pour beaucoup d’expérience sur une page : « Compact ». Vous pouvez changer à tout moment sans rien ressaisir."],
+    ],
+    faq: [
+      ["Le modèle de CV est-il payant ?", "Non. Tous les modèles sont gratuits et sans filigrane."],
+      ["Puis-je obtenir le modèle au format Word ?", "Le CV est créé en PDF – le format qu’attendent recruteurs et portails de candidature. Si vous avez quand même besoin de Word, convertissez le PDF avec « PDF en Word »."],
+      ["Puis-je changer de modèle ?", "Oui, à tout moment. Vos informations restent, seul le design change."],
+    ],
+  },
+  "lebenslauf-ats": {
+    guide: "CV compatible ATS : comment les logiciels de recrutement le lisent",
+    name: "CV compatible ATS",
+    title: "CV compatible ATS – modèle gratuit | PDF Libre",
+    description: "Créez un CV compatible ATS : une colonne, du vrai texte, des titres standard et une vérification ATS avec conseils. Pour que votre candidature passe les logiciels de recrutement. Gratuit en PDF.",
+    h1: "Créer un CV compatible ATS",
+    lead: "Pour que votre candidature ne soit pas écartée par le logiciel : des modèles lisibles par tous les ATS – avec une vérification ATS juste à côté de l’aperçu.",
+    article: [
+      ["Pourquoi des CV échouent dans un ATS", "Mises en page sur plusieurs colonnes que le logiciel mélange ; coordonnées dans l’en-tête ou en image ; icônes à la place des mots (« 📞 » au lieu de « Téléphone ») ; titres créatifs comme « Mon parcours » au lieu de « Expérience professionnelle » ; graphiques pour les langues ; polices sans correspondance Unicode propre, que l’ATS lit comme du charabia. Les modèles de PDF Libre évitent tout cela."],
+      ["Reprendre les mots-clés de l’offre", "Un ATS compare votre CV aux exigences du poste. Utilisez donc les termes de l’annonce quand ils vous correspondent – par exemple « Python », « SQL », « gestion de projet » ou « relation client » – dans vos compétences et dans la description de vos expériences. Écrivez une fois les abréviations en entier (« Customer Relationship Management (CRM) »). Mais n’inventez rien : chaque information est vérifiée en entretien."],
+      ["La vérification ATS de PDF Libre", "À côté de l’aperçu, PDF Libre vérifie que votre nom et vos coordonnées sont bien en texte, qu’il y a un court profil, que toutes les dates ont le même format, que vos expériences sont décrites et que le CV fait deux pages maximum."],
+    ],
+    faq: [
+      ["Qu’est-ce qu’un ATS ?", "Un ATS (Applicant Tracking System) est un logiciel avec lequel les entreprises collectent, lisent et trient les candidatures – par exemple Workday, Taleo, SAP SuccessFactors, Teamtailor ou Welcome to the Jungle."],
+      ["Un CV ATS peut-il avoir une photo ?", "Oui, la photo ne gêne pas la lecture. Elle reste facultative."],
+      ["Un PDF convient-il à un ATS ?", "Oui, s’il contient du vrai texte – comme les PDF de PDF Libre. Les CV scannés ou les images enregistrées en PDF ne sont pas lisibles par un ATS."],
+    ],
+  },
+  "lebenslauf-latex": {
+    guide: "CV style LaTeX – sans LaTeX",
+    name: "CV style LaTeX",
+    title: "CV LaTeX sans LaTeX – créer un CV style moderncv en ligne | PDF Libre",
+    description: "Créez un CV au look LaTeX, sans LaTeX : police Latin Modern, structure claire façon moderncv, aperçu en direct et téléchargement PDF. Idéal pour les études, la recherche et le doctorat. Gratuit.",
+    h1: "CV style LaTeX – sans connaître LaTeX",
+    lead: "Le look LaTeX typique avec la police Latin Modern, sans Overleaf, sans paquets et sans erreurs de compilation. Choisissez le modèle « Académique » et remplissez le formulaire.",
+    article: [
+      ["Pourquoi un CV style LaTeX ?", "En mathématiques, informatique, physique et dans la recherche, les CV faits avec LaTeX (par exemple moderncv ou altacv) sont très répandus : typographie sobre, espacements parfaits, aspect sérieux. L’inconvénient : il faut maîtriser LaTeX, et chaque modification oblige à recompiler. Le modèle « Académique » compose votre CV en Latin Modern – la police par défaut de LaTeX – avec la même structure claire."],
+      ["Pour les candidatures à l’université et dans la recherche", "Poste d’assistant de recherche, job étudiant en laboratoire, candidature en master, doctorat, bourse ou institut de recherche : un CV académique présente, en plus de la formation et de l’expérience, les projets, le mémoire, l’expérience d’enseignement et les publications. Ajoutez simplement vos propres sections via « Projets » ou « Informations complémentaires » et renommez-les."],
+    ],
+    faq: [
+      ["Ai-je besoin de LaTeX ou d’Overleaf ?", "Non. Vous remplissez seulement le formulaire, le PDF est composé automatiquement."],
+      ["Le style LaTeX est-il compatible ATS ?", "Oui. Contrairement à certains modèles LaTeX avec colonnes et icônes, ce modèle est sur une colonne et contient du texte lisible proprement."],
+      ["Puis-je indiquer des publications ?", "Oui. Renommez la section « Informations complémentaires » en « Publications » et listez-les – une par ligne."],
+    ],
+  },
+  "lebenslauf-werkstudent": {
+    guide: "CV pour job étudiant, stage et apprentissage",
+    name: "CV étudiant",
+    title: "CV étudiant pour stage et job étudiant – exemple et modèle gratuits | PDF Libre",
+    description: "Créez un CV pour un stage, un job étudiant ou une alternance : exemple avec études, projets et compétences, compatible ATS en PDF. Gratuit et sans inscription.",
+    h1: "CV pour job étudiant, stage et apprentissage",
+    lead: "Peu d’expérience professionnelle ? Aucun problème : avec vos études, vos projets, vos jobs et vos compétences, votre CV peut quand même être solide. Cliquez sur « Charger un exemple » pour voir un modèle rempli.",
+    article: [
+      ["Que mettre dans un CV étudiant ?", "Un court profil (quelles études, quelles forces, combien d’heures par semaine), vos études avec spécialités, stages, jobs étudiants et alternance, projets universitaires et personnels (par exemple sur GitHub), compétences comme langages de programmation, outils et logiciels, langues avec niveau (A1–C2) et engagement associatif. Même un job hors de votre domaine montre votre fiabilité et a sa place dans le CV."],
+      ["Des projets à la place de l’expérience", "Surtout pour les jobs étudiants en informatique, data science et ingénierie, les projets comptent souvent plus qu’une longue expérience. Décrivez brièvement ce que vous avez construit, avec quelles technologies et quel résultat – et mettez un lien si possible."],
+    ],
+    faq: [
+      ["Quelle longueur pour un CV étudiant ?", "Une page est idéale ; deux pages conviennent si vous avez beaucoup de projets ou d’expériences pertinents."],
+      ["Faut-il mentionner le baccalauréat ?", "Oui, avec la mention, tant que vous êtes étudiant ou jeune diplômé."],
+      ["Dois-je indiquer mes disponibilités ?", "Pour un job étudiant ou une alternance, oui – par exemple dans le profil : « disponible 15 à 20 heures par semaine »."],
+    ],
+  },
+  "lebenslauf-franzoesisch": {
+    guide: "Faire un CV en français – modèle gratuit",
+    name: "CV en français",
+    title: "Faire un CV en français – modèle de CV gratuit en PDF | PDF Libre",
+    description: "Faites votre CV en français : titres en français, format de date usuel et lettre de motivation au même design – ou traduisez votre CV anglais ou allemand avec l’IA. Pour postuler en France, en Belgique, en Suisse, au Luxembourg, au Québec ou en Afrique francophone.",
+    h1: "Faire un CV en français",
+    lead: "Vous postulez en France, en Belgique, en Suisse romande, au Luxembourg, au Québec ou en Afrique francophone ? Obtenez un CV avec des titres en français – ou traduisez votre CV existant d’un clic.",
+    article: [
+      ["Le CV en français : les usages", "Un CV en France tient généralement sur une page (deux au maximum pour les profils expérimentés) et commence souvent par une courte ligne d’objectif, le « titre du CV », par exemple « Stagiaire en Data Science » ou « Ingénieur logiciel ». Viennent ensuite « Expérience professionnelle », « Formation », « Compétences », « Langues » et « Centres d’intérêt ». La photo est facultative.", "Expliquez brièvement les diplômes étrangers, par exemple « Abitur (équivalent du baccalauréat) » ou « Bachelor of Science en informatique ». La fonction de traduction de PDF Libre le fait automatiquement."],
+      ["Traduire son CV plutôt que le réécrire", "Vous avez déjà un CV en anglais ou en allemand ? Importez-le, allez dans « Vérifier & IA » et choisissez « Traduire → Français ». Postes, diplômes et descriptions sont traduits naturellement ; noms, entreprises, lieux et technologies restent inchangés. Enregistrez d’abord le brouillon pour garder les deux versions."],
+      ["Lettre de motivation au même design", "La lettre de motivation se crée ici aussi, dans le même design, avec la formule d’appel « Madame, Monsieur, » et la formule de politesse habituelle. Le brouillon par l’IA suit la langue de l’offre d’emploi."],
+    ],
+    faq: [
+      ["Puis-je passer du français à l’anglais ou à l’allemand ?", "Oui. Les titres se changent à l’étape « Design » ; l’IA traduit les textes à l’étape « Vérifier & IA »."],
+      ["Comment écrire les dates dans un CV en français ?", "Le format MM/AAAA est courant, par exemple 09/2024. « aujourd’hui » indique une expérience en cours."],
+      ["Comment s’appellent les sections en français ?", "Profil, Expérience professionnelle, Formation, Projets, Compétences, Langues et Informations complémentaires."],
     ],
   },
 };

@@ -17,7 +17,7 @@ const LANGS = ["de", "en", "fr"];
 const LANG_NAMES = { de: "Deutsch", en: "English", fr: "Français" };
 const LOCALES = { de: "de_DE", en: "en_US", fr: "fr_FR" };
 // Werkzeuge mit eigener, großer Oberfläche werden in einer späteren Phase übersetzt; bis dahin verlinken /en/ und /fr/ auf die deutsche Seite
-const NOT_YET = new Set(["editor", "cv", "slides"]);
+const NOT_YET = new Set(["editor", "slides"]);
 let LANG = "de";
 const MISSING = new Set();
 function T(text, vars) {
@@ -666,178 +666,178 @@ function cvWorkspace(t) {
   const c = catById[t.cat].color;
   const pro = FREE ? "" : ' <span class="pro-badge">Pro</span>';
   const tpls = [
-    ["modern", "Modern", "Klar, mit Akzentfarbe – IT, Marketing, Start-ups"],
-    ["klassisch", "Klassisch", "Serifenschrift – Banken, Verwaltung, Industrie"],
-    ["akademisch", "Akademisch", "LaTeX-Stil – Uni, Forschung, Technik"],
-    ["kompakt", "Kompakt", "Viel Inhalt auf einer Seite"],
+    ["modern", T("Modern"), T("Klar, mit Akzentfarbe – IT, Marketing, Start-ups")],
+    ["klassisch", T("Klassisch"), T("Serifenschrift – Banken, Verwaltung, Industrie")],
+    ["akademisch", T("Akademisch"), T("LaTeX-Stil – Uni, Forschung, Technik")],
+    ["kompakt", T("Kompakt"), T("Viel Inhalt auf einer Seite")],
   ];
   const swatches = ["#1f4fa3", "#0f766e", "#7c3aed", "#b45309", "#be123c", "#334155"];
   const ai = [
-    ["proofread", "Rechtschreibung prüfen", "Findet Tipp-, Rechtschreib- und Grammatikfehler.", ""],
-    ["improve", "Formulierungen verbessern", "Klarere Stichpunkte mit starken Verben – ohne Erfundenes.", pro],
-    ["open-match", "An Stellenanzeige anpassen", "Trefferquote, fehlende Keywords und passende Formulierungen.", pro],
-    ["open-letter", "Anschreiben erstellen", "Im gleichen Design – selbst schreiben oder KI-Entwurf.", ""],
-    ["translate", "Übersetzen", "Den ganzen Lebenslauf ins Englische, Französische oder Deutsche.", pro],
+    ["proofread", T("Rechtschreibung prüfen"), T("Findet Tipp-, Rechtschreib- und Grammatikfehler."), ""],
+    ["improve", T("Formulierungen verbessern"), T("Klarere Stichpunkte mit starken Verben – ohne Erfundenes."), pro],
+    ["open-match", T("An Stellenanzeige anpassen"), T("Trefferquote, fehlende Keywords und passende Formulierungen."), pro],
+    ["open-letter", T("Anschreiben erstellen"), T("Im gleichen Design – selbst schreiben oder KI-Entwurf."), ""],
+    ["translate", T("Übersetzen"), T("Den ganzen Lebenslauf ins Englische, Französische oder Deutsche."), pro],
   ];
   const file = `type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import`;
-  return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" data-start="${esc(t.ui.start || "")}" data-default-lang="${esc((t.defaults && t.defaults.lang) || "de")}" aria-label="${esc(t.name)}">
+  return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" data-start="${esc(t.ui.start || "")}" data-default-lang="${esc((t.defaults && t.defaults.lang) || LANG)}" aria-label="${esc(t.name)}">
     <div class="cv-welcome" data-welcome hidden>
-      <h2>Wie möchtest du starten?</h2>
+      <h2>${T("Wie möchtest du starten?")}</h2>
       <div class="cv-welcome__cards">
-        <label class="cv-wcard cv-wcard--main"><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>Alten Lebenslauf importieren</b><span>PDF oder Word hochladen – die KI überträgt alles ins Formular.</span><input ${file}></label>
-        <button type="button" class="cv-wcard" data-sample><span class="cv-wcard__icon" aria-hidden="true">✎</span><b>Mit Beispiel starten</b><span>Ein fertiges Muster laden und mit deinen Angaben überschreiben.</span></button>
-        <button type="button" class="cv-wcard" data-empty><span class="cv-wcard__icon" aria-hidden="true">＋</span><b>Leer beginnen</b><span>Schritt für Schritt selbst ausfüllen.</span></button>
+        <label class="cv-wcard cv-wcard--main"><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>${T("Alten Lebenslauf importieren")}</b><span>${T("PDF oder Word hochladen – die KI überträgt alles ins Formular.")}</span><input ${file}></label>
+        <button type="button" class="cv-wcard" data-sample><span class="cv-wcard__icon" aria-hidden="true">✎</span><b>${T("Mit Beispiel starten")}</b><span>${T("Ein fertiges Muster laden und mit deinen Angaben überschreiben.")}</span></button>
+        <button type="button" class="cv-wcard" data-empty><span class="cv-wcard__icon" aria-hidden="true">＋</span><b>${T("Leer beginnen")}</b><span>${T("Schritt für Schritt selbst ausfüllen.")}</span></button>
       </div>
-      <p class="cv-welcome__hint">Kostenlos, ohne Anmeldung. Dein Entwurf bleibt in deinem Browser.</p>
+      <p class="cv-welcome__hint">${T("Kostenlos, ohne Anmeldung. Dein Entwurf bleibt in deinem Browser.")}</p>
     </div>
 
     <div class="cv-app" data-app>
-      <nav class="cv-steps" aria-label="Schritte">
-        <button type="button" data-step="content" class="is-on"><span>1</span>Inhalte</button>
-        <button type="button" data-step="design"><span>2</span>Design</button>
-        <button type="button" data-step="optimize"><span>3</span>Prüfen &amp; KI <em class="cv-steps__badge" data-ats-badge></em></button>
-        <button type="button" data-step="download"><span>4</span>Herunterladen</button>
+      <nav class="cv-steps" aria-label="${T("Schritte")}">
+        <button type="button" data-step="content" class="is-on"><span>1</span>${T("Inhalte")}</button>
+        <button type="button" data-step="design"><span>2</span>${T("Design")}</button>
+        <button type="button" data-step="optimize"><span>3</span>${T("Prüfen &amp; KI")} <em class="cv-steps__badge" data-ats-badge></em></button>
+        <button type="button" data-step="download"><span>4</span>${T("Herunterladen")}</button>
       </nav>
       <p class="cv-notice" data-notice hidden></p>
       <div class="cv-work">
         <div class="cv-main">
           <div class="cv-pane" data-pane="content">
             <div class="cv-toolbar">
-              <label class="btn btn--ghost btn--sm">Lebenslauf importieren<input ${file}></label>
-              <button type="button" class="btn btn--ghost btn--sm" data-sample>Beispiel laden</button>
-              <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
+              <label class="btn btn--ghost btn--sm">${T("Lebenslauf importieren")}<input ${file}></label>
+              <button type="button" class="btn btn--ghost btn--sm" data-sample>${T("Beispiel laden")}</button>
+              <button type="button" class="btn btn--link" data-new>${T("Neu beginnen")}</button>
             </div>
             <div class="cv-jump" data-jump></div>
             <div class="cv-form" data-form></div>
-            <div class="cv-next"><button type="button" class="btn btn--primary" data-goto="design">Weiter: Design wählen →</button></div>
+            <div class="cv-next"><button type="button" class="btn btn--primary" data-goto="design">${T("Weiter: Design wählen →")}</button></div>
           </div>
 
           <div class="cv-pane" data-pane="design" hidden>
-            <h3 class="cv-pane__title">Vorlage</h3>
-            <div class="cv-tplgrid" role="group" aria-label="Vorlage">
+            <h3 class="cv-pane__title">${T("Vorlage")}</h3>
+            <div class="cv-tplgrid" role="group" aria-label="${T("Vorlage")}">
               ${tpls.map(([id, n, d]) => `<button type="button" class="cv-tplcard" data-tpl="${id}"><span class="cv-tplcard__img" data-thumb="${id}"></span><b>${n}</b><small>${d}</small></button>`).join("")}
             </div>
             <div class="cv-design">
-              <div><h3 class="cv-pane__title">Farbe</h3>
-                <div class="cv-swatches">${swatches.map((x) => `<button type="button" class="cv-swatch" data-swatch="${x}" style="background:${x}" aria-label="Farbe ${x}"></button>`).join("")}<label class="cv-swatch cv-swatch--custom" title="Eigene Farbe"><input type="color" data-accent value="#1f4fa3" aria-label="Eigene Farbe"></label></div>
+              <div><h3 class="cv-pane__title">${T("Farbe")}</h3>
+                <div class="cv-swatches">${swatches.map((x) => `<button type="button" class="cv-swatch" data-swatch="${x}" style="background:${x}" aria-label="${T("Farbe {x}", { x })}"></button>`).join("")}<label class="cv-swatch cv-swatch--custom" title="${T("Eigene Farbe")}"><input type="color" data-accent value="#1f4fa3" aria-label="${T("Eigene Farbe")}"></label></div>
               </div>
-              <div><h3 class="cv-pane__title">Sprache der Überschriften</h3>
-                <select data-lang class="cv-select"><option value="de">Deutsch (Berufserfahrung, Ausbildung …)</option><option value="en">Englisch (Experience, Education …)</option><option value="fr">Französisch (Expérience professionnelle, Formation …)</option></select>
+              <div><h3 class="cv-pane__title">${T("Sprache der Überschriften")}</h3>
+                <select data-lang class="cv-select"><option value="de">${T("Deutsch (Berufserfahrung, Ausbildung …)")}</option><option value="en">${T("Englisch (Experience, Education …)")}</option><option value="fr">${T("Französisch (Expérience professionnelle, Formation …)")}</option></select>
               </div>
             </div>
-            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="content">← Inhalte</button><button type="button" class="btn btn--primary" data-goto="optimize">Weiter: Prüfen &amp; KI →</button></div>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="content">${T("← Inhalte")}</button><button type="button" class="btn btn--primary" data-goto="optimize">${T("Weiter: Prüfen &amp; KI →")}</button></div>
           </div>
 
           <div class="cv-pane" data-pane="optimize" hidden>
             <div class="cv-ats">
-              <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
+              <p><strong>${T("ATS-Check")}</strong> <span data-ats-score></span></p>
               <p class="cv-ats__hint" data-ats-hint></p>
               <ul data-ats></ul>
             </div>
-            <h3 class="cv-pane__title">KI-Assistent</h3>
+            <h3 class="cv-pane__title">${T("KI-Assistent")}</h3>
             <div class="cv-aigrid">
               ${ai.map(([k, n, d, b]) => `<button type="button" class="cv-aicard" data-${k}><b>${n}${b}</b><span>${d}</span></button>`).join("")}
             </div>
-            <p class="cv-ai__hint">Die KI formuliert nur um, was in deinem Lebenslauf steht – sie erfindet keine Erfahrungen. Du bestätigst jede Änderung.</p>
-            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="design">← Design</button><button type="button" class="btn btn--primary" data-goto="download">Weiter: Herunterladen →</button></div>
+            <p class="cv-ai__hint">${T("Die KI formuliert nur um, was in deinem Lebenslauf steht – sie erfindet keine Erfahrungen. Du bestätigst jede Änderung.")}</p>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="design">${T("← Design")}</button><button type="button" class="btn btn--primary" data-goto="download">${T("Weiter: Herunterladen →")}</button></div>
           </div>
 
           <div class="cv-pane" data-pane="download" hidden>
             <div class="cv-dlgrid">
-              <button type="button" class="cv-dlcard cv-dlcard--main" data-download><b>Lebenslauf als PDF</b><span>ATS-freundlich, ohne versteckte Daten.</span></button>
-              <button type="button" class="cv-dlcard" data-open-letter><b>Anschreiben erstellen</b><span>Im selben Design, als eigene PDF.</span></button>
-              <button type="button" class="cv-dlcard" data-save-draft><b>Entwurf speichern</b><span>Kleine Datei zum späteren Weiterbearbeiten – nicht mitschicken.</span></button>
-              <a class="cv-dlcard" href="${url("bewerbungsmappe")}"><b>Bewerbungsmappe erstellen</b><span>Lebenslauf, Anschreiben und Zeugnisse zu einer PDF.</span></a>
+              <button type="button" class="cv-dlcard cv-dlcard--main" data-download><b>${T("Lebenslauf als PDF")}</b><span>${T("ATS-freundlich, ohne versteckte Daten.")}</span></button>
+              <button type="button" class="cv-dlcard" data-open-letter><b>${T("Anschreiben erstellen")}</b><span>${T("Im selben Design, als eigene PDF.")}</span></button>
+              <button type="button" class="cv-dlcard" data-save-draft><b>${T("Entwurf speichern")}</b><span>${T("Kleine Datei zum späteren Weiterbearbeiten – nicht mitschicken.")}</span></button>
+              <a class="cv-dlcard" href="${url("bewerbungsmappe")}"><b>${T("Bewerbungsmappe erstellen")}</b><span>${T("Lebenslauf, Anschreiben und Zeugnisse zu einer PDF.")}</span></a>
             </div>
-            <p class="cv-ai__hint">Tipp: Benenne die Datei mit deinem Namen, z. B. „Lebenslauf_Max_Mustermann.pdf“ – das passiert automatisch.</p>
-            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="optimize">← Prüfen &amp; KI</button></div>
+            <p class="cv-ai__hint">${T("Tipp: Benenne die Datei mit deinem Namen, z. B. „Lebenslauf_Max_Mustermann.pdf“ – das passiert automatisch.")}</p>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="optimize">${T("← Prüfen &amp; KI")}</button></div>
           </div>
         </div>
 
         <aside class="cv-side">
-          <div class="cv-preview" data-preview aria-live="polite"><p class="cv-preview__empty">Vorschau wird geladen …</p></div>
+          <div class="cv-preview" data-preview aria-live="polite"><p class="cv-preview__empty">${T("Vorschau wird geladen …")}</p></div>
           <p class="cv-info" data-info></p>
           <p class="form-error" data-error role="alert" hidden></p>
-          <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
-          <p class="privacy">${ICON.shield}<span>Deine Angaben werden nur zum Erstellen der PDF übertragen und nicht gespeichert.</span></p>
+          <button type="button" class="btn btn--primary btn--lg btn--block" data-download>${T("PDF herunterladen")}</button>
+          <p class="privacy">${ICON.shield}<span>${T("Deine Angaben werden nur zum Erstellen der PDF übertragen und nicht gespeichert.")}</span></p>
         </aside>
       </div>
       <div class="cv-mobilebar">
-        <button type="button" class="btn btn--ghost" data-toggle-preview>Vorschau</button>
-        <button type="button" class="btn btn--primary" data-download>PDF herunterladen</button>
+        <button type="button" class="btn btn--ghost" data-toggle-preview>${T("Vorschau")}</button>
+        <button type="button" class="btn btn--primary" data-download>${T("PDF herunterladen")}</button>
       </div>
     </div>
     <dialog class="cv-dialog" data-trdlg>
       <form method="dialog">
-        <h3>Lebenslauf übersetzen</h3>
-        <p class="cv-dialog__hint">Die KI übersetzt alle Texte, Überschriften, Positionen und Abschlüsse. Namen, Firmen, Orte und Technologien bleiben unverändert. Tipp: Speichere vorher mit „Entwurf speichern“ die aktuelle Fassung.</p>
+        <h3>${T("Lebenslauf übersetzen")}</h3>
+        <p class="cv-dialog__hint">${T("Die KI übersetzt alle Texte, Überschriften, Positionen und Abschlüsse. Namen, Firmen, Orte und Technologien bleiben unverändert. Tipp: Speichere vorher mit „Entwurf speichern“ die aktuelle Fassung.")}</p>
         <div class="cv-trlangs">
-          <button value="de" class="cv-aicard" data-tr="de"><b>Deutsch</b><span>Lebenslauf</span></button>
-          <button value="en" class="cv-aicard" data-tr="en"><b>Englisch</b><span>CV / Résumé</span></button>
-          <button value="fr" class="cv-aicard" data-tr="fr"><b>Französisch</b><span>CV en français</span></button>
+          <button value="de" class="cv-aicard" data-tr="de"><b>${T("Deutsch")}</b><span>${T("Lebenslauf")}</span></button>
+          <button value="en" class="cv-aicard" data-tr="en"><b>${T("Englisch")}</b><span>${T("CV / Résumé")}</span></button>
+          <button value="fr" class="cv-aicard" data-tr="fr"><b>${T("Französisch")}</b><span>${T("CV en français")}</span></button>
         </div>
-        <div class="cv-dialog__actions"><button value="cancel" class="btn btn--ghost">Abbrechen</button></div>
+        <div class="cv-dialog__actions"><button value="cancel" class="btn btn--ghost">${T("Abbrechen")}</button></div>
       </form>
     </dialog>
     <dialog class="cv-dialog" data-review>
       <form method="dialog">
-        <h3 data-review-title>Vorschläge</h3>
-        <p class="cv-dialog__hint">Rot = vorher, grün = korrigiert. Wähle aus, was übernommen werden soll.</p>
+        <h3 data-review-title>${T("Vorschläge")}</h3>
+        <p class="cv-dialog__hint">${T("Rot = vorher, grün = korrigiert. Wähle aus, was übernommen werden soll.")}</p>
         <div data-changes></div>
         <div class="cv-dialog__actions">
-          <button value="cancel" class="btn btn--ghost">Abbrechen</button>
-          <button value="ok" class="btn btn--primary" data-apply>Ausgewählte übernehmen</button>
+          <button value="cancel" class="btn btn--ghost">${T("Abbrechen")}</button>
+          <button value="ok" class="btn btn--primary" data-apply>${T("Ausgewählte übernehmen")}</button>
         </div>
       </form>
     </dialog>
     <dialog class="cv-dialog cv-dialog--wide" data-match>
       <form method="dialog">
-        <h3>An Stellenanzeige anpassen</h3>
-        <p class="cv-dialog__hint">Füge den Text der Stellenanzeige ein. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.</p>
-        <textarea class="cv-ad" data-ad rows="8" placeholder="Stellenanzeige hier einfügen (Aufgaben und Anforderungen) …"></textarea>
-        <div class="cv-dialog__actions cv-dialog__actions--start"><button type="button" class="btn btn--primary" data-run-match>Analysieren</button><span class="cv-dialog__status" data-match-status></span></div>
+        <h3>${T("An Stellenanzeige anpassen")}</h3>
+        <p class="cv-dialog__hint">${T("Füge den Text der Stellenanzeige ein. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.")}</p>
+        <textarea class="cv-ad" data-ad rows="8" placeholder="${T("Stellenanzeige hier einfügen (Aufgaben und Anforderungen) …")}"></textarea>
+        <div class="cv-dialog__actions cv-dialog__actions--start"><button type="button" class="btn btn--primary" data-run-match>${T("Analysieren")}</button><span class="cv-dialog__status" data-match-status></span></div>
         <div data-match-result hidden>
           <div class="cv-score"><div class="cv-score__bar"><span data-score-bar></span></div><b data-score></b></div>
           <p class="cv-dialog__hint" data-role></p>
           <ul class="cv-kws" data-kws></ul>
           <ul class="cv-tips" data-tips></ul>
-          <h4 data-changes-title>Vorgeschlagene Änderungen</h4>
+          <h4 data-changes-title>${T("Vorgeschlagene Änderungen")}</h4>
           <div data-match-changes></div>
         </div>
         <div class="cv-dialog__actions">
-          <button value="cancel" class="btn btn--ghost">Schließen</button>
-          <button value="ok" class="btn btn--primary" data-apply-match hidden>Ausgewählte übernehmen</button>
+          <button value="cancel" class="btn btn--ghost">${T("Schließen")}</button>
+          <button value="ok" class="btn btn--primary" data-apply-match hidden>${T("Ausgewählte übernehmen")}</button>
         </div>
       </form>
     </dialog>
     <dialog class="cv-dialog cv-dialog--wide" data-letter>
       <form method="dialog">
-        <h3>Anschreiben</h3>
-        <p class="cv-dialog__hint">Im selben Design wie dein Lebenslauf. Schreib selbst oder lass die KI einen Entwurf aus Lebenslauf und Stellenanzeige erstellen${FREE ? "" : " (Pro)"} – danach kannst du alles ändern.</p>
+        <h3>${T("Anschreiben")}</h3>
+        <p class="cv-dialog__hint">${T("Im selben Design wie dein Lebenslauf. Schreib selbst oder lass die KI einen Entwurf aus Lebenslauf und Stellenanzeige erstellen{pro} – danach kannst du alles ändern.", { pro: FREE ? "" : " (Pro)" })}</p>
         <div class="cv-letter">
           <div class="cv-letter__form">
             <div class="cv-letter__base">
-              <p class="cv-letter__basetitle">Grundlage für den KI-Entwurf</p>
+              <p class="cv-letter__basetitle">${T("Grundlage für den KI-Entwurf")}</p>
               <p class="cv-letter__cv" data-letter-cv></p>
-              <label class="btn btn--ghost btn--sm" data-letter-import>Lebenslauf importieren (PDF/Word)<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
-              <div class="cv-field"><label for="cl-ad">Stellenanzeige (Text einfügen)</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="Aufgaben und Anforderungen aus der Stellenanzeige …"></textarea></div>
+              <label class="btn btn--ghost btn--sm" data-letter-import>${T("Lebenslauf importieren (PDF/Word)")}<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
+              <div class="cv-field"><label for="cl-ad">${T("Stellenanzeige (Text einfügen)")}</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="${T("Aufgaben und Anforderungen aus der Stellenanzeige …")}"></textarea></div>
             </div>
-            <div class="cv-field"><label for="cl-rec">Empfänger (Firma, Ansprechpartner, Adresse)</label><textarea id="cl-rec" rows="4" data-l="recipient" placeholder="Muster GmbH&#10;Frau Julia Schmidt&#10;Hauptstraße 1&#10;60311 Frankfurt am Main"></textarea></div>
-            <div class="cv-field"><label for="cl-notes">Notizen für die KI (optional)</label><textarea id="cl-notes" rows="2" data-l="notes" placeholder="z. B. Warum diese Firma? Ab wann verfügbar? Wie viele Stunden?"></textarea></div>
-            <button type="button" class="btn btn--ghost btn--block" data-run-letter>Entwurf mit KI schreiben${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
+            <div class="cv-field"><label for="cl-rec">${T("Empfänger (Firma, Ansprechpartner, Adresse)")}</label><textarea id="cl-rec" rows="4" data-l="recipient" placeholder="${T("Muster GmbH&#10;Frau Julia Schmidt&#10;Hauptstraße 1&#10;60311 Frankfurt am Main")}"></textarea></div>
+            <div class="cv-field"><label for="cl-notes">${T("Notizen für die KI (optional)")}</label><textarea id="cl-notes" rows="2" data-l="notes" placeholder="${T("z. B. Warum diese Firma? Ab wann verfügbar? Wie viele Stunden?")}"></textarea></div>
+            <button type="button" class="btn btn--ghost btn--block" data-run-letter>${T("Entwurf mit KI schreiben")}${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
             <p class="cv-dialog__status" data-letter-status></p>
-            <div class="cv-field"><label for="cl-date">Ort, Datum</label><input id="cl-date" data-l="date"></div>
-            <div class="cv-field"><label for="cl-sub">Betreff</label><input id="cl-sub" data-l="subject" placeholder="Bewerbung als …"></div>
-            <div class="cv-field"><label for="cl-sal">Anrede</label><input id="cl-sal" data-l="salutation" placeholder="Sehr geehrte Damen und Herren,"></div>
-            <div class="cv-field"><label for="cl-body">Text (Absätze mit Leerzeile trennen)</label><textarea id="cl-body" rows="12" data-l="body"></textarea></div>
-            <div class="cv-field"><label for="cl-close">Grußformel</label><input id="cl-close" data-l="closing" placeholder="Mit freundlichen Grüßen"></div>
+            <div class="cv-field"><label for="cl-date">${T("Ort, Datum")}</label><input id="cl-date" data-l="date"></div>
+            <div class="cv-field"><label for="cl-sub">${T("Betreff")}</label><input id="cl-sub" data-l="subject" placeholder="${T("Bewerbung als …")}"></div>
+            <div class="cv-field"><label for="cl-sal">${T("Anrede")}</label><input id="cl-sal" data-l="salutation" placeholder="${T("Sehr geehrte Damen und Herren,")}"></div>
+            <div class="cv-field"><label for="cl-body">${T("Text (Absätze mit Leerzeile trennen)")}</label><textarea id="cl-body" rows="12" data-l="body"></textarea></div>
+            <div class="cv-field"><label for="cl-close">${T("Grußformel")}</label><input id="cl-close" data-l="closing" placeholder="${T("Mit freundlichen Grüßen")}"></div>
           </div>
           <div class="cv-letter__preview" data-letter-preview></div>
         </div>
         <p class="form-error" data-letter-error role="alert" hidden></p>
         <div class="cv-dialog__actions">
-          <button value="cancel" class="btn btn--ghost">Schließen</button>
-          <button type="button" class="btn btn--primary" data-letter-pdf>Anschreiben als PDF</button>
+          <button value="cancel" class="btn btn--ghost">${T("Schließen")}</button>
+          <button type="button" class="btn btn--primary" data-letter-pdf>${T("Anschreiben als PDF")}</button>
         </div>
       </form>
     </dialog>
@@ -972,7 +972,7 @@ function bewerbungHub() {
       .sort((a, b) => ["lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe"].indexOf(a.slug) - ["lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe"].indexOf(b.slug))
       .map((t, i) => `<li><a href="${url(t.slug)}" class="hub-step"><span class="hub-step__n">${i + 1}</span>${toolIcon(t, 40)}<b>${esc(t.name)}</b><span>${esc(t.short)}</span></a></li>`)
       .join("\n    ")}
-  </ol>${LANG === "de" ? "" : `\n  <p class="hub-note">${T("Der Lebenslauf-Generator und das Anschreiben-Werkzeug haben im Moment eine deutsche Oberfläche – sie erstellen aber schon Lebensläufe auf Deutsch und Französisch. Englisch und Französisch als Oberfläche folgen bald.")}</p>`}
+  </ol>
 </section>
 
 <section class="wrap article">

@@ -4,7 +4,7 @@ module.exports = {
     guide: "Combine your application documents into one PDF",
     name: "Combine job application into one PDF",
     title: "Combine your job application into one PDF – cover letter, CV & certificates | PDF Libre",
-    description: "Merge your application documents into one PDF online: cover letter, CV and certificates in the right order, with cover page and under 5 MB – as German employers expect. Free, no sign-up.",
+    description: "Merge your application documents into one PDF online: cover letter, CV and certificates in the right order, with cover page and under 5 MB – as recruiters expect. Free, no sign-up.",
     h1: "Combine your application documents into one PDF",
     lead: "Cover letter, CV, job references and certificates in one single PDF – sorted, with a table of contents and small enough for any application portal and any email.",
     steps: [
@@ -13,9 +13,9 @@ module.exports = {
       ["Download the application PDF", "Click “Create application PDF”. You get one PDF file you can upload directly or send by email."],
     ],
     article: [
-      ["Why recruiters prefer one single PDF file", "When you apply online, it’s best to send one PDF instead of ten separate attachments. HR can open, forward and print your application with one click – and nothing gets lost. Many companies, especially in Germany, explicitly write in the job ad: “Please send your documents in one PDF file.”", "With PDF Libre you combine your application documents for free, without installing software and without an account. Word files such as your cover letter or CV are converted to PDF automatically, and photos of certificates are placed on A4 pages."],
-      ["The right order of application documents", "The usual order in Germany is: cover page (optional), cover letter (Anschreiben), CV (Lebenslauf), job references (Arbeitszeugnisse, most recent first), university or vocational certificate, school certificate and finally certificates, further training and work samples. For an apprenticeship or internship, your latest school reports and internship confirmations come right after the CV."],
-      ["For working student jobs, apprenticeships and unsolicited applications", "Whether you apply for an apprenticeship, an internship, a working student (Werkstudent) position, a mini-job or send an unsolicited application: the principle is always the same. All documents belong in one clear file with a meaningful name, for example “Application_Jane_Doe.pdf”."],
+      ["Why recruiters prefer one single PDF file", "When you apply online, it’s best to send one PDF instead of ten separate attachments. HR can open, forward and print your application with one click – and nothing gets lost. Many companies explicitly write in the job ad: “Please send your documents in one PDF file.”", "With PDF Libre you combine your application documents for free, without installing software and without an account. Word files such as your cover letter or CV are converted to PDF automatically, and photos of certificates are placed on A4 pages."],
+      ["The right order of application documents", "A proven order is: cover page (optional), cover letter, CV, references (most recent first), university or vocational certificate, school certificate and finally certificates, further training and work samples. For an apprenticeship or internship, your latest school reports and internship confirmations come right after the CV."],
+      ["For working student jobs, apprenticeships and unsolicited applications", "Whether you apply for an apprenticeship, an internship, a student job, a part-time job or send an unsolicited application: the principle is always the same. All documents belong in one clear file with a meaningful name, for example “Application_Jane_Doe.pdf”."],
     ],
     faq: [
       ["Can I combine Word and PDF files?", "Yes. You can upload PDF, Word (DOC, DOCX), ODT and photos (JPG, PNG) together. Everything is converted to PDF automatically and merged."],
@@ -52,7 +52,7 @@ module.exports = {
     guide: "Create a cover page for your application",
     name: "Application cover page",
     title: "Create a cover page for your job application – free as PDF | PDF Libre",
-    description: "Create a cover page (Deckblatt) for your job application online: with name, position, company, contact details and automatic table of contents – straight into your application PDF. Free.",
+    description: "Create a cover page for your job application online: with name, position, company, contact details and automatic table of contents – straight into your application PDF. Free.",
     h1: "Create a cover page for your application",
     lead: "Enter your name, the position and the company – PDF Libre places a simple, professional cover page with a table of contents in front of your documents.",
     steps: [
@@ -61,14 +61,14 @@ module.exports = {
       ["Download with cover page", "The cover page is placed at the beginning automatically, including a table of contents from your file names."],
     ],
     article: [
-      ["Does an application need a cover page?", "A cover page (Deckblatt) is not mandatory in Germany, but it looks tidy and shows the recruiter at a glance who is applying for which position. It is especially helpful for an application PDF with many attachments, because the table of contents shows what is included. For very short applications – for example just cover letter and CV – you can leave it out."],
-      ["What goes on the cover page of an application?", "Usually: the word “Application” (Bewerbung), the position (e.g. “as Working Student Data Science” or “for an apprenticeship as office manager”), the company, your full name and your contact details. An application photo is optional. The table of contents lists the cover letter, CV and all attachments."],
+      ["Does an application need a cover page?", "A cover page is not mandatory, but it looks tidy and shows the recruiter at a glance who is applying for which position. It is especially helpful for an application PDF with many attachments, because the table of contents shows what is included. For very short applications – for example just cover letter and CV – you can leave it out."],
+      ["What goes on the cover page of an application?", "Usually: the word “Application”, the position (e.g. “Data Science Intern” or “Apprentice Office Manager”), the company, your full name and your contact details. An application photo is optional. The table of contents lists the cover letter, CV and all attachments."],
       ["Simple rather than colorful", "A good cover page is calm and easy to read: lots of white space, a clear font, no colorful frames. That’s exactly how the PDF Libre cover page is designed – it fits any CV design and any industry."],
     ],
     faq: [
       ["Is the table of contents created automatically?", "Yes, from the file names of your documents. “Reference_Example_Ltd.pdf” becomes “Reference Example Ltd”. So give your files meaningful names beforehand."],
       ["Do I have to add phone and address?", "No, these fields are optional. Name, position and company are enough for a complete cover page."],
-      ["Can I put an application photo on the cover page?", "Not at the moment. Upload the photo as its own page or put it in your CV – in Germany an application photo is optional anyway."],
+      ["Can I put an application photo on the cover page?", "Not at the moment. Upload the photo as its own page or put it in your CV – in many countries an application photo is optional or even discouraged."],
       ["Does the cover page cost anything?", "No. The cover page and the whole application PDF are free and work without sign-up."],
     ],
   },
@@ -111,7 +111,7 @@ module.exports = {
     article: [
       ["Why your CV should be sent as PDF", "A CV in Word looks different on every computer: if a font is missing, tables, lines and the photo shift. As a PDF, your CV stays exactly as you designed it – whether the recruiter reads it on PC, Mac or phone. A PDF also can’t be changed by accident."],
       ["CV template from Word or Canva?", "Whether you wrote your CV with a Word template, in LibreOffice or in Google Docs: save it as DOCX and convert it to PDF here. From Canva or Pages, it’s best to export directly as PDF – then you can combine the file with your cover letter and certificates using our application PDF tool."],
-      ["Tips for a good CV as PDF", "One to two pages, reverse chronological (most recent first), clear headings such as “Work experience”, “Education”, “Skills” and “Languages”. In Germany, a tabular CV (tabellarischer Lebenslauf) is standard. Save the file with your name, for example “CV_Jane_Doe.pdf” – so the recruiter finds it again right away."],
+      ["Tips for a good CV as PDF", "One to two pages, reverse chronological (most recent first), clear headings such as “Work experience”, “Education”, “Skills” and “Languages”. Save the file with your name, for example “CV_Jane_Doe.pdf” – so the recruiter finds it again right away."],
     ],
     faq: [
       ["Is my application photo kept in the PDF?", "Yes. Photos, tables, lines and columns are carried over into the PDF."],
@@ -134,7 +134,7 @@ module.exports = {
     ],
     article: [
       ["How to photograph certificates properly", "Place the certificate on a dark, plain surface and photograph it straight from above in daylight, without flash. Make sure all four corners are visible and no shadows fall across the text. That way grades, stamps and signatures stay easy to read."],
-      ["Certificates for job, university applications and recognition", "Whether job reference, school leaving certificate, bachelor’s degree, language certificate (e.g. Goethe, TestDaF, DSH, IELTS) or internship confirmation: many portals – from companies to uni-assist and German authorities – require proof as PDF. You can bundle several certificates in one file or create a separate PDF for each document."],
+      ["Certificates for job, university applications and recognition", "Whether job reference, school leaving certificate, bachelor’s degree, language certificate (e.g. IELTS, TOEFL, Cambridge) or internship confirmation: many portals – from companies to universities and authorities – require proof as PDF. You can bundle several certificates in one file or create a separate PDF for each document."],
       ["Add certificates to your application PDF", "You can combine the finished certificate PDF directly with your cover letter and CV into one application PDF. There the file is also reduced automatically to under 5 MB if the photos are very large."],
     ],
     faq: [
@@ -142,6 +142,93 @@ module.exports = {
       ["How many certificates can I put into one PDF?", "As many as you like. Each image becomes its own page."],
       ["The PDF is too large – what now?", "Add it to the application PDF tool and choose a target size, or use “Compress PDF”."],
       ["Are my certificates stored?", "No. The conversion runs directly in your browser, your photos never leave your device."],
+    ],
+  },
+  "lebenslauf-vorlage": {
+    guide: "Free CV template (Word alternative, as PDF)",
+    name: "CV template",
+    title: "Free CV template – modern, classic & as PDF | PDF Libre",
+    description: "Free CV templates: Modern, Classic, LaTeX style and Compact. Fill them in online instead of fighting with a Word template – download an ATS-friendly PDF. No sign-up.",
+    h1: "Free CV template – fill it in and save as PDF",
+    lead: "Tired of fighting with tables and tab stops in Word? Pick a template, enter your details – the layout adapts automatically.",
+    article: [
+      ["Fill in a template online instead of editing a Word file", "Classic CV templates for Word or Google Docs shift easily: one more line and the table jumps to the next page. Here you only enter content – spacing, fonts and page breaks are handled by PDF Libre. Headings that would end up alone at the bottom of a page move to the next page automatically."],
+      ["Which CV template suits me?", "For IT, marketing, start-ups, student jobs and internships: “Modern”. For banks, public sector, insurance, law firms and industry: “Classic”. For research, PhD positions, scholarships and technical subjects: “Academic” in LaTeX style. For lots of experience on one page: “Compact”. You can switch at any time without re-entering anything."],
+    ],
+    faq: [
+      ["Does the CV template cost anything?", "No. All templates are free and without watermark."],
+      ["Can I get the template as a Word file?", "The CV is created as a PDF – the format recruiters and application portals expect. If you still need Word, convert the PDF with “PDF to Word”."],
+      ["Can I switch between templates?", "Yes, at any time. Your details stay, only the design changes."],
+    ],
+  },
+  "lebenslauf-ats": {
+    guide: "ATS-friendly CV: how applicant tracking systems read it correctly",
+    name: "ATS CV",
+    title: "ATS-friendly CV – free ATS resume template | PDF Libre",
+    description: "Create an ATS-friendly CV: single column, real text, standard headings and an ATS check with tips. Get your application through applicant tracking systems. Free as PDF.",
+    h1: "Create an ATS-friendly CV",
+    lead: "So your application doesn’t fail at the software stage: templates every applicant tracking system can read – with an ATS check right next to the preview.",
+    article: [
+      ["Why CVs fail in an ATS", "Multi-column layouts where the software mixes up columns; contact details in the header or as an image; icons instead of words (“📞” instead of “Phone”); creative headings like “My journey” instead of “Experience”; charts for language skills; fonts without proper Unicode mapping, so the ATS reads gibberish. PDF Libre templates avoid all of this."],
+      ["Use keywords from the job ad", "An ATS compares your CV with the job requirements. So use the terms from the ad where they apply to you – for example “Python”, “SQL”, “project management” or “customer service” – in your skills and in the description of your positions. Spell out abbreviations once (“Customer Relationship Management (CRM)”). But don’t invent anything: every detail is checked in the interview."],
+      ["The PDF Libre ATS check", "Next to the preview, PDF Libre checks whether your name and contact details are present as text, whether there is a short profile, whether all dates use the same format, whether your positions are described and whether the CV is two pages at most."],
+    ],
+    faq: [
+      ["What is an ATS?", "An applicant tracking system is software companies use to collect, parse and rank applications – for example Workday, Greenhouse, Lever, SAP SuccessFactors or Personio."],
+      ["Can an ATS CV have a photo?", "Yes, a photo doesn’t disturb parsing. Whether to include one depends on the country – in the UK and the US it is usually left out."],
+      ["Is a PDF suitable for an ATS?", "Yes, as long as it contains real text – like PDF Libre PDFs. Scanned CVs or images saved as PDF can’t be read by an ATS."],
+    ],
+  },
+  "lebenslauf-latex": {
+    guide: "CV in LaTeX style – without LaTeX",
+    name: "LaTeX-style CV",
+    title: "LaTeX CV without LaTeX – create a moderncv-style resume online | PDF Libre",
+    description: "Create a CV with the LaTeX look, no LaTeX needed: Latin Modern font, clean moderncv-like structure, live preview and PDF download. Ideal for university, research and PhD applications. Free.",
+    h1: "CV in LaTeX style – no LaTeX needed",
+    lead: "The typical LaTeX look with the Latin Modern font, without Overleaf, packages or compile errors. Choose the “Academic” template and fill in the form.",
+    article: [
+      ["Why a CV in LaTeX style?", "In mathematics, computer science, physics and research, CVs made with LaTeX (for example moderncv or altacv) are widespread: calm typography, perfect spacing, a serious look. The downside: you need to know LaTeX, and every change means recompiling. The “Academic” template sets your CV in Latin Modern – LaTeX’s default font – with the same clear structure."],
+      ["For applications to universities, institutes and research", "Research assistant job, student job at an institute, master’s application, PhD, scholarship or research institute: an academic CV shows projects, thesis, teaching experience and publications alongside education and experience. Simply add your own sections via “Projects” or “Additional information” and rename them."],
+    ],
+    faq: [
+      ["Do I need LaTeX or Overleaf?", "No. You only fill in the form, the PDF is typeset automatically."],
+      ["Is the LaTeX style ATS-friendly?", "Yes. Unlike some LaTeX templates with columns and icons, this template uses a single column and contains cleanly readable text."],
+      ["Can I list publications?", "Yes. Rename the “Additional information” section to “Publications” and enter them there – one per line."],
+    ],
+  },
+  "lebenslauf-werkstudent": {
+    guide: "CV for student jobs, internships and apprenticeships",
+    name: "Student CV",
+    title: "Student CV for internships & part-time jobs – free example & template | PDF Libre",
+    description: "Create a CV for an internship, student job or apprenticeship: example with degree, projects and skills, ATS-friendly as PDF. Free and without sign-up.",
+    h1: "CV for student jobs, internships and apprenticeships",
+    lead: "Little work experience? No problem: with your studies, projects, side jobs and skills your CV can still be strong. Click “Load example” to see a sample.",
+    article: [
+      ["What goes into a student CV?", "A short profile (what you study, your strengths, how many hours a week you’re available), your degree with focus areas, internships, side jobs and student jobs, university and personal projects (for example on GitHub), skills such as programming languages, tools and software, languages with level (A1–C2) and volunteering. Side jobs outside your field also show reliability and belong in it."],
+      ["Projects instead of work experience", "Especially for student jobs in IT, data science and engineering, projects are often more important than long work experience. Briefly describe what you built, with which technologies and what came out of it – and link to it if possible."],
+    ],
+    faq: [
+      ["How long may a student CV be?", "One page is ideal; two pages are fine if you have many relevant projects or jobs."],
+      ["Should I include my school leaving exams?", "Yes, with your grade, as long as you are still studying or have just graduated."],
+      ["Should I state my weekly hours?", "For part-time student jobs, yes – for example in your profile: “available 15–20 hours a week”."],
+    ],
+  },
+  "lebenslauf-franzoesisch": {
+    guide: "CV in French (CV français) – for France, Belgium, Switzerland, Luxembourg",
+    name: "CV in French",
+    title: "Create a CV in French – free French CV template | PDF Libre",
+    description: "Create a French CV: headings in French, the usual date format and a cover letter (lettre de motivation) – or translate your English CV with AI. For applications in France, Belgium, Switzerland and Luxembourg.",
+    h1: "CV in French – CV en français",
+    lead: "Applying in France, Belgium, French-speaking Switzerland, Luxembourg or to a French company? Get a CV with French headings – or translate your existing CV with one click.",
+    article: [
+      ["The French CV: what’s different", "A CV in France is usually one page long (two at most for experienced professionals) and often starts with a short target line, the “titre du CV”, for example “Stagiaire en Data Science” or “Ingénieur logiciel”. Then come “Expérience professionnelle”, “Formation”, “Compétences”, “Langues” and “Centres d’intérêt”. A photo is optional in France.", "Explain foreign degrees briefly, for example “A-levels (équivalent du baccalauréat)” or “Bachelor of Science en informatique”. PDF Libre’s translation feature does this automatically."],
+      ["Translate your CV instead of rewriting it", "Already have an English or German CV? Import it, go to “Check & AI” and choose “Translate → French”. Job titles, degrees and descriptions are translated naturally; names, companies, places and technologies stay unchanged. Save your draft first so you keep both language versions."],
+      ["Lettre de motivation in the same design", "You can also create the cover letter – the “lettre de motivation” – here in the same design, with the French salutation “Madame, Monsieur,” and the usual closing formula. The AI draft follows the language of the job ad."],
+    ],
+    faq: [
+      ["Can I switch between English, French and German?", "Yes. You change the headings in the “Design” step; the AI translates the texts in the “Check & AI” step."],
+      ["How do I write dates in a French CV?", "MM/YYYY is common, for example 09/2024. “aujourd’hui” means “present”."],
+      ["What are the sections called in French?", "Profil, Expérience professionnelle, Formation, Projets, Compétences, Langues and Informations complémentaires."],
     ],
   },
 };

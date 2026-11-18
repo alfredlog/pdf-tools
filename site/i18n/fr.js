@@ -2,6 +2,7 @@
 module.exports = {
   ui: {
     ...require("./fr-hub"),
+    ...require("./fr-cvui"),
     "Ist PDF Libre kostenlos?": "PDF Libre est-il gratuit ?",
     "und": "et",
     "Fast alles: {n} Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur {pro} gehören zu PDF Libre Pro: {trial} Tage kostenlos testen, danach {price} im Monat oder {day} für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.": "Presque tout : {n} outils comme fusionner, compresser, signer et convertir sont gratuits et sans inscription. Seuls {pro} font partie de PDF Libre Pro : {trial} jours d’essai gratuit, puis {price} par mois ou {day} pour un pass journée. Aucune publicité ni filigrane n’est jamais ajouté à vos fichiers.",
@@ -98,10 +99,11 @@ module.exports = {
     security: { name: "Sécurité", short: "Sécurité" },
     erechnung: { name: "Facture électronique", short: "E-facture" },
   },
-  tools: require("./fr-tools"),
+  tools: { ...require("./fr-tools"), ...require("./fr-cvtools") },
   articles: require("./fr-articles"),
   landings: require("./fr-landings"),
   js: {
+    ...require("./fr-cvjs"),
     " – Details stehen am Ende der PDF.": " – les détails figurent à la fin du PDF.",
     "1 Bild erstellt.": "1 image créée.",
     "1 Bild in eine PDF umgewandelt.": "1 image convertie en PDF.",

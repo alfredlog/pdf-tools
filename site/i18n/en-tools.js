@@ -1,10 +1,6 @@
 // English texts for the tools (phase 1: everything except the long SEO articles)
 const PDF_PRIVATE = "No, everything happens in your browser.";
 module.exports = {
-  // Nur Name und Kurztext: die Oberfläche dieser Werkzeuge folgt in Phase 3 (Links führen bis dahin zur deutschen Seite)
-  "lebenslauf-erstellen": { name: "Create a CV", short: "ATS-friendly CV in German or French – import your old CV, design and download as PDF." },
-  "lebenslauf-anpassen": { name: "Tailor CV to a job ad", short: "Compare your CV with a job ad and adapt it – with missing keywords." },
-  "anschreiben-erstellen": { name: "Write a cover letter", short: "Cover letter in the same design as your CV – optionally drafted with AI." },
   bewerbungsmappe: {
     name: "Job application PDF",
     short: "Cover letter, CV and certificates in one PDF – with cover page and under 5 MB.",

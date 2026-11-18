@@ -523,7 +523,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
       const out = parseJson(
         await chat(
           [
-            { role: "system", content: CV_TAILOR_PROMPT },
+            { role: "system", content: CV_TAILOR_PROMPT + `\nSchreibe die tips auf ${{ en: "Englisch", fr: "Französisch" }[req.lang] || "Deutsch"}.` },
             { role: "user", content: JSON.stringify({ stellenanzeige: ad, anforderungen: status, items }) },
           ],
           { json: true, maxTokens: 6000, strong: true }

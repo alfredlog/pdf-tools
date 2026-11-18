@@ -23,6 +23,15 @@ A4 = pymupdf.paper_rect("a4")
 MARGIN = 36
 
 
+# Texte auf Deckblatt und Seitenzahlen in der Sprache der Seite (de/en/fr)
+WORDS = {
+    "de": {"kicker": "BEWERBUNG", "as": "als", "at": "bei", "toc": "INHALT", "page": "Seite {n} von {t}", "title": "Bewerbung"},
+    "en": {"kicker": "APPLICATION", "as": "for the position of", "at": "at", "toc": "CONTENTS", "page": "Page {n} of {t}", "title": "Application"},
+    "fr": {"kicker": "CANDIDATURE", "as": "au poste de", "at": "chez", "toc": "SOMMAIRE", "page": "Page {n} sur {t}", "title": "Candidature"},
+}
+W = WORDS["de"]
+
+
 def add_image(out, path):
     page = out.new_page(width=A4.width, height=A4.height)
     page.insert_image(A4 + (MARGIN, MARGIN, -MARGIN, -MARGIN), filename=path, keep_proportion=True)
@@ -33,13 +42,13 @@ def add_cover(out, cover, labels):
     e = lambda key: html.escape(str(cover.get(key) or "").strip())
     contact = " · ".join(x for x in (e("address"), e("email"), e("phone")) if x)
     content = "".join(f"<li>{html.escape(label)}</li>" for label in labels if label)
-    position = f"<p class='pos'>als {e('position')}</p>" if e("position") else ""
-    company = f"<p class='company'>bei {e('company')}</p>" if e("company") else ""
-    top = f"""<p class="kicker">BEWERBUNG</p>{position}{company}"""
+    position = f"<p class='pos'>{W['as']} {e('position')}</p>" if e("position") else ""
+    company = f"<p class='company'>{W['at']} {e('company')}</p>" if e("company") else ""
+    top = f"""<p class="kicker">{W['kicker']}</p>{position}{company}"""
     bottom = f"""
       <p class="name">{e('name')}</p>
       <p class="contact">{contact}</p>
-      {'<p class="toc-title">INHALT</p><ol>' + content + '</ol>' if content else ''}
+      {'<p class="toc-title">' + W['toc'] + '</p><ol>' + content + '</ol>' if content else ''}
     """
     css = """
       * { font-family: sans-serif; color: #16213d; }
@@ -64,7 +73,7 @@ def number_pages(out, skip):
     for i, page in enumerate(out):
         if i < skip:
             continue
-        text = f"Seite {i - skip + 1} von {total}"
+        text = W["page"].format(n=i - skip + 1, t=total)
         r = page.rect
         width = pymupdf.get_text_length(text, fontname="helv", fontsize=9)
         page.insert_text((r.width - 36 - width, r.height - 22), text, fontname="helv", fontsize=9, color=(0.42, 0.45, 0.52))
@@ -89,6 +98,8 @@ def main():
     spec_path, out_path = sys.argv[1:3]
     with open(spec_path, encoding="utf-8") as fh:
         spec = json.load(fh)
+    global W
+    W = WORDS.get(spec.get("lang"), WORDS["de"])
     files = spec.get("files", [])[:40]
     out = pymupdf.open()
     cover = spec.get("cover")
@@ -112,7 +123,7 @@ def main():
         return 2
     if spec.get("pageNumbers"):
         number_pages(out, skip)
-    out.set_metadata({"title": "Bewerbung" + (f" – {cover.get('name')}" if cover and cover.get("name") else ""), "producer": "PDF Libre"})
+    out.set_metadata({"title": W["title"] + (f" – {cover.get('name')}" if cover and cover.get("name") else ""), "producer": "PDF Libre"})
     save_under(out, out_path, float(spec.get("maxMb") or 0))
     return 0
 
