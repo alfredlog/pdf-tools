@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=dab78cdc">
+  <link rel="stylesheet" href="/assets/style.css?v=f223fa14">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Bewerbungsmappe erstellen – PDF Libre","url":"https://pdf-libre.de/bewerbungsmappe.html","description":"Bewerbungsmappe online erstellen: Anschreiben, Lebenslauf und Zeugnisse (PDF, Word, JPG) zu einer PDF zusammenfügen, mit Deckblatt und automatisch unter 5 MB. Kostenlos, ohne Anmeldung.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"Bewerbungsmappe erstellen","item":"https://pdf-libre.de/bewerbungsmappe.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Welche Dateien kann ich hochladen?","acceptedAnswer":{"@type":"Answer","text":"PDF, Word (DOC, DOCX, ODT, RTF) sowie Fotos und Scans als JPG oder PNG. Fotos werden auf A4-Seiten gesetzt."}},{"@type":"Question","name":"Wie wird die Datei unter 5 MB gebracht?","acceptedAnswer":{"@type":"Answer","text":"Bilder in den Dokumenten werden schrittweise verkleinert, bis die gewünschte Größe erreicht ist. Text bleibt scharf und durchsuchbar."}},{"@type":"Question","name":"Woher kommt das Inhaltsverzeichnis?","acceptedAnswer":{"@type":"Answer","text":"Aus den Dateinamen. „Lebenslauf_Max_Mustermann.pdf“ erscheint als „Lebenslauf Max Mustermann“."}},{"@type":"Question","name":"Wie groß darf eine Bewerbungsmappe als PDF sein?","acceptedAnswer":{"@type":"Answer","text":"Die meisten Bewerbungsportale erlauben 2 bis 5 MB. Wähle einfach die passende Grenze – die Mappe wird automatisch verkleinert."}},{"@type":"Question","name":"Kann ich die Bewerbungsmappe auf dem Handy erstellen?","acceptedAnswer":{"@type":"Answer","text":"Ja. Die Seite funktioniert auch auf dem Smartphone: Fotos von Zeugnissen direkt aus der Galerie auswählen, Reihenfolge festlegen, fertig."}},{"@type":"Question","name":"Werden meine Unterlagen gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Alle Dateien werden direkt nach dem Erstellen gelöscht."}}]}</script>
@@ -52,8 +52,12 @@
   <div class="mega" id="mega" hidden>
     <div class="wrap mega__grid">
         <div class="mega__col">
+          <p class="mega__cat mega__cat--career"><a href="/bewerbung.html">Bewerbung &amp; Lebenslauf</a></p>
+          <ul><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/lebenslauf-anpassen.html">Lebenslauf an Stellenanzeige anpassen</a></li><li><a href="/anschreiben-erstellen.html">Anschreiben erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li></ul>
+        </div>
+        <div class="mega__col">
           <p class="mega__cat mega__cat--organize">Zusammenfügen &amp; Organisieren</p>
-          <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
+          <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--optimize">Komprimieren</p>
@@ -88,17 +92,17 @@
 </header>
 <main id="inhalt">
 <div class="tool-head wrap">
-  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>Zusammenfügen &amp; Organisieren</span></nav>
+  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>Bewerbung &amp; Lebenslauf</span></nav>
   <h1>Bewerbungsmappe als PDF erstellen</h1>
   <p class="tool-head__lead">Lade Anschreiben, Lebenslauf und Zeugnisse hoch – als PDF, Word oder Foto. Du bekommst eine saubere PDF in der richtigen Reihenfolge, klein genug für jedes Bewerbungsportal.</p>
 </div>
 
 <div class="wrap">
-  <section class="tool tool--organize" data-tool="bewerbungsmappe" data-mode="server" data-endpoint="/api/bewerbungsmappe" data-accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.odt,.rtf" data-kind="Dokumente" data-multiple="true" data-min="1" data-sortable="true" aria-label="Bewerbungsmappe erstellen">
+  <section class="tool tool--career" data-tool="bewerbungsmappe" data-mode="server" data-endpoint="/api/bewerbungsmappe" data-accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.odt,.rtf" data-kind="Dokumente" data-multiple="true" data-min="1" data-sortable="true" aria-label="Bewerbungsmappe erstellen">
     <form class="tool__form" novalidate>
       <div class="stage stage--pick">
         <div class="drop" data-drop>
-          <svg class="ficon ficon--organize" width="56" height="66" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+          <svg class="ficon ficon--career" width="56" height="66" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
 <g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="4" y="8" width="16" height="11" rx="1.5"/><path d="M9 8V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v2M4 13h16"/></g>
@@ -257,7 +261,6 @@
     <li><a href="/lebenslauf-vorlage.html">Lebenslauf-Vorlage kostenlos (Word-Alternative als PDF)</a></li>
     <li><a href="/lebenslauf-latex.html">Lebenslauf im LaTeX-Stil – ohne LaTeX</a></li>
     <li><a href="/lebenslauf-werkstudent.html">Lebenslauf für Werkstudenten, Praktikum und Ausbildung</a></li>
-    <li><a href="/anschreiben-erstellen.html">Anschreiben erstellen – passend zum Lebenslauf</a></li>
   </ul>
 </section>
 <section class="wrap related" aria-labelledby="related-title">
@@ -315,11 +318,15 @@
     <div class="site-footer__grid">
       <div class="site-footer__about">
         <a href="/" class="brand brand--footer"><svg class="brand__mark" viewBox="0 0 32 36" aria-hidden="true"><path d="M3 2h17l9 9v22a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M20 2v8a1 1 0 0 0 1 1h8Z" fill="#fff" opacity=".45"/><path d="M9 25V14h4.5a3.5 3.5 0 0 1 0 7H9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>PDF Libre</span></a>
-        <p>33 kostenlose PDF-Werkzeuge ohne Anmeldung. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <p>35 kostenlose PDF-Werkzeuge ohne Anmeldung. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+      </div>
+      <div>
+        <p class="site-footer__head">Bewerbung &amp; Lebenslauf</p>
+        <ul><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/lebenslauf-anpassen.html">Lebenslauf an Stellenanzeige anpassen</a></li><li><a href="/anschreiben-erstellen.html">Anschreiben erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">Zusammenfügen &amp; Organisieren</p>
-        <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
+        <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">Komprimieren</p>
@@ -356,8 +363,8 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=dab78cdc" defer></script>
+<script src="/assets/site.js?v=f223fa14" defer></script>
 <script src="/vendor/Sortable.min.js" defer></script>
-<script src="/assets/tool.js?v=dab78cdc" defer></script>
+<script src="/assets/tool.js?v=f223fa14" defer></script>
 </body>
 </html>

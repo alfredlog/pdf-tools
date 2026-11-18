@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=dab78cdc">
+  <link rel="stylesheet" href="/assets/style.css?v=f223fa14">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Lebenslauf für Werkstudenten – PDF Libre","url":"https://pdf-libre.de/lebenslauf-werkstudent.html","description":"Lebenslauf für Werkstudentenstelle, Praktikum oder Ausbildung erstellen: Muster mit Studium, Projekten und Kenntnissen, ATS-freundlich als PDF. Kostenlos und ohne Anmeldung.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"Lebenslauf erstellen","item":"https://pdf-libre.de/lebenslauf-erstellen.html"},{"@type":"ListItem","position":3,"name":"Lebenslauf für Werkstudenten","item":"https://pdf-libre.de/lebenslauf-werkstudent.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie lang darf der Lebenslauf eines Studenten sein?","acceptedAnswer":{"@type":"Answer","text":"Eine Seite ist ideal, zwei Seiten sind in Ordnung, wenn du viele relevante Projekte oder Jobs hast."}},{"@type":"Question","name":"Gehört das Abitur in den Lebenslauf?","acceptedAnswer":{"@type":"Answer","text":"Ja, mit Note, solange du noch studierst oder gerade erst fertig bist."}},{"@type":"Question","name":"Sollte ich die Wochenstunden angeben?","acceptedAnswer":{"@type":"Answer","text":"Für Werkstudentenstellen ja – zum Beispiel im Profil: „verfügbar für 15–20 Stunden pro Woche“."}}]}</script>
@@ -53,8 +53,12 @@
   <div class="mega" id="mega" hidden>
     <div class="wrap mega__grid">
         <div class="mega__col">
+          <p class="mega__cat mega__cat--career"><a href="/bewerbung.html">Bewerbung &amp; Lebenslauf</a></p>
+          <ul><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/lebenslauf-anpassen.html">Lebenslauf an Stellenanzeige anpassen</a></li><li><a href="/anschreiben-erstellen.html">Anschreiben erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li></ul>
+        </div>
+        <div class="mega__col">
           <p class="mega__cat mega__cat--organize">Zusammenfügen &amp; Organisieren</p>
-          <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
+          <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--optimize">Komprimieren</p>
@@ -95,22 +99,93 @@
 </div>
 
 <div class="wrap">
-  <section class="tool tool--organize cv" data-cv data-default-template="modern" aria-label="Lebenslauf für Werkstudenten">
-    <div class="cv-bar">
-      <div class="cv-tpls" role="group" aria-label="Vorlage">
-        <button type="button" class="cv-tpl cv-tpl--modern" data-tpl="modern"><span class="cv-tpl__mini" aria-hidden="true"><i></i><i></i><i></i></span><b>Modern</b><small>Klar und farbig</small></button><button type="button" class="cv-tpl cv-tpl--klassisch" data-tpl="klassisch"><span class="cv-tpl__mini" aria-hidden="true"><i></i><i></i><i></i></span><b>Klassisch</b><small>Seriös, Serifenschrift</small></button><button type="button" class="cv-tpl cv-tpl--akademisch" data-tpl="akademisch"><span class="cv-tpl__mini" aria-hidden="true"><i></i><i></i><i></i></span><b>Akademisch</b><small>LaTeX-Stil</small></button><button type="button" class="cv-tpl cv-tpl--kompakt" data-tpl="kompakt"><span class="cv-tpl__mini" aria-hidden="true"><i></i><i></i><i></i></span><b>Kompakt</b><small>Viel Inhalt, eine Seite</small></button>
+  <section class="tool tool--career cv" data-cv data-default-template="modern" data-start="" aria-label="Lebenslauf für Werkstudenten">
+    <div class="cv-welcome" data-welcome hidden>
+      <h2>Wie möchtest du starten?</h2>
+      <div class="cv-welcome__cards">
+        <label class="cv-wcard cv-wcard--main"><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>Alten Lebenslauf importieren</b><span>PDF oder Word hochladen – die KI überträgt alles ins Formular.</span><input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
+        <button type="button" class="cv-wcard" data-sample><span class="cv-wcard__icon" aria-hidden="true">✎</span><b>Mit Beispiel starten</b><span>Ein fertiges Muster laden und mit deinen Angaben überschreiben.</span></button>
+        <button type="button" class="cv-wcard" data-empty><span class="cv-wcard__icon" aria-hidden="true">＋</span><b>Leer beginnen</b><span>Schritt für Schritt selbst ausfüllen.</span></button>
       </div>
-      <div class="cv-bar__opts">
-        <label class="cv-inline">Farbe <input type="color" data-accent value="#1f4fa3"></label>
-        <label class="cv-inline">Sprache
-          <select data-lang><option value="de">Deutsch</option><option value="en">Englisch</option></select>
-        </label>
-        <button type="button" class="btn btn--link" data-sample>Beispiel laden</button>
-        <label class="btn btn--link" title="Bestehenden Lebenslauf (PDF oder Word) übernehmen oder einen gespeicherten Entwurf öffnen">Lebenslauf importieren<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
-        <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
+      <p class="cv-welcome__hint">Kostenlos, ohne Anmeldung. Dein Entwurf bleibt in deinem Browser.</p>
+    </div>
+
+    <div class="cv-app" data-app>
+      <nav class="cv-steps" aria-label="Schritte">
+        <button type="button" data-step="content" class="is-on"><span>1</span>Inhalte</button>
+        <button type="button" data-step="design"><span>2</span>Design</button>
+        <button type="button" data-step="optimize"><span>3</span>Prüfen &amp; KI <em class="cv-steps__badge" data-ats-badge></em></button>
+        <button type="button" data-step="download"><span>4</span>Herunterladen</button>
+      </nav>
+      <p class="cv-notice" data-notice hidden></p>
+      <div class="cv-work">
+        <div class="cv-main">
+          <div class="cv-pane" data-pane="content">
+            <div class="cv-toolbar">
+              <label class="btn btn--ghost btn--sm">Lebenslauf importieren<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
+              <button type="button" class="btn btn--ghost btn--sm" data-sample>Beispiel laden</button>
+              <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
+            </div>
+            <div class="cv-jump" data-jump></div>
+            <div class="cv-form" data-form></div>
+            <div class="cv-next"><button type="button" class="btn btn--primary" data-goto="design">Weiter: Design wählen →</button></div>
+          </div>
+
+          <div class="cv-pane" data-pane="design" hidden>
+            <h3 class="cv-pane__title">Vorlage</h3>
+            <div class="cv-tplgrid" role="group" aria-label="Vorlage">
+              <button type="button" class="cv-tplcard" data-tpl="modern"><span class="cv-tplcard__img" data-thumb="modern"></span><b>Modern</b><small>Klar, mit Akzentfarbe – IT, Marketing, Start-ups</small></button><button type="button" class="cv-tplcard" data-tpl="klassisch"><span class="cv-tplcard__img" data-thumb="klassisch"></span><b>Klassisch</b><small>Serifenschrift – Banken, Verwaltung, Industrie</small></button><button type="button" class="cv-tplcard" data-tpl="akademisch"><span class="cv-tplcard__img" data-thumb="akademisch"></span><b>Akademisch</b><small>LaTeX-Stil – Uni, Forschung, Technik</small></button><button type="button" class="cv-tplcard" data-tpl="kompakt"><span class="cv-tplcard__img" data-thumb="kompakt"></span><b>Kompakt</b><small>Viel Inhalt auf einer Seite</small></button>
+            </div>
+            <div class="cv-design">
+              <div><h3 class="cv-pane__title">Farbe</h3>
+                <div class="cv-swatches"><button type="button" class="cv-swatch" data-swatch="#1f4fa3" style="background:#1f4fa3" aria-label="Farbe #1f4fa3"></button><button type="button" class="cv-swatch" data-swatch="#0f766e" style="background:#0f766e" aria-label="Farbe #0f766e"></button><button type="button" class="cv-swatch" data-swatch="#7c3aed" style="background:#7c3aed" aria-label="Farbe #7c3aed"></button><button type="button" class="cv-swatch" data-swatch="#b45309" style="background:#b45309" aria-label="Farbe #b45309"></button><button type="button" class="cv-swatch" data-swatch="#be123c" style="background:#be123c" aria-label="Farbe #be123c"></button><button type="button" class="cv-swatch" data-swatch="#334155" style="background:#334155" aria-label="Farbe #334155"></button><label class="cv-swatch cv-swatch--custom" title="Eigene Farbe"><input type="color" data-accent value="#1f4fa3" aria-label="Eigene Farbe"></label></div>
+              </div>
+              <div><h3 class="cv-pane__title">Sprache der Überschriften</h3>
+                <select data-lang class="cv-select"><option value="de">Deutsch (Berufserfahrung, Ausbildung …)</option><option value="en">Englisch (Experience, Education …)</option></select>
+              </div>
+            </div>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="content">← Inhalte</button><button type="button" class="btn btn--primary" data-goto="optimize">Weiter: Prüfen &amp; KI →</button></div>
+          </div>
+
+          <div class="cv-pane" data-pane="optimize" hidden>
+            <div class="cv-ats">
+              <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
+              <ul data-ats></ul>
+              <p class="cv-ats__hint">Klicke auf einen offenen Punkt, um direkt zum passenden Feld zu springen.</p>
+            </div>
+            <h3 class="cv-pane__title">KI-Assistent</h3>
+            <div class="cv-aigrid">
+              <button type="button" class="cv-aicard" data-proofread><b>Rechtschreibung prüfen</b><span>Findet Tipp-, Rechtschreib- und Grammatikfehler.</span></button><button type="button" class="cv-aicard" data-improve><b>Formulierungen verbessern <span class="pro-badge">Pro</span></b><span>Klarere Stichpunkte mit starken Verben – ohne Erfundenes.</span></button><button type="button" class="cv-aicard" data-open-match><b>An Stellenanzeige anpassen <span class="pro-badge">Pro</span></b><span>Trefferquote, fehlende Keywords und passende Formulierungen.</span></button><button type="button" class="cv-aicard" data-open-letter><b>Anschreiben erstellen</b><span>Im gleichen Design – selbst schreiben oder KI-Entwurf.</span></button><button type="button" class="cv-aicard" data-translate><b>Auf Englisch übersetzen <span class="pro-badge">Pro</span></b><span>Den ganzen Lebenslauf ins Englische (oder zurück).</span></button>
+            </div>
+            <p class="cv-ai__hint">Die KI formuliert nur um, was in deinem Lebenslauf steht – sie erfindet keine Erfahrungen. Du bestätigst jede Änderung.</p>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="design">← Design</button><button type="button" class="btn btn--primary" data-goto="download">Weiter: Herunterladen →</button></div>
+          </div>
+
+          <div class="cv-pane" data-pane="download" hidden>
+            <div class="cv-dlgrid">
+              <button type="button" class="cv-dlcard cv-dlcard--main" data-download><b>Lebenslauf als PDF</b><span>ATS-freundlich, ohne versteckte Daten.</span></button>
+              <button type="button" class="cv-dlcard" data-open-letter><b>Anschreiben erstellen</b><span>Im selben Design, als eigene PDF.</span></button>
+              <button type="button" class="cv-dlcard" data-save-draft><b>Entwurf speichern</b><span>Kleine Datei zum späteren Weiterbearbeiten – nicht mitschicken.</span></button>
+              <a class="cv-dlcard" href="/bewerbungsmappe.html"><b>Bewerbungsmappe erstellen</b><span>Lebenslauf, Anschreiben und Zeugnisse zu einer PDF.</span></a>
+            </div>
+            <p class="cv-ai__hint">Tipp: Benenne die Datei mit deinem Namen, z. B. „Lebenslauf_Max_Mustermann.pdf“ – das passiert automatisch.</p>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="optimize">← Prüfen &amp; KI</button></div>
+          </div>
+        </div>
+
+        <aside class="cv-side">
+          <div class="cv-preview" data-preview aria-live="polite"><p class="cv-preview__empty">Vorschau wird geladen …</p></div>
+          <p class="cv-info" data-info></p>
+          <p class="form-error" data-error role="alert" hidden></p>
+          <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
+          <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span>Deine Angaben werden nur zum Erstellen der PDF übertragen und nicht gespeichert.</span></p>
+        </aside>
+      </div>
+      <div class="cv-mobilebar">
+        <button type="button" class="btn btn--ghost" data-toggle-preview>Vorschau</button>
+        <button type="button" class="btn btn--primary" data-download>PDF herunterladen</button>
       </div>
     </div>
-    <p class="cv-notice" data-notice hidden></p>
     <dialog class="cv-dialog" data-review>
       <form method="dialog">
         <h3 data-review-title>Vorschläge</h3>
@@ -167,30 +242,6 @@
         </div>
       </form>
     </dialog>
-    <div class="cv-work">
-      <div class="cv-form" data-form></div>
-      <aside class="cv-side">
-        <div class="cv-preview" data-preview aria-live="polite"><p class="cv-preview__empty">Vorschau wird geladen …</p></div>
-        <p class="cv-info" data-info></p>
-        <p class="form-error" data-error role="alert" hidden></p>
-        <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
-        <div class="cv-ai">
-          <p><strong>KI-Assistent</strong></p>
-          <button type="button" class="cv-ai__btn" data-proofread>Rechtschreibung prüfen</button>
-          <button type="button" class="cv-ai__btn" data-improve>Formulierungen verbessern <span class="pro-badge">Pro</span></button>
-          <button type="button" class="cv-ai__btn" data-open-match>An Stellenanzeige anpassen <span class="pro-badge">Pro</span></button>
-          <button type="button" class="cv-ai__btn" data-open-letter>Anschreiben erstellen</button>
-          <button type="button" class="cv-ai__btn" data-translate>Auf Englisch übersetzen <span class="pro-badge">Pro</span></button>
-          <p class="cv-ai__hint">Die KI formuliert nur um, was in deinem Lebenslauf steht – sie erfindet keine Erfahrungen. Du bestätigst jede Änderung.</p>
-        </div>
-        <button type="button" class="btn btn--ghost btn--block" data-save-draft>Entwurf speichern (zum späteren Bearbeiten)</button>
-        <div class="cv-ats">
-          <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
-          <ul data-ats></ul>
-        </div>
-        <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span>Deine Angaben werden nur zum Erstellen der PDF übertragen und nicht gespeichert. Der Entwurf bleibt in deinem Browser.</span></p>
-      </aside>
-    </div>
   </section>
 </div>
 
@@ -199,8 +250,8 @@
   <h2 id="so-gehts">So geht's: Lebenslauf für Werkstudenten</h2>
   <ol class="steps">
     <li><h3>Angaben eintragen oder importieren</h3><p>Fülle das Formular aus, lade ein Beispiel – oder importiere deinen bisherigen Lebenslauf als PDF oder Word-Datei. Die KI überträgt alle Angaben automatisch ins Formular.</p></li>
-    <li><h3>Vorlage wählen</h3><p>Modern, Klassisch, Akademisch im LaTeX-Stil oder Kompakt. Farbe und Sprache (Deutsch/Englisch) stellst du oben ein.</p></li>
-    <li><h3>Vorschau prüfen</h3><p>Rechts siehst du live die fertige PDF und einen ATS-Check mit Hinweisen, was noch fehlt.</p></li>
+    <li><h3>Design wählen</h3><p>Im Schritt „Design“ siehst du deinen Lebenslauf in allen vier Vorlagen – Modern, Klassisch, Akademisch im LaTeX-Stil und Kompakt – und wählst Farbe und Sprache.</p></li>
+    <li><h3>Prüfen und verbessern</h3><p>Der ATS-Check zeigt, was noch fehlt – ein Klick springt zum passenden Feld. Der KI-Assistent prüft die Rechtschreibung, verbessert Formulierungen und passt den Lebenslauf an eine Stellenanzeige an.</p></li>
     <li><h3>PDF herunterladen</h3><p>Lade den Lebenslauf herunter. Mit „Entwurf speichern“ bekommst du zusätzlich eine kleine Datei, mit der du ihn später weiterbearbeitest.</p></li>
   </ol>
 </section>
@@ -233,15 +284,14 @@
   <ul>
     <li><a href="/lebenslauf-vorlage.html">Lebenslauf-Vorlage kostenlos (Word-Alternative als PDF)</a></li>
     <li><a href="/lebenslauf-latex.html">Lebenslauf im LaTeX-Stil – ohne LaTeX</a></li>
-    <li><a href="/anschreiben-erstellen.html">Anschreiben erstellen – passend zum Lebenslauf</a></li>
   </ul>
 </section>
 <section class="wrap related" aria-labelledby="related-title">
   <h2 id="related-title">Passende Werkzeuge</h2>
   <ul class="tgrid tgrid--compact">
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="bewerbung">
         <a href="/lebenslauf-erstellen.html">
-          <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+          <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
 <g transform="translate(10 17) scale(1)" class="ficon__glyph"><circle cx="9" cy="8.5" r="2.5"/><path d="M5 14.5c.6-1.8 2.1-2.8 4-2.8s3.4 1 4 2.8M15 7h4M15 10.5h4M5 18h14"/></g>
@@ -250,9 +300,9 @@
           <span class="tcard__text">ATS-freundlicher Lebenslauf als PDF – mit Vorlagen und Live-Vorschau.</span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="bewerbung">
         <a href="/bewerbungsmappe.html">
-          <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+          <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
 <g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="4" y="8" width="16" height="11" rx="1.5"/><path d="M9 8V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v2M4 13h16"/></g>
@@ -261,9 +311,9 @@
           <span class="tcard__text">Anschreiben, Lebenslauf und Zeugnisse zu einer PDF – mit Deckblatt und unter 5 MB.</span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="bewerbung">
         <a href="/bewerbung-per-email.html">
-          <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+          <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
 <g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="4" y="8" width="16" height="11" rx="1.5"/><path d="M9 8V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v2M4 13h16"/></g>
@@ -272,9 +322,9 @@
           <span class="tcard__text">Bewerbung per E-Mail: den PDF-Anhang richtig vorbereiten</span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="bewerbung">
         <a href="/lebenslauf-ats.html">
-          <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+          <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
 <g transform="translate(10 17) scale(1)" class="ficon__glyph"><circle cx="9" cy="8.5" r="2.5"/><path d="M5 14.5c.6-1.8 2.1-2.8 4-2.8s3.4 1 4 2.8M15 7h4M15 10.5h4M5 18h14"/></g>
@@ -291,11 +341,15 @@
     <div class="site-footer__grid">
       <div class="site-footer__about">
         <a href="/" class="brand brand--footer"><svg class="brand__mark" viewBox="0 0 32 36" aria-hidden="true"><path d="M3 2h17l9 9v22a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M20 2v8a1 1 0 0 0 1 1h8Z" fill="#fff" opacity=".45"/><path d="M9 25V14h4.5a3.5 3.5 0 0 1 0 7H9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>PDF Libre</span></a>
-        <p>29 kostenlose PDF-Werkzeuge ohne Anmeldung, dazu PDF Libre Pro mit PDF-Editor und KI-Werkzeugen. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <p>31 kostenlose PDF-Werkzeuge ohne Anmeldung, dazu PDF Libre Pro mit PDF-Editor und KI-Werkzeugen. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+      </div>
+      <div>
+        <p class="site-footer__head">Bewerbung &amp; Lebenslauf</p>
+        <ul><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/lebenslauf-anpassen.html">Lebenslauf an Stellenanzeige anpassen</a></li><li><a href="/anschreiben-erstellen.html">Anschreiben erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">Zusammenfügen &amp; Organisieren</p>
-        <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/lebenslauf-erstellen.html">Lebenslauf erstellen</a></li><li><a href="/bewerbungsmappe.html">Bewerbungsmappe erstellen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
+        <ul><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/split.html">PDF teilen</a></li><li><a href="/organize.html">PDF organisieren</a></li><li><a href="/rotate.html">PDF drehen</a></li><li><a href="/remove-pages.html">Seiten entfernen</a></li><li><a href="/extract-pages.html">Seiten extrahieren</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">Komprimieren</p>
@@ -332,7 +386,7 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=dab78cdc" defer></script>
-<script src="/assets/cv.js?v=dab78cdc" defer></script>
+<script src="/assets/site.js?v=f223fa14" defer></script>
+<script src="/assets/cv.js?v=f223fa14" defer></script>
 </body>
 </html>

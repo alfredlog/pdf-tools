@@ -402,38 +402,6 @@ const landings = [
     ],
     related: ["lebenslauf-erstellen", "bewerbungsmappe", "bewerbung-per-email", "lebenslauf-ats"],
   },
-  {
-    slug: "anschreiben-erstellen",
-    base: "lebenslauf-erstellen",
-    guide: "Anschreiben erstellen – passend zum Lebenslauf",
-    name: "Anschreiben erstellen",
-    title: "Anschreiben erstellen – kostenlos, im Design deines Lebenslaufs | PDF Libre",
-    description:
-      "Bewerbungsanschreiben online erstellen: im gleichen Design wie dein Lebenslauf, mit Empfänger, Betreff und Grußformel – selbst schreiben oder Entwurf mit KI aus Lebenslauf und Stellenanzeige. Als PDF.",
-    h1: "Anschreiben erstellen – passend zu deinem Lebenslauf",
-    lead: "Fülle zuerst deinen Lebenslauf aus und klicke dann rechts auf „Anschreiben erstellen“. Dein Brief bekommt dieselbe Schrift und Farbe – auf Wunsch mit einem KI-Entwurf zur Stellenanzeige.",
-    article: [
-      {
-        h: "Aufbau eines guten Anschreibens",
-        p: [
-          "Ein Anschreiben hat eine Seite: oben deine Kontaktdaten, darunter die Anschrift des Unternehmens (am besten mit Ansprechpartner), rechts Ort und Datum, dann ein klarer Betreff wie „Bewerbung als Werkstudent Data Science“. Es folgen die persönliche Anrede, drei bis vier Absätze und die Grußformel „Mit freundlichen Grüßen“.",
-          "Im Einstieg zeigst du, warum genau diese Stelle und dieses Unternehmen zu dir passen. Im Hauptteil belegst du mit zwei oder drei konkreten Beispielen aus deinem Lebenslauf, was du mitbringst. Zum Schluss nennst du, ab wann und wie viele Stunden du verfügbar bist, und freust dich auf ein Gespräch.",
-        ],
-      },
-      {
-        h: "Anschreiben mit KI – aber persönlich",
-        p: [
-          "Die KI schreibt einen Entwurf aus den Angaben in deinem Lebenslauf und dem Text der Stellenanzeige – ohne Floskeln und ohne erfundene Erfahrungen. Lies ihn danach in Ruhe durch und ergänze, was nur du weißt: warum dich das Unternehmen interessiert, was dich antreibt. Personaler merken schnell, ob ein Anschreiben persönlich ist.",
-        ],
-      },
-    ],
-    faq: [
-      ["Ist das Anschreiben kostenlos?", "Das Schreiben und der PDF-Download sind kostenlos. Den KI-Entwurf kannst du zusätzlich nutzen."],
-      ["Wie lang sollte ein Anschreiben sein?", "Höchstens eine Seite, etwa 250 bis 350 Wörter."],
-      ["Wie füge ich Anschreiben und Lebenslauf zusammen?", "Lade beide PDFs in „Bewerbungsmappe erstellen“ hoch – dort werden sie mit deinen Zeugnissen zu einer Datei zusammengefügt."],
-    ],
-    related: ["lebenslauf-erstellen", "bewerbungsmappe", "bewerbung-per-email", "lebenslauf-ats"],
-  },
 ];
 
 module.exports = { landings };

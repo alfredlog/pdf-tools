@@ -41,7 +41,7 @@ let FREE = false;
 function setFreeMode() {
   FREE = true;
   for (const t of tools) {
-    if (!t.pro) continue;
+    if (!t.pro && !t.free) continue;
     t.pro = false;
     const f = t.free || {};
     if (f.short) t.short = f.short;
@@ -55,6 +55,8 @@ function setFreeMode() {
 // Icons
 // ---------------------------------------------------------------------------
 const GLYPHS = {
+  letter: '<rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="m4.5 7 7.5 6 7.5-6"/>',
+  target: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="#fff"/>',
   cv: '<circle cx="9" cy="8.5" r="2.5"/><path d="M5 14.5c.6-1.8 2.1-2.8 4-2.8s3.4 1 4 2.8M15 7h4M15 10.5h4M5 18h14"/>',
   ocr: '<path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><path d="M8 9h8M8 12h8M8 15h5"/>',
   redact: '<path d="M5 6h9M5 18h11"/><rect x="5" y="9.5" width="14" height="5" rx="1" fill="#fff"/>',
@@ -174,7 +176,7 @@ function megaMenu() {
   return categories
     .map(
       (c) => `<div class="mega__col">
-          <p class="mega__cat mega__cat--${c.color}">${esc(c.name)}</p>
+          <p class="mega__cat mega__cat--${c.color}">${c.hub ? `<a href="${url(c.hub)}">${esc(c.name)}</a>` : esc(c.name)}</p>
           <ul>${tools
             .filter((t) => t.cat === c.id)
             .map((t) => `<li><a href="${url(t.slug)}">${esc(t.name)}</a></li>`)
@@ -319,7 +321,7 @@ function homePage() {
     <h3 class="tgroup__title tgroup__title--${c.color}">${esc(c.name)}</h3>
     <ul class="tgrid">
       ${tools.filter((t) => t.cat === c.id).map(toolCard).join("\n      ")}
-    </ul>
+    </ul>${c.hub ? `\n    <p class="tgroup__more"><a href="${url(c.hub)}">Alles rund um Bewerbung und Lebenslauf: Ratgeber, Vorlagen und Tipps →</a></p>` : ""}
   </div>`
     )
     .join("\n  ")}
@@ -560,31 +562,112 @@ function workspace(t) {
   </section>`;
 }
 
-// Lebenslauf erstellen: Formular links, Live-Vorschau rechts (Logik: public/assets/cv.js)
+// Lebenslauf erstellen: Schritte (Inhalte → Design → Optimieren → Herunterladen), Vorschau rechts (Logik: public/assets/cv.js)
 function cvWorkspace(t) {
   const c = catById[t.cat].color;
+  const pro = FREE ? "" : ' <span class="pro-badge">Pro</span>';
   const tpls = [
-    ["modern", "Modern", "Klar und farbig"],
-    ["klassisch", "Klassisch", "Seriös, Serifenschrift"],
-    ["akademisch", "Akademisch", "LaTeX-Stil"],
-    ["kompakt", "Kompakt", "Viel Inhalt, eine Seite"],
+    ["modern", "Modern", "Klar, mit Akzentfarbe – IT, Marketing, Start-ups"],
+    ["klassisch", "Klassisch", "Serifenschrift – Banken, Verwaltung, Industrie"],
+    ["akademisch", "Akademisch", "LaTeX-Stil – Uni, Forschung, Technik"],
+    ["kompakt", "Kompakt", "Viel Inhalt auf einer Seite"],
   ];
-  return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" aria-label="${esc(t.name)}">
-    <div class="cv-bar">
-      <div class="cv-tpls" role="group" aria-label="Vorlage">
-        ${tpls.map(([id, n, d]) => `<button type="button" class="cv-tpl cv-tpl--${id}" data-tpl="${id}"><span class="cv-tpl__mini" aria-hidden="true"><i></i><i></i><i></i></span><b>${n}</b><small>${d}</small></button>`).join("")}
+  const swatches = ["#1f4fa3", "#0f766e", "#7c3aed", "#b45309", "#be123c", "#334155"];
+  const ai = [
+    ["proofread", "Rechtschreibung prüfen", "Findet Tipp-, Rechtschreib- und Grammatikfehler.", ""],
+    ["improve", "Formulierungen verbessern", "Klarere Stichpunkte mit starken Verben – ohne Erfundenes.", pro],
+    ["open-match", "An Stellenanzeige anpassen", "Trefferquote, fehlende Keywords und passende Formulierungen.", pro],
+    ["open-letter", "Anschreiben erstellen", "Im gleichen Design – selbst schreiben oder KI-Entwurf.", ""],
+    ["translate", "Auf Englisch übersetzen", "Den ganzen Lebenslauf ins Englische (oder zurück).", pro],
+  ];
+  const file = `type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import`;
+  return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" data-start="${esc(t.ui.start || "")}" aria-label="${esc(t.name)}">
+    <div class="cv-welcome" data-welcome hidden>
+      <h2>Wie möchtest du starten?</h2>
+      <div class="cv-welcome__cards">
+        <label class="cv-wcard cv-wcard--main"><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>Alten Lebenslauf importieren</b><span>PDF oder Word hochladen – die KI überträgt alles ins Formular.</span><input ${file}></label>
+        <button type="button" class="cv-wcard" data-sample><span class="cv-wcard__icon" aria-hidden="true">✎</span><b>Mit Beispiel starten</b><span>Ein fertiges Muster laden und mit deinen Angaben überschreiben.</span></button>
+        <button type="button" class="cv-wcard" data-empty><span class="cv-wcard__icon" aria-hidden="true">＋</span><b>Leer beginnen</b><span>Schritt für Schritt selbst ausfüllen.</span></button>
       </div>
-      <div class="cv-bar__opts">
-        <label class="cv-inline">Farbe <input type="color" data-accent value="#1f4fa3"></label>
-        <label class="cv-inline">Sprache
-          <select data-lang><option value="de">Deutsch</option><option value="en">Englisch</option></select>
-        </label>
-        <button type="button" class="btn btn--link" data-sample>Beispiel laden</button>
-        <label class="btn btn--link" title="Bestehenden Lebenslauf (PDF oder Word) übernehmen oder einen gespeicherten Entwurf öffnen">Lebenslauf importieren<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
-        <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
+      <p class="cv-welcome__hint">Kostenlos, ohne Anmeldung. Dein Entwurf bleibt in deinem Browser.</p>
+    </div>
+
+    <div class="cv-app" data-app>
+      <nav class="cv-steps" aria-label="Schritte">
+        <button type="button" data-step="content" class="is-on"><span>1</span>Inhalte</button>
+        <button type="button" data-step="design"><span>2</span>Design</button>
+        <button type="button" data-step="optimize"><span>3</span>Prüfen &amp; KI <em class="cv-steps__badge" data-ats-badge></em></button>
+        <button type="button" data-step="download"><span>4</span>Herunterladen</button>
+      </nav>
+      <p class="cv-notice" data-notice hidden></p>
+      <div class="cv-work">
+        <div class="cv-main">
+          <div class="cv-pane" data-pane="content">
+            <div class="cv-toolbar">
+              <label class="btn btn--ghost btn--sm">Lebenslauf importieren<input ${file}></label>
+              <button type="button" class="btn btn--ghost btn--sm" data-sample>Beispiel laden</button>
+              <button type="button" class="btn btn--link" data-new>Neu beginnen</button>
+            </div>
+            <div class="cv-jump" data-jump></div>
+            <div class="cv-form" data-form></div>
+            <div class="cv-next"><button type="button" class="btn btn--primary" data-goto="design">Weiter: Design wählen →</button></div>
+          </div>
+
+          <div class="cv-pane" data-pane="design" hidden>
+            <h3 class="cv-pane__title">Vorlage</h3>
+            <div class="cv-tplgrid" role="group" aria-label="Vorlage">
+              ${tpls.map(([id, n, d]) => `<button type="button" class="cv-tplcard" data-tpl="${id}"><span class="cv-tplcard__img" data-thumb="${id}"></span><b>${n}</b><small>${d}</small></button>`).join("")}
+            </div>
+            <div class="cv-design">
+              <div><h3 class="cv-pane__title">Farbe</h3>
+                <div class="cv-swatches">${swatches.map((x) => `<button type="button" class="cv-swatch" data-swatch="${x}" style="background:${x}" aria-label="Farbe ${x}"></button>`).join("")}<label class="cv-swatch cv-swatch--custom" title="Eigene Farbe"><input type="color" data-accent value="#1f4fa3" aria-label="Eigene Farbe"></label></div>
+              </div>
+              <div><h3 class="cv-pane__title">Sprache der Überschriften</h3>
+                <select data-lang class="cv-select"><option value="de">Deutsch (Berufserfahrung, Ausbildung …)</option><option value="en">Englisch (Experience, Education …)</option></select>
+              </div>
+            </div>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="content">← Inhalte</button><button type="button" class="btn btn--primary" data-goto="optimize">Weiter: Prüfen &amp; KI →</button></div>
+          </div>
+
+          <div class="cv-pane" data-pane="optimize" hidden>
+            <div class="cv-ats">
+              <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
+              <ul data-ats></ul>
+              <p class="cv-ats__hint">Klicke auf einen offenen Punkt, um direkt zum passenden Feld zu springen.</p>
+            </div>
+            <h3 class="cv-pane__title">KI-Assistent</h3>
+            <div class="cv-aigrid">
+              ${ai.map(([k, n, d, b]) => `<button type="button" class="cv-aicard" data-${k}><b>${n}${b}</b><span>${d}</span></button>`).join("")}
+            </div>
+            <p class="cv-ai__hint">Die KI formuliert nur um, was in deinem Lebenslauf steht – sie erfindet keine Erfahrungen. Du bestätigst jede Änderung.</p>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="design">← Design</button><button type="button" class="btn btn--primary" data-goto="download">Weiter: Herunterladen →</button></div>
+          </div>
+
+          <div class="cv-pane" data-pane="download" hidden>
+            <div class="cv-dlgrid">
+              <button type="button" class="cv-dlcard cv-dlcard--main" data-download><b>Lebenslauf als PDF</b><span>ATS-freundlich, ohne versteckte Daten.</span></button>
+              <button type="button" class="cv-dlcard" data-open-letter><b>Anschreiben erstellen</b><span>Im selben Design, als eigene PDF.</span></button>
+              <button type="button" class="cv-dlcard" data-save-draft><b>Entwurf speichern</b><span>Kleine Datei zum späteren Weiterbearbeiten – nicht mitschicken.</span></button>
+              <a class="cv-dlcard" href="${url("bewerbungsmappe")}"><b>Bewerbungsmappe erstellen</b><span>Lebenslauf, Anschreiben und Zeugnisse zu einer PDF.</span></a>
+            </div>
+            <p class="cv-ai__hint">Tipp: Benenne die Datei mit deinem Namen, z. B. „Lebenslauf_Max_Mustermann.pdf“ – das passiert automatisch.</p>
+            <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="optimize">← Prüfen &amp; KI</button></div>
+          </div>
+        </div>
+
+        <aside class="cv-side">
+          <div class="cv-preview" data-preview aria-live="polite"><p class="cv-preview__empty">Vorschau wird geladen …</p></div>
+          <p class="cv-info" data-info></p>
+          <p class="form-error" data-error role="alert" hidden></p>
+          <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
+          <p class="privacy">${ICON.shield}<span>Deine Angaben werden nur zum Erstellen der PDF übertragen und nicht gespeichert.</span></p>
+        </aside>
+      </div>
+      <div class="cv-mobilebar">
+        <button type="button" class="btn btn--ghost" data-toggle-preview>Vorschau</button>
+        <button type="button" class="btn btn--primary" data-download>PDF herunterladen</button>
       </div>
     </div>
-    <p class="cv-notice" data-notice hidden></p>
     <dialog class="cv-dialog" data-review>
       <form method="dialog">
         <h3 data-review-title>Vorschläge</h3>
@@ -641,30 +724,6 @@ function cvWorkspace(t) {
         </div>
       </form>
     </dialog>
-    <div class="cv-work">
-      <div class="cv-form" data-form></div>
-      <aside class="cv-side">
-        <div class="cv-preview" data-preview aria-live="polite"><p class="cv-preview__empty">Vorschau wird geladen …</p></div>
-        <p class="cv-info" data-info></p>
-        <p class="form-error" data-error role="alert" hidden></p>
-        <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
-        <div class="cv-ai">
-          <p><strong>KI-Assistent</strong></p>
-          <button type="button" class="cv-ai__btn" data-proofread>Rechtschreibung prüfen</button>
-          <button type="button" class="cv-ai__btn" data-improve>Formulierungen verbessern${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
-          <button type="button" class="cv-ai__btn" data-open-match>An Stellenanzeige anpassen${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
-          <button type="button" class="cv-ai__btn" data-open-letter>Anschreiben erstellen</button>
-          <button type="button" class="cv-ai__btn" data-translate>Auf Englisch übersetzen${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
-          <p class="cv-ai__hint">Die KI formuliert nur um, was in deinem Lebenslauf steht – sie erfindet keine Erfahrungen. Du bestätigst jede Änderung.</p>
-        </div>
-        <button type="button" class="btn btn--ghost btn--block" data-save-draft>Entwurf speichern (zum späteren Bearbeiten)</button>
-        <div class="cv-ats">
-          <p><strong>ATS-Check</strong> <span data-ats-score></span></p>
-          <ul data-ats></ul>
-        </div>
-        <p class="privacy">${ICON.shield}<span>Deine Angaben werden nur zum Erstellen der PDF übertragen und nicht gespeichert. Der Entwurf bleibt in deinem Browser.</span></p>
-      </aside>
-    </div>
   </section>`;
 }
 
@@ -763,6 +822,81 @@ function promoBox(p) {
     <a class="promo__btn" href="${esc(p.url)}" rel="noopener">${esc(p.button)}</a>
   </div>
 </aside>`;
+}
+
+// Übersichtsseite „Bewerbung & Lebenslauf“: alle Werkzeuge und Ratgeber an einem Ort (stärkt die Seiten gegenseitig)
+function bewerbungHub() {
+  const own = tools.filter((t) => t.cat === "bewerbung");
+  const more = ["merge", "compress", "jpg-to-pdf", "heic-to-pdf", "docx-to-pdf", "ocr"].map((s) => bySlug[s]).filter(Boolean);
+  const guides = (re) => landingPages.filter((g) => re.test(g.slug));
+  const guideList = (list) => `<ul class="hub-guides">${list.map((g) => `<li><a href="${url(g.slug)}"><b>${esc(g.guide)}</b><span>${esc(g.description)}</span></a></li>`).join("")}</ul>`;
+  const faq = [
+    ["Was gehört in eine vollständige Bewerbung?", "Anschreiben, Lebenslauf und die passenden Nachweise: Arbeitszeugnisse, Abschlusszeugnisse, Zertifikate. Ein Deckblatt ist optional. Online wird alles meist als eine einzige PDF verschickt."],
+    ["Ist ein Lebenslauf mit PDF Libre ATS-freundlich?", "Ja. Die Vorlagen sind einspaltig, enthalten echten Text mit eingebetteten Schriften und übliche Überschriften, sodass Bewerbermanagementsysteme alle Angaben richtig lesen."],
+    ["Was kostet das?", FREE ? "Alle Werkzeuge für die Bewerbung sind kostenlos und ohne Anmeldung nutzbar." : "Lebenslauf, Anschreiben, Bewerbungsmappe und alle PDF-Werkzeuge sind kostenlos. Nur einige KI-Funktionen (Formulierungen verbessern, Abgleich mit der Stellenanzeige, KI-Anschreiben, Übersetzung) gehören zu PDF Libre Pro."],
+    ["Werden meine Bewerbungsunterlagen gespeichert?", "Nein. Dateien und Angaben werden nur verarbeitet und direkt danach gelöscht. Dein Lebenslauf-Entwurf bleibt nur in deinem Browser."],
+  ];
+  const jsonLd = [
+    { "@context": "https://schema.org", "@type": "CollectionPage", name: "Bewerbung & Lebenslauf – " + config.name, url: absUrl("bewerbung"), inLanguage: "de-DE" },
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: config.name, item: config.domain + "/" }, { "@type": "ListItem", position: 2, name: "Bewerbung & Lebenslauf", item: absUrl("bewerbung") }] },
+    faqLd(faq),
+  ];
+  const body = `<div class="tool-head wrap">
+  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>Bewerbung &amp; Lebenslauf</span></nav>
+  <h1>Bewerbung &amp; Lebenslauf – alles an einem Ort</h1>
+  <p class="tool-head__lead">Lebenslauf erstellen, an die Stellenanzeige anpassen, Anschreiben schreiben und alles zu einer Bewerbungsmappe zusammenfügen – kostenlos, ohne Anmeldung und ATS-freundlich.</p>
+</div>
+
+<section class="wrap" aria-labelledby="hub-tools">
+  <h2 id="hub-tools" class="visually-hidden">Werkzeuge für die Bewerbung</h2>
+  <ol class="hub-flow">
+    ${own
+      .slice()
+      .sort((a, b) => ["lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe"].indexOf(a.slug) - ["lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe"].indexOf(b.slug))
+      .map((t, i) => `<li><a href="${url(t.slug)}" class="hub-step"><span class="hub-step__n">${i + 1}</span>${toolIcon(t, 40)}<b>${esc(t.name)}</b><span>${esc(t.short)}</span></a></li>`)
+      .join("\n    ")}
+  </ol>
+</section>
+
+<section class="wrap article">
+  <h2>In vier Schritten zur fertigen Bewerbung</h2>
+  <p>Eine überzeugende Bewerbung besteht heute fast immer aus einer einzigen PDF-Datei: Anschreiben, Lebenslauf und Zeugnisse – sauber sortiert, gut lesbar und klein genug für jedes Bewerbungsportal. Mit PDF Libre erstellst du zuerst deinen <a href="${url("lebenslauf-erstellen")}">Lebenslauf</a> (oder importierst deinen alten), <a href="${url("lebenslauf-anpassen")}">passt ihn an die Stellenanzeige an</a>, schreibst das <a href="${url("anschreiben-erstellen")}">Anschreiben</a> im gleichen Design und fügst zum Schluss alles mit der <a href="${url("bewerbungsmappe")}">Bewerbungsmappe</a> zusammen – automatisch unter 5 MB.</p>
+  <p>Egal ob Ausbildung, Praktikum, Werkstudentenjob, Minijob, duales Studium, Berufseinstieg oder Jobwechsel: Die Werkzeuge funktionieren am PC, am Mac und auf dem Handy und erzeugen Unterlagen, die sowohl Personaler als auch Bewerbermanagementsysteme (ATS) gut lesen können.</p>
+
+  <h2>Ratgeber: Lebenslauf</h2>
+  ${guideList(guides(/^lebenslauf-(vorlage|ats|latex|werkstudent|pdf)$/))}
+
+  <h2>Ratgeber: Bewerbungsunterlagen</h2>
+  ${guideList(guides(/^(bewerbung-|zeugnisse)/))}
+
+  <h2>Checkliste vor dem Absenden</h2>
+  <ul>
+    <li>Lebenslauf auf die Stelle angepasst, wichtigste Erfahrung oben, Daten einheitlich (MM/JJJJ).</li>
+    <li>Anschreiben mit Namen des Ansprechpartners, richtiger Stelle und Referenznummer.</li>
+    <li>Alle Unterlagen in einer PDF, in der richtigen Reihenfolge, gut lesbar und unter der Größengrenze.</li>
+    <li>Sinnvoller Dateiname, z. B. „Bewerbung_Max_Mustermann.pdf“.</li>
+    <li>Rechtschreibung geprüft – am besten zusätzlich von einer zweiten Person.</li>
+  </ul>
+</section>
+
+<section class="wrap faq" aria-labelledby="faq-title">
+  <h2 id="faq-title">Häufige Fragen</h2>
+  ${faqHtml(faq)}
+</section>
+
+<section class="wrap related" aria-labelledby="related-title">
+  <h2 id="related-title">Weitere hilfreiche Werkzeuge</h2>
+  <ul class="tgrid tgrid--compact">
+      ${more.map(toolCard).join("\n      ")}
+  </ul>
+</section>`;
+  return page({
+    title: "Bewerbung & Lebenslauf – kostenlos online erstellen | PDF Libre",
+    description: "Alles für deine Bewerbung: Lebenslauf erstellen (ATS-freundlich), an die Stellenanzeige anpassen, Anschreiben schreiben und Bewerbungsmappe als PDF zusammenfügen. Kostenlos, ohne Anmeldung.",
+    slug: "bewerbung",
+    body,
+    jsonLd,
+  });
 }
 
 function toolPage(t) {
@@ -1349,4 +1483,4 @@ function setBuildId(id) {
   BUILD_ID = id;
 }
 
-module.exports = { setFreeMode, homePage, toolPage, impressum, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, landingPages, url, absUrl };
+module.exports = { setFreeMode, homePage, toolPage, impressum, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, landingPages, bewerbungHub, url, absUrl };

@@ -8,6 +8,7 @@
 
 // Reihenfolge = Reihenfolge auf der Startseite, im Menü und in den Filtern
 const categories = [
+  { id: "bewerbung", name: "Bewerbung & Lebenslauf", short: "Bewerbung", color: "career", hub: "bewerbung" },
   { id: "organize", name: "Zusammenfügen & Organisieren", short: "Organisieren", color: "organize" },
   { id: "optimize", name: "Komprimieren", short: "Komprimieren", color: "optimize" },
   { id: "edit", name: "Bearbeiten & Unterschreiben", short: "Bearbeiten", color: "edit" },
@@ -20,7 +21,7 @@ const categories = [
 
 // Reihenfolge der Werkzeuge innerhalb der Kategorien (beliebteste zuerst)
 const ORDER = [
-  "merge", "lebenslauf-erstellen", "bewerbungsmappe", "split", "organize", "rotate", "remove-pages", "extract-pages",
+  "lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe", "merge", "split", "organize", "rotate", "remove-pages", "extract-pages",
   "compress", "merge-compress",
   "edit", "sign", "ocr", "create", "page-numbers", "watermark",
   "docx-to-pdf", "jpg-to-pdf", "heic-to-pdf", "excel-to-pdf", "ppt-to-pdf", "pdfa",

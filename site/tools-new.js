@@ -71,7 +71,7 @@ module.exports = [
     slug: "bewerbungsmappe",
     name: "Bewerbungsmappe erstellen",
     short: "Anschreiben, Lebenslauf und Zeugnisse zu einer PDF – mit Deckblatt und unter 5 MB.",
-    cat: "organize",
+    cat: "bewerbung",
     isNew: true,
     badge: "PDF",
     glyph: "mappe",
@@ -653,7 +653,7 @@ module.exports = [
     slug: "lebenslauf-erstellen",
     name: "Lebenslauf erstellen",
     short: "ATS-freundlicher Lebenslauf als PDF – mit Vorlagen und Live-Vorschau.",
-    cat: "organize",
+    cat: "bewerbung",
     isNew: true,
     badge: "CV",
     glyph: "cv",
@@ -665,8 +665,8 @@ module.exports = [
     ui: { mode: "cv", endpoint: "/api/cv/pdf" },
     steps: [
       ["Angaben eintragen oder importieren", "Fülle das Formular aus, lade ein Beispiel – oder importiere deinen bisherigen Lebenslauf als PDF oder Word-Datei. Die KI überträgt alle Angaben automatisch ins Formular."],
-      ["Vorlage wählen", "Modern, Klassisch, Akademisch im LaTeX-Stil oder Kompakt. Farbe und Sprache (Deutsch/Englisch) stellst du oben ein."],
-      ["Vorschau prüfen", "Rechts siehst du live die fertige PDF und einen ATS-Check mit Hinweisen, was noch fehlt."],
+      ["Design wählen", "Im Schritt „Design“ siehst du deinen Lebenslauf in allen vier Vorlagen – Modern, Klassisch, Akademisch im LaTeX-Stil und Kompakt – und wählst Farbe und Sprache."],
+      ["Prüfen und verbessern", "Der ATS-Check zeigt, was noch fehlt – ein Klick springt zum passenden Feld. Der KI-Assistent prüft die Rechtschreibung, verbessert Formulierungen und passt den Lebenslauf an eine Stellenanzeige an."],
       ["PDF herunterladen", "Lade den Lebenslauf herunter. Mit „Entwurf speichern“ bekommst du zusätzlich eine kleine Datei, mit der du ihn später weiterbearbeitest."],
     ],
     article: [
@@ -739,5 +739,98 @@ module.exports = [
       ["Wie füge ich Anschreiben und Zeugnisse hinzu?", "Lade den fertigen Lebenslauf zusammen mit Anschreiben und Zeugnissen in „Bewerbungsmappe erstellen“ – dort wird alles zu einer PDF zusammengefügt."],
     ],
     related: ["bewerbungsmappe", "bewerbung-pdf-zusammenfuegen", "lebenslauf-pdf", "bewerbung-deckblatt"],
+  },
+  {
+    slug: "lebenslauf-anpassen",
+    name: "Lebenslauf an Stellenanzeige anpassen",
+    short: "Trefferquote, fehlende Keywords und passende Formulierungen per KI.",
+    cat: "bewerbung",
+    isNew: true,
+    pro: false,
+    badge: "KI",
+    glyph: "target",
+    title: "Lebenslauf an Stellenanzeige anpassen – ATS-Keywords & Trefferquote | PDF Libre",
+    description:
+      "Lebenslauf mit der Stellenanzeige abgleichen: Die KI zeigt deine Trefferquote, fehlende ATS-Keywords und schlägt passende Formulierungen vor – ohne erfundene Angaben. Danach als PDF herunterladen.",
+    h1: "Lebenslauf an die Stellenanzeige anpassen",
+    lead: "Füge die Stellenanzeige ein und sieh sofort, wie gut dein Lebenslauf passt: Trefferquote, erfüllte und fehlende Anforderungen und konkrete Vorschläge für Titel, Profil und Stationen.",
+    ui: { mode: "cv", start: "match" },
+    steps: [
+      ["Lebenslauf importieren", "Lade deinen bisherigen Lebenslauf als PDF oder Word hoch – oder fülle das Formular aus."],
+      ["Stellenanzeige einfügen", "Kopiere den Text der Stellenanzeige mit Aufgaben und Anforderungen in das Feld."],
+      ["Ergebnis prüfen", "Du siehst die Trefferquote, welche Anforderungen dein Lebenslauf schon erfüllt und welche fehlen – plus Formulierungsvorschläge, die du einzeln übernimmst."],
+      ["Angepassten Lebenslauf herunterladen", "Lade die angepasste Fassung als PDF herunter – und erstelle direkt das passende Anschreiben."],
+    ],
+    article: [
+      {
+        h: "Warum jede Bewerbung einen angepassten Lebenslauf braucht",
+        p: [
+          "Personaler lesen einen Lebenslauf im Schnitt nur wenige Sekunden, und Bewerbermanagementsysteme (ATS) sortieren vorher nach Stichworten aus der Stellenanzeige. Wer für jede Stelle denselben Lebenslauf verschickt, verschenkt Chancen: Die passende Erfahrung steht oft irgendwo in der Mitte, und die Begriffe der Anzeige tauchen gar nicht auf.",
+          "Mit diesem Werkzeug passt du deinen Lebenslauf in wenigen Minuten an: Die KI liest die Anforderungen der Stelle, vergleicht sie mit deinem Lebenslauf und zeigt dir, was schon passt und was fehlt.",
+        ],
+      },
+      {
+        h: "So wird die Trefferquote berechnet",
+        p: [
+          "Aus der Anzeige werden 8 bis 20 konkrete Anforderungen gelesen – Fachkenntnisse, Tools, Abschlüsse, Sprachen – und als „gefordert“ oder „wünschenswert“ markiert. Danach wird geprüft, ob jede Anforderung (oder eine übliche andere Schreibweise) in deinem Lebenslauf vorkommt. Geforderte Punkte zählen doppelt. Ergänzt du etwas, steigt die Quote sofort.",
+        ],
+      },
+      {
+        h: "Keywords ja – Erfindungen nein",
+        p: [
+          "Die KI formuliert deine vorhandenen Erfahrungen so um, dass die Begriffe der Anzeige vorkommen – aber nur, wenn dein Lebenslauf die Sache wirklich belegt. Vorschläge mit neuen Zahlen werden automatisch verworfen, und fehlende Kenntnisse fügst du nur nach ausdrücklicher Bestätigung hinzu. Denn im Vorstellungsgespräch wird jede Angabe geprüft.",
+        ],
+      },
+    ],
+    faq: [
+      ["Ist der Abgleich mit der Stellenanzeige kostenlos?", "Die Analyse nutzt KI und gehört zu den Premium-Funktionen von PDF Libre. Lebenslauf erstellen und herunterladen bleibt immer kostenlos."],
+      ["Welche Anzeigen funktionieren?", "Jede Stellenanzeige als Text – von StepStone, Indeed, LinkedIn, XING, der Bundesagentur für Arbeit oder der Karriereseite eines Unternehmens. Kopiere einfach Aufgaben und Anforderungen."],
+      ["Was ist eine gute Trefferquote?", "Ab etwa 70 % passt dein Lebenslauf gut. Unter 45 % lohnt es sich, die Stationen gezielter zu beschreiben – oder die Stelle passt noch nicht ganz zu deinem Profil."],
+      ["Werden meine Daten gespeichert?", "Nein. Lebenslauf und Stellenanzeige werden nur für die Analyse verarbeitet und nicht gespeichert."],
+    ],
+    related: ["lebenslauf-erstellen", "anschreiben-erstellen", "lebenslauf-ats", "bewerbungsmappe"],
+    free: { faq: { 0: ["Ist der Abgleich mit der Stellenanzeige kostenlos?", "Ja, kostenlos und ohne Anmeldung (mit einer fairen Begrenzung pro Stunde)."] } },
+  },
+  {
+    slug: "anschreiben-erstellen",
+    name: "Anschreiben erstellen",
+    short: "Bewerbungsanschreiben im Design deines Lebenslaufs – selbst oder mit KI.",
+    cat: "bewerbung",
+    isNew: true,
+    badge: "Brief",
+    glyph: "letter",
+    ui: { mode: "cv", start: "letter" },
+    steps: [
+      ["Lebenslauf ausfüllen oder importieren", "Das Anschreiben nutzt Name, Kontaktdaten und Design deines Lebenslaufs. Importiere deinen alten Lebenslauf oder fülle das Formular aus."],
+      ["Stellenanzeige einfügen", "Für einen KI-Entwurf fügst du den Text der Stellenanzeige ein. Ohne KI schreibst du den Text einfach selbst."],
+      ["Anschreiben anpassen", "Trage Empfänger, Betreff und Anrede ein und überarbeite den Text – die Vorschau zeigt sofort das Ergebnis."],
+      ["Als PDF herunterladen", "Lade das Anschreiben als PDF herunter und füge es mit „Bewerbungsmappe erstellen“ zu Lebenslauf und Zeugnissen hinzu."],
+    ],
+    title: "Anschreiben erstellen – kostenlos, im Design deines Lebenslaufs | PDF Libre",
+    description:
+      "Bewerbungsanschreiben online erstellen: im gleichen Design wie dein Lebenslauf, mit Empfänger, Betreff und Grußformel – selbst schreiben oder Entwurf mit KI aus Lebenslauf und Stellenanzeige. Als PDF.",
+    h1: "Anschreiben erstellen – passend zu deinem Lebenslauf",
+    lead: "Dein Brief bekommt dieselbe Schrift und Farbe wie dein Lebenslauf – mit Empfänger, Betreff und Grußformel. Schreib selbst oder lass dir von der KI einen Entwurf zur Stellenanzeige schreiben.",
+    article: [
+      {
+        h: "Aufbau eines guten Anschreibens",
+        p: [
+          "Ein Anschreiben hat eine Seite: oben deine Kontaktdaten, darunter die Anschrift des Unternehmens (am besten mit Ansprechpartner), rechts Ort und Datum, dann ein klarer Betreff wie „Bewerbung als Werkstudent Data Science“. Es folgen die persönliche Anrede, drei bis vier Absätze und die Grußformel „Mit freundlichen Grüßen“.",
+          "Im Einstieg zeigst du, warum genau diese Stelle und dieses Unternehmen zu dir passen. Im Hauptteil belegst du mit zwei oder drei konkreten Beispielen aus deinem Lebenslauf, was du mitbringst. Zum Schluss nennst du, ab wann und wie viele Stunden du verfügbar bist, und freust dich auf ein Gespräch.",
+        ],
+      },
+      {
+        h: "Anschreiben mit KI – aber persönlich",
+        p: [
+          "Die KI schreibt einen Entwurf aus den Angaben in deinem Lebenslauf und dem Text der Stellenanzeige – ohne Floskeln und ohne erfundene Erfahrungen. Lies ihn danach in Ruhe durch und ergänze, was nur du weißt: warum dich das Unternehmen interessiert, was dich antreibt. Personaler merken schnell, ob ein Anschreiben persönlich ist.",
+        ],
+      },
+    ],
+    faq: [
+      ["Ist das Anschreiben kostenlos?", "Das Schreiben und der PDF-Download sind kostenlos. Den KI-Entwurf kannst du zusätzlich nutzen."],
+      ["Wie lang sollte ein Anschreiben sein?", "Höchstens eine Seite, etwa 250 bis 350 Wörter."],
+      ["Wie füge ich Anschreiben und Lebenslauf zusammen?", "Lade beide PDFs in „Bewerbungsmappe erstellen“ hoch – dort werden sie mit deinen Zeugnissen zu einer Datei zusammengefügt."],
+    ],
+    related: ["lebenslauf-erstellen", "lebenslauf-anpassen", "bewerbungsmappe", "bewerbung-per-email"],
   },
 ];

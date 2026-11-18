@@ -147,6 +147,67 @@
       }
   }
 
+  // ---------------------------------------------------------------- Karten einklappen + Sprungleiste
+  // Nur die Karten, an denen man gerade arbeitet, sind offen – so bleibt das Formular kurz und übersichtlich.
+  let open = new Set(["person"]);
+  try {
+    const o = JSON.parse(sessionStorage.getItem(KEY + "-open") || "null");
+    if (Array.isArray(o)) open = new Set(o);
+  } catch {
+    /* egal */
+  }
+  const keepOpen = () => {
+    try {
+      sessionStorage.setItem(KEY + "-open", JSON.stringify([...open]));
+    } catch {
+      /* egal */
+    }
+  };
+  function sectionStatus(key) {
+    if (key === "person") return data.person.name && data.person.email ? "✓" : "";
+    const sec = data.sections[+key.replace(/^\D+/, "")];
+    if (!sec) return "";
+    if (sec.hidden) return "ausgeblendet";
+    if (sec.type === "summary" || sec.type === "extra") return (sec.text || "").trim() ? "✓" : "";
+    const n = (sec.items || []).filter((i) => i.title || i.org || i.label || i.value).length;
+    return n ? String(n) : "";
+  }
+  function decorateCards() {
+    const jump = $("[data-jump]");
+    jump.textContent = "";
+    $("[data-form]").querySelectorAll(".cv-card").forEach((c) => {
+      const key = c.dataset.key;
+      const head = c.querySelector(".cv-card__head");
+      const title = key === "person" ? "Persönliche Daten" : head.querySelector(".cv-title").value || head.querySelector(".cv-title").placeholder;
+      const st = sectionStatus(key);
+      const isOpen = open.has(key);
+      c.classList.toggle("is-collapsed", !isOpen);
+      const tog = h("button", { type: "button", class: "cv-card__toggle", "aria-expanded": String(isOpen), "aria-label": (isOpen ? "Zuklappen: " : "Aufklappen: ") + title, onclick: () => toggleCard(key) }, isOpen ? "▾" : "▸");
+      head.prepend(tog);
+      const h3 = head.querySelector("h3");
+      if (h3) h3.addEventListener("click", () => toggleCard(key));
+      if (st) head.append(h("span", { class: "cv-card__status" + (st === "✓" ? " is-done" : "") }, st));
+      jump.append(h("button", { type: "button", class: "cv-chip" + (st ? " is-done" : ""), onclick: () => openCard(key) }, title, st ? h("small", {}, st) : null));
+    });
+  }
+  function toggleCard(key) {
+    open.has(key) ? open.delete(key) : open.add(key);
+    keepOpen();
+    renderForm();
+  }
+  function openCard(key, focusSel) {
+    setStep("content");
+    open.add(key);
+    keepOpen();
+    renderForm();
+    const c = $(`[data-key="${key}"]`);
+    if (c) {
+      c.scrollIntoView({ behavior: "smooth", block: "start" });
+      const f = focusSel ? c.querySelector(focusSel) : c.querySelector("input:not([type=checkbox]):not([type=file]), textarea");
+      if (f) setTimeout(() => f.focus({ preventScroll: true }), 350);
+    }
+  }
+
   function renderForm() {
     normalizeAll();
     const form = $("[data-form]");
@@ -170,8 +231,8 @@
     };
     drawPhoto();
     form.append(
-      h("section", { class: "cv-card" },
-        h("h3", {}, "Persönliche Daten"),
+      h("section", { class: "cv-card", "data-key": "person" },
+        h("div", { class: "cv-card__head" }, h("h3", {}, "Persönliche Daten")),
         h("div", { class: "cv-grid" },
           field("Vor- und Nachname", p, "name", { placeholder: "Max Mustermann" }),
           field("Wunschposition / Titel", p, "headline", { placeholder: "z. B. Werkstudent Data Science" }),
@@ -193,7 +254,7 @@
         iconBtn("Abschnitt nach unten", "↓", () => move(data.sections, si, 1)),
         iconBtn(sec.hidden ? "Abschnitt einblenden" : "Abschnitt ausblenden", sec.hidden ? "Einblenden" : "Ausblenden", () => { sec.hidden = !sec.hidden; renderForm(); changed(); }, "cv-ibtn--text")
       );
-      const card = h("section", { class: "cv-card" + (sec.hidden ? " is-hidden" : "") }, head);
+      const card = h("section", { class: "cv-card" + (sec.hidden ? " is-hidden" : ""), "data-key": sec.type + si }, head);
       if (sec.type === "summary" || sec.type === "extra") {
         card.append(field(sec.type === "summary" ? "2–4 Sätze: Wer bist du, was kannst du, was suchst du?" : "Ehrenamt, Interessen, Führerschein …", sec, "text", { textarea: true, rows: 4, wide: true }));
       } else if (sec.type === "skills" || sec.type === "languages") {
@@ -252,8 +313,11 @@
       form.append(card);
     });
 
-    // Steuerung oben
+    decorateCards();
+
+    // Steuerung
     root.querySelectorAll("[data-tpl]").forEach((b) => b.classList.toggle("is-on", b.dataset.tpl === data.template));
+    root.querySelectorAll("[data-swatch]").forEach((b) => b.classList.toggle("is-on", b.dataset.swatch.toLowerCase() === (data.accent || "").toLowerCase()));
     $("[data-accent]").value = data.accent || "#1f4fa3";
     $("[data-lang]").value = data.lang || "de";
   }
@@ -290,20 +354,29 @@
     const badDate = !!bad;
     const badLabel = bad ? `Datum bei „${bad.title || bad.org}“ prüfen: „${!DATE_OK.test(normalizeDate(bad.from)) && bad.from ? bad.from : bad.to}“ → bitte MM/JJJJ (z. B. 10/2025) oder JJJJ` : "";
     const bullets = (exp?.items || []).filter((i) => (i.text || "").trim()).length;
+    const keyOf = (type) => {
+      const i = data.sections.findIndex((x) => x.type === type);
+      return i >= 0 ? type + i : "person";
+    };
+    const badSec = bad ? data.sections.findIndex((x) => (x.items || []).includes(bad)) : -1;
     const checks = [
-      [!!p.name.trim(), "Name angegeben"],
-      [/@/.test(p.email) && !!p.phone.trim(), "E-Mail und Telefon als Text im Lebenslauf"],
-      [!!(sum && !sum.hidden && (sum.text || "").trim().length >= 80), "Kurzprofil mit 2–4 Sätzen"],
-      [filled(exp) || filled(edu), "Berufserfahrung oder Ausbildung eingetragen"],
-      [!badDate, badDate ? badLabel : "Einheitliches Datumsformat (MM/JJJJ oder JJJJ)"],
-      [!filled(exp) || bullets >= Math.min(2, (exp.items || []).length), "Aufgaben und Erfolge bei den Stationen beschrieben"],
-      [pages > 0 && pages <= 2, "Höchstens zwei Seiten"],
+      [!!p.name.trim(), "Name angegeben", () => openCard("person")],
+      [/@/.test(p.email) && !!p.phone.trim(), "E-Mail und Telefon als Text im Lebenslauf", () => openCard("person", 'input[type="email"]')],
+      [!!(sum && !sum.hidden && (sum.text || "").trim().length >= 80), "Kurzprofil mit 2–4 Sätzen", () => openCard(keyOf("summary"))],
+      [filled(exp) || filled(edu), "Berufserfahrung oder Ausbildung eingetragen", () => openCard(keyOf("experience"))],
+      [!badDate, badDate ? badLabel : "Einheitliches Datumsformat (MM/JJJJ oder JJJJ)", () => openCard(badSec >= 0 ? data.sections[badSec].type + badSec : keyOf("experience"), "input.is-bad")],
+      [!filled(exp) || bullets >= Math.min(2, (exp.items || []).length), "Aufgaben und Erfolge bei den Stationen beschrieben", () => openCard(keyOf("experience"), "textarea")],
+      [pages > 0 && pages <= 2, "Höchstens zwei Seiten – tipp: Vorlage „Kompakt“ oder kürzere Stichpunkte", () => setStep("design")],
     ];
     const list = $("[data-ats]");
     list.textContent = "";
-    for (const [ok, label] of checks) list.append(h("li", { class: ok ? "ok" : "todo" }, label));
+    for (const [ok, label, go] of checks)
+      list.append(ok ? h("li", { class: "ok" }, label) : h("li", { class: "todo" }, h("button", { type: "button", onclick: go }, label)));
     const score = checks.filter((c) => c[0]).length;
     $("[data-ats-score]").textContent = `${score} von ${checks.length}`;
+    const badge = $("[data-ats-badge]");
+    badge.textContent = `${score}/${checks.length}`;
+    badge.classList.toggle("is-ok", score === checks.length);
   }
 
   // ---------------------------------------------------------------- Vorschau
@@ -353,26 +426,37 @@
   );
   $("[data-accent]").addEventListener("input", (e) => { data.accent = e.target.value; changed(); });
   $("[data-lang]").addEventListener("change", (e) => { data.lang = e.target.value; changed(); });
-  $("[data-sample]").addEventListener("click", () => {
-    if (hasContent() && !confirm("Dein aktueller Lebenslauf wird durch das Beispiel ersetzt. Fortfahren?")) return;
-    data = JSON.parse(JSON.stringify({ ...SAMPLE, template: data.template, accent: data.accent }));
-    renderForm();
-    changed();
-  });
+  root.querySelectorAll("[data-sample]").forEach((b) =>
+    b.addEventListener("click", () => {
+      if (hasContent() && !confirm("Dein aktueller Lebenslauf wird durch das Beispiel ersetzt. Fortfahren?")) return;
+      data = JSON.parse(JSON.stringify({ ...SAMPLE, template: data.template, accent: data.accent }));
+      open = new Set(["person", "summary0", "experience1"]);
+      keepOpen();
+      startApp();
+      renderForm();
+      changed();
+    })
+  );
   $("[data-new]").addEventListener("click", () => {
     if (hasContent() && !confirm("Alle Eingaben löschen und neu beginnen?")) return;
     data = empty();
+    open = new Set(["person"]);
+    keepOpen();
     renderForm();
     changed();
+    showWelcome(true);
   });
   const hasContent = () => !!(data.person.name || data.sections.some((s) => (s.text || "").trim() || (s.items || []).some((i) => i.title || i.label)));
 
   // Lebenslauf-PDF von PDF Libre wieder öffnen
-  const imp = $("[data-import]");
-  imp.addEventListener("change", async () => {
-    const f = imp.files[0];
-    imp.value = "";
-    if (!f) return;
+  root.querySelectorAll("[data-import]").forEach((imp) =>
+    imp.addEventListener("change", () => {
+      const f = imp.files[0];
+      imp.value = "";
+      if (f) importFile(f);
+    })
+  );
+  async function importFile(f) {
     showError("");
     if (/\.json$/i.test(f.name)) {
       // Entwurfsdatei: direkt im Browser lesen, nichts wird hochgeladen
@@ -380,6 +464,7 @@
         const j = JSON.parse(await f.text());
         if (!j || !j.person || !Array.isArray(j.sections)) throw new Error();
         data = { ...empty(), ...j };
+        startApp();
         renderForm();
         changed();
       } catch {
@@ -387,6 +472,7 @@
       }
       return;
     }
+    startApp();
     if (hasContent() && !confirm("Dein aktueller Lebenslauf im Formular wird durch den importierten ersetzt. Fortfahren?")) return;
     const fd = new FormData();
     fd.append("file", f);
@@ -397,6 +483,8 @@
       if (!res.ok) throw new Error(j.error || "Die Datei konnte nicht gelesen werden.");
       // Design, Farbe und Foto bleiben wie eingestellt – nur die Inhalte kommen aus der Datei
       data = { ...empty(), ...j.data, template: data.template, accent: data.accent, photo: j.data.photo || data.photo };
+      open = new Set(["person", "summary0", "experience1"]);
+      keepOpen();
       renderForm();
       changed();
       notice(j.source === "ai" ? "Import fertig. Bitte prüfe alle Angaben – die KI überträgt nur, was im Lebenslauf steht, kann sich aber beim Zuordnen irren." : "Entwurf geöffnet.", "ok");
@@ -404,9 +492,10 @@
       notice("", "");
       showError(e.message);
     }
-  });
+  }
 
-  $("[data-download]").addEventListener("click", async (ev) => {
+  root.querySelectorAll("[data-download]").forEach((b) => b.addEventListener("click", download));
+  async function download(ev) {
     const btn = ev.currentTarget;
     const label = btn.textContent;
     btn.disabled = true;
@@ -426,7 +515,7 @@
       btn.disabled = false;
       btn.textContent = label;
     }
-  });
+  }
 
   // ---------------------------------------------------------------- Hinweise
   function notice(msg, kind) {
@@ -665,7 +754,8 @@
       lTimer = setTimeout(letterPreview, 600);
     })
   );
-  $("[data-open-letter]").addEventListener("click", () => {
+  root.querySelectorAll("[data-open-letter]").forEach((b) => b.addEventListener("click", openLetter));
+  function openLetter() {
     const l = L();
     if (!l.date) l.date = `${data.person.location || ""}${data.person.location ? ", " : ""}${new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`;
     if (!l.closing) l.closing = data.lang === "en" ? "Kind regards" : "Mit freundlichen Grüßen";
@@ -673,7 +763,7 @@
     $("[data-letter-error]").hidden = true;
     letterDlg.showModal();
     letterPreview();
-  });
+  }
   $("[data-run-letter]").addEventListener("click", async (ev) => {
     const btn = ev.currentTarget;
     const status = $("[data-letter-status]");
@@ -718,7 +808,7 @@
 
   // ---------------------------------------------------------------- Übersetzen
   function translateLabel() {
-    $("[data-translate]").firstChild.textContent = data.lang === "en" ? "Auf Deutsch übersetzen" : "Auf Englisch übersetzen";
+    $("[data-translate] b").firstChild.textContent = data.lang === "en" ? "Auf Deutsch übersetzen" : "Auf Englisch übersetzen";
   }
   $("[data-translate]").addEventListener("click", async (ev) => {
     const target = data.lang === "en" ? "de" : "en";
@@ -771,6 +861,107 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 60000);
   });
 
+  // ---------------------------------------------------------------- Schritte
+  const steps = ["content", "design", "optimize", "download"];
+  function setStep(name) {
+    if (!steps.includes(name)) name = "content";
+    root.querySelectorAll("[data-step]").forEach((b) => {
+      b.classList.toggle("is-on", b.dataset.step === name);
+      b.setAttribute("aria-current", b.dataset.step === name ? "step" : "false");
+    });
+    root.querySelectorAll("[data-pane]").forEach((p) => (p.hidden = p.dataset.pane !== name));
+    try {
+      sessionStorage.setItem(KEY + "-step", name);
+    } catch {
+      /* egal */
+    }
+    if (name === "design") thumbs();
+  }
+  const toApp = () => {
+    const top = $("[data-app]").getBoundingClientRect().top;
+    if (top < 0 || top > innerHeight * 0.6) $("[data-app]").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  root.querySelectorAll("[data-step]").forEach((b) =>
+    b.addEventListener("click", () => {
+      setStep(b.dataset.step);
+      toApp();
+    })
+  );
+  root.querySelectorAll("[data-goto]").forEach((b) =>
+    b.addEventListener("click", () => {
+      setStep(b.dataset.goto);
+      $("[data-app]").scrollIntoView({ behavior: "smooth", block: "start" });
+    })
+  );
+
+  // Vorlagen als echte Miniaturen deines Lebenslaufs (nur neu, wenn sich der Inhalt geändert hat)
+  let thumbKey = "";
+  async function thumbs() {
+    const { template, ...rest } = data;
+    const key = JSON.stringify(rest);
+    if (key === thumbKey) return;
+    thumbKey = key;
+    for (const tpl of ["modern", "klassisch", "akademisch", "kompakt"]) {
+      const box = $(`[data-thumb="${tpl}"]`);
+      box.classList.add("is-busy");
+      fetch("/api/cv/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: { ...data, template: tpl } }) })
+        .then((r) => r.json())
+        .then((j) => {
+          if (key !== thumbKey || !j.pages) return;
+          box.textContent = "";
+          box.append(h("img", { src: j.pages[0], alt: "" }));
+        })
+        .catch(() => {})
+        .finally(() => box.classList.remove("is-busy"));
+    }
+  }
+  root.querySelectorAll("[data-swatch]").forEach((b) =>
+    b.addEventListener("click", () => {
+      data.accent = b.dataset.swatch;
+      $("[data-accent]").value = data.accent;
+      renderForm();
+      changed();
+    })
+  );
+
+  // ---------------------------------------------------------------- Start: Willkommen oder direkt weiter
+  function showWelcome(on) {
+    $("[data-welcome]").hidden = !on;
+    $("[data-app]").hidden = on;
+  }
+  let pendingStart = root.dataset.start; // „letter“ oder „match“ auf den Seiten Anschreiben / Stellenanzeige
+  function startApp() {
+    showWelcome(false);
+    if (pendingStart) {
+      const what = pendingStart;
+      pendingStart = "";
+      setStep("optimize");
+      setTimeout(() => (what === "letter" ? openLetter() : $("[data-open-match]").click()), 300);
+    }
+  }
+  $("[data-empty]").addEventListener("click", () => {
+    open = new Set(["person"]);
+    keepOpen();
+    startApp();
+    renderForm();
+  });
+
+  // Handy: zwischen Formular und Vorschau umschalten
+  $("[data-toggle-preview]").addEventListener("click", (ev) => {
+    const on = root.classList.toggle("show-preview");
+    ev.currentTarget.textContent = on ? "Bearbeiten" : "Vorschau";
+    if (on) $(".cv-side").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   renderForm();
+  let savedStep = "content";
+  try {
+    savedStep = sessionStorage.getItem(KEY + "-step") || "content";
+  } catch {
+    /* egal */
+  }
+  setStep(savedStep);
+  if (hasContent()) startApp();
+  else showWelcome(true);
   preview();
 })();
