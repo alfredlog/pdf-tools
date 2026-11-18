@@ -402,6 +402,45 @@ const landings = [
     ],
     related: ["lebenslauf-erstellen", "bewerbungsmappe", "bewerbung-per-email", "lebenslauf-ats"],
   },
+  {
+    slug: "lebenslauf-franzoesisch",
+    base: "lebenslauf-erstellen",
+    defaults: { lang: "fr" },
+    guide: "Lebenslauf auf Französisch (CV français) – für Frankreich, Belgien, Schweiz, Luxemburg",
+    name: "Lebenslauf auf Französisch",
+    title: "Lebenslauf auf Französisch erstellen – CV en français kostenlos | PDF Libre",
+    description:
+      "Französischen Lebenslauf (CV) erstellen: Überschriften auf Französisch, Datumsformat und Anschreiben (lettre de motivation) – oder deinen deutschen Lebenslauf per KI übersetzen. Für Bewerbungen in Frankreich, Belgien, der Schweiz und Luxemburg.",
+    h1: "Lebenslauf auf Französisch – CV en français",
+    lead: "Bewirbst du dich in Frankreich, Belgien, der Westschweiz, Luxemburg oder bei einem französischen Unternehmen? Hier bekommst du einen CV mit französischen Überschriften – oder übersetzt deinen bestehenden Lebenslauf mit einem Klick.",
+    article: [
+      {
+        h: "Der französische CV: was anders ist",
+        p: [
+          "Ein CV in Frankreich ist meist eine Seite lang (bei Berufserfahrenen höchstens zwei) und beginnt oft mit einer kurzen Zielzeile, dem „titre du CV“, zum Beispiel „Stagiaire en Data Science“ oder „Ingénieur logiciel“. Danach folgen „Expérience professionnelle“, „Formation“, „Compétences“, „Langues“ und „Centres d’intérêt“. Ein Foto ist in Frankreich freiwillig.",
+          "Deutsche Abschlüsse solltest du kurz erklären, zum Beispiel „Abitur (équivalent du baccalauréat)“ oder „Bachelor of Science en informatique, TU Darmstadt“. Die Übersetzungsfunktion von PDF Libre macht das automatisch.",
+        ],
+      },
+      {
+        h: "Lebenslauf übersetzen statt neu schreiben",
+        p: [
+          "Du hast schon einen deutschen oder englischen Lebenslauf? Importiere ihn, gehe zu „Prüfen & KI“ und wähle „Übersetzen → Französisch“. Positionen, Abschlüsse und Beschreibungen werden natürlich übersetzt, Namen, Firmen, Orte und Technologien bleiben unverändert. Speichere vorher den Entwurf, dann hast du beide Sprachversionen.",
+        ],
+      },
+      {
+        h: "Lettre de motivation im selben Design",
+        p: [
+          "Auch das Anschreiben – die „lettre de motivation“ – erstellst du hier im gleichen Design, mit französischer Anrede „Madame, Monsieur,“ und der üblichen Grußformel. Der KI-Entwurf richtet sich nach der Sprache der Stellenanzeige.",
+        ],
+      },
+    ],
+    faq: [
+      ["Kann ich zwischen Deutsch, Englisch und Französisch wechseln?", "Ja. Die Überschriften stellst du im Schritt „Design“ um; die Texte übersetzt die KI im Schritt „Prüfen & KI“."],
+      ["Wie schreibe ich Daten im französischen CV?", "Üblich ist MM/AAAA, zum Beispiel 09/2024 – also dasselbe Format wie im deutschen Lebenslauf. „aujourd’hui“ steht für „heute“."],
+      ["Wie heißen die Abschnitte auf Französisch?", "Profil, Expérience professionnelle, Formation, Projets, Compétences, Langues und Informations complémentaires."],
+    ],
+    related: ["lebenslauf-erstellen", "anschreiben-erstellen", "lebenslauf-ats", "bewerbungsmappe"],
+  },
 ];
 
 module.exports = { landings };

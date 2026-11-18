@@ -65,7 +65,7 @@
     ],
   };
 
-  let data = load() || { ...empty(), template: root.dataset.defaultTemplate || "modern" };
+  let data = load() || { ...empty(), template: root.dataset.defaultTemplate || "modern", lang: root.dataset.defaultLang || "de" };
 
   function load() {
     try {
@@ -96,7 +96,7 @@
   };
 
   // Datumsangaben vereinheitlichen: „2.2025“, „02-2025“, „Feb. 2025“, „2025-02“ → „02/2025“
-  const MONTHS = { jan: 1, feb: 2, mär: 3, mar: 3, maer: 3, apr: 4, mai: 5, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, okt: 10, oct: 10, nov: 11, dez: 12, dec: 12 };
+  const MONTHS = { jan: 1, feb: 2, fév: 2, fev: 2, mär: 3, mar: 3, maer: 3, apr: 4, avr: 4, mai: 5, may: 5, jun: 6, juin: 6, jul: 7, juil: 7, aug: 8, aoû: 8, aou: 8, sep: 9, okt: 10, oct: 10, nov: 11, dez: 12, dec: 12, déc: 12 };
   const DATE_OK = /^((0[1-9]|1[0-2])\/)?(19|20)\d{2}$/;
   function normalizeDate(v) {
     const t = String(v || "").trim();
@@ -105,14 +105,14 @@
     const mm = (n) => String(n).padStart(2, "0");
     if ((m = t.match(/^(\d{1,2})\s*[./-]\s*((?:19|20)\d{2})$/)) && +m[1] >= 1 && +m[1] <= 12) return `${mm(m[1])}/${m[2]}`;
     if ((m = t.match(/^((?:19|20)\d{2})\s*[./-]\s*(\d{1,2})$/)) && +m[2] >= 1 && +m[2] <= 12) return `${mm(m[2])}/${m[1]}`;
-    if ((m = t.toLowerCase().match(/^([a-zäöü]{3,})\.?\s*((?:19|20)\d{2})$/))) {
-      const n = MONTHS[m[1].slice(0, 3).replace("ä", "ä")] || MONTHS[m[1].slice(0, 4)];
+    if ((m = t.toLowerCase().match(/^([a-zäöüéèêûôîç]{3,})\.?\s*((?:19|20)\d{2})$/))) {
+      const n = MONTHS[m[1].slice(0, 4)] || MONTHS[m[1].slice(0, 3)];
       if (n) return `${mm(n)}/${m[2]}`;
     }
-    if ((m = t.match(/^(?:seit|ab|since)\s+(.+)$/i))) return normalizeDate(m[1]);
+    if ((m = t.match(/^(?:seit|ab|since|depuis)\s+(.+)$/i))) return normalizeDate(m[1]);
     return t;
   }
-  const isNow = (v) => /^(heute|aktuell|jetzt|bis heute|present|today|now|current)$/i.test(String(v || "").trim());
+  const isNow = (v) => /^(heute|aktuell|jetzt|bis heute|present|today|now|current|aujourd.hui|actuel|actuellement|en cours)$/i.test(String(v || "").trim());
 
   function field(label, obj, key, { textarea = false, placeholder = "", type = "text", rows = 3, wide = false } = {}) {
     const id = "cv-" + Math.random().toString(36).slice(2, 9);
@@ -673,9 +673,10 @@
     if (!confirm(`„${term}“ zu deinen Kenntnissen hinzufügen?\n\nBitte nur, wenn du das wirklich kannst – im Vorstellungsgespräch wird danach gefragt.`)) return;
     let sec = data.sections.find((x) => x.type === "skills");
     if (!sec) data.sections.push((sec = { type: "skills", items: [] }));
-    let row = sec.items.find((i) => /^(weitere|sonstige|other)/i.test(i.label || "")) || sec.items.find((i) => !i.label && !i.value);
-    if (!row) sec.items.push((row = { label: data.lang === "en" ? "Other" : "Weitere", value: "" }));
-    if (!row.label && !row.value) row.label = data.lang === "en" ? "Other" : "Weitere";
+    let row = sec.items.find((i) => /^(weitere|sonstige|other|autres)/i.test(i.label || "")) || sec.items.find((i) => !i.label && !i.value);
+    const other = { en: "Other", fr: "Autres" }[data.lang] || "Weitere";
+    if (!row) sec.items.push((row = { label: other, value: "" }));
+    if (!row.label && !row.value) row.label = other;
     row.value = [row.value, term].filter(Boolean).join(", ");
     renderForm();
     changed();
@@ -757,8 +758,10 @@
   root.querySelectorAll("[data-open-letter]").forEach((b) => b.addEventListener("click", openLetter));
   function openLetter() {
     const l = L();
-    if (!l.date) l.date = `${data.person.location || ""}${data.person.location ? ", " : ""}${new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`;
-    if (!l.closing) l.closing = data.lang === "en" ? "Kind regards" : "Mit freundlichen Grüßen";
+    const loc = { de: "de-DE", en: "en-GB", fr: "fr-FR" }[data.lang] || "de-DE";
+    const today = new Date().toLocaleDateString(loc, data.lang === "de" ? { day: "2-digit", month: "2-digit", year: "numeric" } : { day: "numeric", month: "long", year: "numeric" });
+    if (!l.date) l.date = data.person.location ? `${data.person.location}, ${data.lang === "fr" ? "le " : ""}${today}` : today;
+    if (!l.closing) l.closing = { en: "Kind regards", fr: "Je vous prie d’agréer, Madame, Monsieur, l’expression de mes salutations distinguées." }[data.lang] || "Mit freundlichen Grüßen";
     for (const k of ["recipient", "notes", "date", "subject", "salutation", "body", "closing"]) lf(k).value = l[k] || "";
     $("[data-letter-error]").hidden = true;
     letterDlg.showModal();
@@ -808,10 +811,18 @@
 
   // ---------------------------------------------------------------- Übersetzen
   function translateLabel() {
-    $("[data-translate] b").firstChild.textContent = data.lang === "en" ? "Auf Deutsch übersetzen" : "Auf Englisch übersetzen";
+    /* Beschriftung bleibt „Übersetzen“ – die Zielsprache wird im Dialog gewählt */
   }
-  $("[data-translate]").addEventListener("click", async (ev) => {
-    const target = data.lang === "en" ? "de" : "en";
+  const trDlg = $("[data-trdlg]");
+  $("[data-translate]").addEventListener("click", () => {
+    trDlg.querySelectorAll("[data-tr]").forEach((b) => (b.disabled = b.dataset.tr === (data.lang || "de")));
+    trDlg.returnValue = "";
+    trDlg.showModal();
+  });
+  trDlg.addEventListener("close", () => {
+    if (["de", "en", "fr"].includes(trDlg.returnValue)) translateTo(trDlg.returnValue, $("[data-translate]"));
+  });
+  async function translateTo(target, btn) {
     const fields = textFields();
     // auch Kenntnisse/Sprachen und Überschriften übersetzen
     data.sections.forEach((sec, si) => {
@@ -825,8 +836,6 @@
       if (["experience", "education", "projects"].includes(sec.type)) (sec.items || []).forEach((it, ii) => it.place && fields.push({ id: `s${si}.i${ii}.place`, obj: it, key: "place", text: it.place }));
     });
     if (!fields.length) return showError("Es gibt noch keinen Text zum Übersetzen.");
-    if (!confirm(`Lebenslauf ${target === "en" ? "ins Englische" : "ins Deutsche"} übersetzen?\n\nTipp: Speichere vorher mit „Entwurf speichern“ die aktuelle Fassung, damit du beide Versionen hast.`)) return;
-    const btn = ev.currentTarget;
     btn.disabled = true;
     notice("Der Lebenslauf wird übersetzt … (ca. 20–40 Sekunden)", "busy");
     try {
@@ -847,7 +856,7 @@
     } finally {
       btn.disabled = false;
     }
-  });
+  }
   $("[data-lang]").addEventListener("change", translateLabel);
   translateLabel();
 

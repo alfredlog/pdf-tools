@@ -121,7 +121,7 @@ Erfinde nichts, was nicht im Dokument steht.`;
 
 // ------------------------------------------------------------------ Lebenslauf
 const CV_IMPORT_PROMPT = `Du überträgst einen bestehenden Lebenslauf in ein Formular. Antworte nur mit JSON in genau diesem Format:
-{"lang":"de"|"en",
+{"lang":"de"|"en"|"fr",
  "person":{"name":"","headline":"","email":"","phone":"","location":"","links":""},
  "summary":"",
  "experience":[{"title":"","org":"","place":"","from":"","to":"","current":false,"text":""}],
@@ -178,10 +178,10 @@ const CV_LETTER_PROMPT = `Du schreibst ein Bewerbungsanschreiben auf Grundlage e
 - Ton: professionell, konkret, freundlich, ohne Floskeln wie „hiermit bewerbe ich mich“. Etwa 250–350 Wörter, 3–4 Absätze: Einstieg mit Bezug zur Stelle/zum Unternehmen, passende Erfahrungen mit konkreten Beispielen aus dem Lebenslauf, Motivation und Mehrwert, Abschluss mit Verfügbarkeit/Gesprächswunsch.
 - ${NO_INVENT} Nutze nur Angaben aus dem Lebenslauf und den Notizen des Bewerbers.
 Antworte nur mit JSON: {"subject":"Bewerbung als …","salutation":"Sehr geehrte …,","paragraphs":["…","…"],"closing":"Mit freundlichen Grüßen"}
-Ist ein Ansprechpartner bekannt, sprich ihn mit Namen an, sonst „Sehr geehrte Damen und Herren,“ (bzw. „Dear Hiring Team,“).`;
+Ist ein Ansprechpartner bekannt, sprich ihn mit Namen an, sonst „Sehr geehrte Damen und Herren,“ (Englisch: „Dear Hiring Team,“, Französisch: „Madame, Monsieur,“). Grußformel auf Französisch: „Je vous prie d’agréer, Madame, Monsieur, l’expression de mes salutations distinguées.“`;
 
 const CV_TRANSLATE_PROMPT = (lang) => `Übersetze die Textfelder eines Lebenslaufs ins ${lang}. Natürlich und professionell, wie ein Muttersprachler einen Lebenslauf schreibt – nicht wörtlich.
-Übersetze Positionen, Abschlüsse (z. B. „Abitur“ → „German university entrance qualification (Abitur)“) und Beschreibungen. Lass Namen, Firmennamen, Hochschulnamen, Orte, E-Mail-Adressen, Links, Produkt- und Technologienamen unverändert. Behalte Stichpunkte ("- ") und Zeilenumbrüche.
+Übersetze Positionen, Abschlüsse (z. B. „Abitur“ → „German university entrance qualification (Abitur)“ bzw. „Abitur (équivalent du baccalauréat)“) und Beschreibungen. Verwende die in der Zielsprache üblichen Begriffe für Lebensläufe. Lass Namen, Firmennamen, Hochschulnamen, Orte, E-Mail-Adressen, Links, Produkt- und Technologienamen unverändert. Behalte Stichpunkte ("- ") und Zeilenumbrüche.
 Antworte nur mit JSON: {"items":[{"id":"…","text":"…"}]} – für jedes Feld.`;
 
 const str = (v, max = 400) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -201,7 +201,7 @@ function normalizeCv(j) {
   const extra = j.extra && typeof j.extra === "object" ? j.extra : {};
   return {
     v: 1,
-    lang: j.lang === "en" ? "en" : "de",
+    lang: ["en", "fr"].includes(j.lang) ? j.lang : "de",
     person: { name: str(p.name, 120), headline: str(p.headline, 200), email: str(p.email, 200), phone: str(p.phone, 60), location: str(p.location, 120), links: str(p.links, 600) },
     sections: [
       { type: "summary", text: str(j.summary, 3000) },
@@ -550,7 +550,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
     try {
       const items = cleanItems(req.body.items);
       checkSize(items);
-      const lang = req.body.lang === "de" ? "Deutsche" : "Englische";
+      const lang = { de: "Deutsche", en: "Englische", fr: "Französische" }[req.body.lang] || "Englische";
       const out = parseJson(await chat([{ role: "system", content: CV_TRANSLATE_PROMPT(lang) }, { role: "user", content: JSON.stringify({ items }) }], { json: true, maxTokens: 8000 }));
       const ids = new Set(items.map((i) => i.id));
       res.json({ items: (Array.isArray(out.items) ? out.items : []).filter((o) => o && ids.has(o.id) && typeof o.text === "string").map((o) => ({ id: o.id, text: o.text.slice(0, 3000) })) });

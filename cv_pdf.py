@@ -47,6 +47,11 @@ LABELS = {
         "skills": "Skills", "languages": "Languages", "extra": "Additional Information", "present": "present",
         "cv": "Curriculum Vitae",
     },
+    "fr": {
+        "summary": "Profil", "experience": "Expérience professionnelle", "education": "Formation", "projects": "Projets",
+        "skills": "Compétences", "languages": "Langues", "extra": "Informations complémentaires", "present": "aujourd’hui",
+        "cv": "CV",
+    },
 }
 SECTION_TYPES = ("summary", "experience", "education", "projects", "skills", "languages", "extra")
 

@@ -708,7 +708,7 @@ module.exports = [
         h: "Anschreiben im gleichen Design – selbst schreiben oder mit KI",
         p: [
           "Zum Lebenslauf gehört meist ein Anschreiben. Unter „Anschreiben erstellen“ setzt PDF Libre deinen Brief in dieselbe Schrift und Farbe wie den Lebenslauf – mit Empfängeradresse, Ort und Datum, Betreff und Grußformel. Du kannst den Text selbst schreiben oder die KI einen Entwurf aus deinem Lebenslauf und der Stellenanzeige schreiben lassen und ihn dann persönlich anpassen.",
-          "Und wenn du dich international bewirbst, übersetzt die KI deinen ganzen Lebenslauf mit einem Klick ins Englische – oder zurück ins Deutsche.",
+          "Und wenn du dich international bewirbst, übersetzt die KI deinen ganzen Lebenslauf mit einem Klick ins Englische oder Französische – oder zurück ins Deutsche. Die Überschriften gibt es in allen drei Sprachen: „Berufserfahrung“, „Experience“, „Expérience professionnelle“.",
         ],
       },
       {
@@ -728,7 +728,7 @@ module.exports = [
     faq: [
       ["Ist der Lebenslauf-Generator kostenlos?", "Ja. Alle Vorlagen, die Live-Vorschau, der ATS-Check und der PDF-Download sind kostenlos, ohne Anmeldung und ohne Wasserzeichen."],
       ["Ist der Lebenslauf ATS-freundlich?", "Ja. Er ist einspaltig, enthält echten Text mit eingebetteten Schriften und verwendet übliche Überschriften. Bewerbermanagementsysteme können Name, Kontaktdaten, Stationen und Kenntnisse zuverlässig auslesen."],
-      ["Kann ich den Lebenslauf auf Englisch erstellen?", "Ja. Stelle oben die Sprache auf Englisch – Überschriften wie „Experience“, „Education“ und „Skills“ werden automatisch angepasst. Deine Texte schreibst du selbst in der gewünschten Sprache."],
+      ["Kann ich den Lebenslauf auf Englisch oder Französisch erstellen?", "Ja. Wähle im Schritt „Design“ die Sprache Englisch oder Französisch – Überschriften wie „Experience“ oder „Expérience professionnelle“ werden automatisch angepasst. Deine Texte schreibst du selbst oder lässt sie von der KI übersetzen."],
       ["Wie bearbeite ich meinen Lebenslauf später?", "Speichere mit „Entwurf speichern“ die Entwurfsdatei und öffne sie später über „Entwurf öffnen“. Alle Angaben werden wieder ins Formular übernommen. Im selben Browser bleibt dein Entwurf auch so erhalten."],
       ["Enthält die PDF versteckte Daten?", "Nein. Die PDF für deine Bewerbung enthält nur den sichtbaren Lebenslauf – keine Anhänge und keine ausgeblendeten Abschnitte."],
       ["Werden meine Daten gespeichert?", "Nein. Deine Angaben werden nur zum Erstellen der PDF an den Server geschickt und sofort wieder gelöscht. Der Entwurf liegt ausschließlich in deinem Browser."],

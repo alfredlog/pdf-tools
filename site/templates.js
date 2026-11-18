@@ -578,10 +578,10 @@ function cvWorkspace(t) {
     ["improve", "Formulierungen verbessern", "Klarere Stichpunkte mit starken Verben – ohne Erfundenes.", pro],
     ["open-match", "An Stellenanzeige anpassen", "Trefferquote, fehlende Keywords und passende Formulierungen.", pro],
     ["open-letter", "Anschreiben erstellen", "Im gleichen Design – selbst schreiben oder KI-Entwurf.", ""],
-    ["translate", "Auf Englisch übersetzen", "Den ganzen Lebenslauf ins Englische (oder zurück).", pro],
+    ["translate", "Übersetzen", "Den ganzen Lebenslauf ins Englische, Französische oder Deutsche.", pro],
   ];
   const file = `type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import`;
-  return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" data-start="${esc(t.ui.start || "")}" aria-label="${esc(t.name)}">
+  return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" data-start="${esc(t.ui.start || "")}" data-default-lang="${esc((t.defaults && t.defaults.lang) || "de")}" aria-label="${esc(t.name)}">
     <div class="cv-welcome" data-welcome hidden>
       <h2>Wie möchtest du starten?</h2>
       <div class="cv-welcome__cards">
@@ -623,7 +623,7 @@ function cvWorkspace(t) {
                 <div class="cv-swatches">${swatches.map((x) => `<button type="button" class="cv-swatch" data-swatch="${x}" style="background:${x}" aria-label="Farbe ${x}"></button>`).join("")}<label class="cv-swatch cv-swatch--custom" title="Eigene Farbe"><input type="color" data-accent value="#1f4fa3" aria-label="Eigene Farbe"></label></div>
               </div>
               <div><h3 class="cv-pane__title">Sprache der Überschriften</h3>
-                <select data-lang class="cv-select"><option value="de">Deutsch (Berufserfahrung, Ausbildung …)</option><option value="en">Englisch (Experience, Education …)</option></select>
+                <select data-lang class="cv-select"><option value="de">Deutsch (Berufserfahrung, Ausbildung …)</option><option value="en">Englisch (Experience, Education …)</option><option value="fr">Französisch (Expérience professionnelle, Formation …)</option></select>
               </div>
             </div>
             <div class="cv-next"><button type="button" class="btn btn--ghost" data-goto="content">← Inhalte</button><button type="button" class="btn btn--primary" data-goto="optimize">Weiter: Prüfen &amp; KI →</button></div>
@@ -668,6 +668,18 @@ function cvWorkspace(t) {
         <button type="button" class="btn btn--primary" data-download>PDF herunterladen</button>
       </div>
     </div>
+    <dialog class="cv-dialog" data-trdlg>
+      <form method="dialog">
+        <h3>Lebenslauf übersetzen</h3>
+        <p class="cv-dialog__hint">Die KI übersetzt alle Texte, Überschriften, Positionen und Abschlüsse. Namen, Firmen, Orte und Technologien bleiben unverändert. Tipp: Speichere vorher mit „Entwurf speichern“ die aktuelle Fassung.</p>
+        <div class="cv-trlangs">
+          <button value="de" class="cv-aicard" data-tr="de"><b>Deutsch</b><span>Lebenslauf</span></button>
+          <button value="en" class="cv-aicard" data-tr="en"><b>Englisch</b><span>CV / Résumé</span></button>
+          <button value="fr" class="cv-aicard" data-tr="fr"><b>Französisch</b><span>CV en français</span></button>
+        </div>
+        <div class="cv-dialog__actions"><button value="cancel" class="btn btn--ghost">Abbrechen</button></div>
+      </form>
+    </dialog>
     <dialog class="cv-dialog" data-review>
       <form method="dialog">
         <h3 data-review-title>Vorschläge</h3>

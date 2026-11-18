@@ -829,3 +829,4 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
   .cv-mobilebar .btn { flex: 1; }
 }
 @media (max-width: 560px) { .cv-welcome__cards { grid-template-columns: minmax(0, 1fr); } }
+.cv-trlangs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; } .cv-trlangs button:disabled { opacity: .4; cursor: default; }
