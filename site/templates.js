@@ -717,6 +717,12 @@ function cvWorkspace(t) {
         <p class="cv-dialog__hint">Im selben Design wie dein Lebenslauf. Schreib selbst oder lass die KI einen Entwurf aus Lebenslauf und Stellenanzeige erstellen${FREE ? "" : " (Pro)"} – danach kannst du alles ändern.</p>
         <div class="cv-letter">
           <div class="cv-letter__form">
+            <div class="cv-letter__base">
+              <p class="cv-letter__basetitle">Grundlage für den KI-Entwurf</p>
+              <p class="cv-letter__cv" data-letter-cv></p>
+              <label class="btn btn--ghost btn--sm" data-letter-import>Lebenslauf importieren (PDF/Word)<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
+              <div class="cv-field"><label for="cl-ad">Stellenanzeige (Text einfügen)</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="Aufgaben und Anforderungen aus der Stellenanzeige …"></textarea></div>
+            </div>
             <div class="cv-field"><label for="cl-rec">Empfänger (Firma, Ansprechpartner, Adresse)</label><textarea id="cl-rec" rows="4" data-l="recipient" placeholder="Muster GmbH&#10;Frau Julia Schmidt&#10;Hauptstraße 1&#10;60311 Frankfurt am Main"></textarea></div>
             <div class="cv-field"><label for="cl-notes">Notizen für die KI (optional)</label><textarea id="cl-notes" rows="2" data-l="notes" placeholder="z. B. Warum diese Firma? Ab wann verfügbar? Wie viele Stunden?"></textarea></div>
             <button type="button" class="btn btn--ghost btn--block" data-run-letter>Entwurf mit KI schreiben${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>

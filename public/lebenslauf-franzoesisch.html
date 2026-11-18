@@ -22,7 +22,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=bb5df4ac">
+  <link rel="stylesheet" href="/assets/style.css?v=c87e0854">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Lebenslauf auf Französisch – PDF Libre","url":"https://pdf-libre.de/lebenslauf-franzoesisch.html","description":"Französischen Lebenslauf (CV) erstellen: Überschriften auf Französisch, Datumsformat und Anschreiben (lettre de motivation) – oder deinen deutschen Lebenslauf per KI übersetzen. Für Bewerbungen in Frankreich, Belgien, der Schweiz und Luxemburg.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"Lebenslauf erstellen","item":"https://pdf-libre.de/lebenslauf-erstellen.html"},{"@type":"ListItem","position":3,"name":"Lebenslauf auf Französisch","item":"https://pdf-libre.de/lebenslauf-franzoesisch.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kann ich zwischen Deutsch, Englisch und Französisch wechseln?","acceptedAnswer":{"@type":"Answer","text":"Ja. Die Überschriften stellst du im Schritt „Design“ um; die Texte übersetzt die KI im Schritt „Prüfen & KI“."}},{"@type":"Question","name":"Wie schreibe ich Daten im französischen CV?","acceptedAnswer":{"@type":"Answer","text":"Üblich ist MM/AAAA, zum Beispiel 09/2024 – also dasselbe Format wie im deutschen Lebenslauf. „aujourd’hui“ steht für „heute“."}},{"@type":"Question","name":"Wie heißen die Abschnitte auf Französisch?","acceptedAnswer":{"@type":"Answer","text":"Profil, Expérience professionnelle, Formation, Projets, Compétences, Langues und Informations complémentaires."}}]}</script>
@@ -235,6 +235,12 @@
         <p class="cv-dialog__hint">Im selben Design wie dein Lebenslauf. Schreib selbst oder lass die KI einen Entwurf aus Lebenslauf und Stellenanzeige erstellen (Pro) – danach kannst du alles ändern.</p>
         <div class="cv-letter">
           <div class="cv-letter__form">
+            <div class="cv-letter__base">
+              <p class="cv-letter__basetitle">Grundlage für den KI-Entwurf</p>
+              <p class="cv-letter__cv" data-letter-cv></p>
+              <label class="btn btn--ghost btn--sm" data-letter-import>Lebenslauf importieren (PDF/Word)<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
+              <div class="cv-field"><label for="cl-ad">Stellenanzeige (Text einfügen)</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="Aufgaben und Anforderungen aus der Stellenanzeige …"></textarea></div>
+            </div>
             <div class="cv-field"><label for="cl-rec">Empfänger (Firma, Ansprechpartner, Adresse)</label><textarea id="cl-rec" rows="4" data-l="recipient" placeholder="Muster GmbH&#10;Frau Julia Schmidt&#10;Hauptstraße 1&#10;60311 Frankfurt am Main"></textarea></div>
             <div class="cv-field"><label for="cl-notes">Notizen für die KI (optional)</label><textarea id="cl-notes" rows="2" data-l="notes" placeholder="z. B. Warum diese Firma? Ab wann verfügbar? Wie viele Stunden?"></textarea></div>
             <button type="button" class="btn btn--ghost btn--block" data-run-letter>Entwurf mit KI schreiben <span class="pro-badge">Pro</span></button>
@@ -402,7 +408,7 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=bb5df4ac" defer></script>
-<script src="/assets/cv.js?v=bb5df4ac" defer></script>
+<script src="/assets/site.js?v=c87e0854" defer></script>
+<script src="/assets/cv.js?v=c87e0854" defer></script>
 </body>
 </html>

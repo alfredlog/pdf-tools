@@ -622,6 +622,7 @@
       changed();
       notice(j.source === "ai" ? "Import fertig. Bitte prüfe alle Angaben – die KI überträgt nur, was im Lebenslauf steht, kann sich aber beim Zuordnen irren." : "Entwurf geöffnet.", "ok");
       afterImport = true; // nach der nächsten Vorschau: offene ATS-Punkte nennen
+      letterInfo();
     } catch (e) {
       notice("", "");
       showError(e.message);
@@ -882,6 +883,7 @@
       /* Vorschau ist nur Komfort */
     }
   }
+  $("[data-letter-ad]").addEventListener("input", (e) => { data.jobAd = e.target.value; save(); });
   letterDlg.querySelectorAll("[data-l]").forEach((el) =>
     el.addEventListener("input", () => {
       L()[el.dataset.l] = el.value;
@@ -891,7 +893,29 @@
     })
   );
   root.querySelectorAll("[data-open-letter]").forEach((b) => b.addEventListener("click", openLetter));
+  // Zeigt im Anschreiben-Dialog, ob die KI einen Lebenslauf als Grundlage hat
+  function letterInfo() {
+    const box = $("[data-letter-cv]");
+    if (!box) return;
+    const n = data.sections.filter((s) => !s.hidden && ["experience", "education", "projects"].includes(s.type)).reduce((k, s) => k + (s.items || []).filter((i) => i.title || i.org).length, 0);
+    const ok = hasContent() && n > 0;
+    box.className = "cv-letter__cv " + (ok ? "is-ok" : "is-missing");
+    box.textContent = ok
+      ? `✓ Lebenslauf${data.person.name ? " von " + data.person.name : ""} mit ${n} ${n === 1 ? "Station" : "Stationen"} – daraus schreibt die KI.`
+      : "Noch kein Lebenslauf: Importiere deinen Lebenslauf, damit die KI deine echten Erfahrungen verwenden kann.";
+    $("[data-letter-import]").hidden = ok && !!data.person.name;
+    // Ort nachtragen, wenn er erst durch den Import bekannt wurde
+    const l = data.letter;
+    if (l && l.date && data.person.location && !l.date.includes(",")) {
+      l.date = `${data.person.location}, ${data.lang === "fr" ? "le " : ""}${l.date}`;
+      const f = letterDlg.querySelector('[data-l="date"]');
+      if (f) f.value = l.date;
+    }
+  }
+
   function openLetter() {
+    letterInfo();
+    $("[data-letter-ad]").value = data.jobAd || "";
     const l = L();
     const loc = { de: "de-DE", en: "en-GB", fr: "fr-FR" }[data.lang] || "de-DE";
     const today = new Date().toLocaleDateString(loc, data.lang === "de" ? { day: "2-digit", month: "2-digit", year: "numeric" } : { day: "numeric", month: "long", year: "numeric" });
@@ -905,8 +929,15 @@
   $("[data-run-letter]").addEventListener("click", async (ev) => {
     const btn = ev.currentTarget;
     const status = $("[data-letter-status]");
+    const cvOk = data.sections.some((s) => !s.hidden && (s.items || []).some((i) => i.title || i.org));
+    if (!cvOk) {
+      status.textContent = "Importiere zuerst deinen Lebenslauf (oben) oder fülle das Formular aus – sonst hat die KI nichts, worauf sie sich stützen kann.";
+      $("[data-letter-import]").hidden = false;
+      return;
+    }
     if (!(data.jobAd || "").trim()) {
-      status.textContent = "Füge zuerst unter „An Stellenanzeige anpassen“ die Stellenanzeige ein.";
+      status.textContent = "Füge oben den Text der Stellenanzeige ein.";
+      $("[data-letter-ad]").focus();
       return;
     }
     if ((lf("body").value || "").trim() && !confirm("Der bisherige Text des Anschreibens wird ersetzt. Fortfahren?")) return;

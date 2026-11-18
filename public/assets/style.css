@@ -836,3 +836,9 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .cv-fix__help { margin: 0 !important; display: block !important; font-size: .9rem; color: #5b4a1f; }
 .cv-fix__actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .cv-notice .btn { margin-left: 8px; vertical-align: middle; }
+.cv-letter__base { display: grid; gap: 8px; padding: 12px; border: 1px dashed var(--line-2); border-radius: 12px; background: #fafbff; }
+.cv-letter__basetitle { margin: 0; font-weight: 700; }
+.cv-letter__cv { margin: 0; font-size: .92rem; font-weight: 600; }
+.cv-letter__cv.is-ok { color: #15803d; }
+.cv-letter__cv.is-missing { color: #8a5a00; }
+.cv-letter__base label.btn[hidden] { display: none; }
