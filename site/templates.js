@@ -587,12 +587,57 @@ function cvWorkspace(t) {
     <p class="cv-notice" data-notice hidden></p>
     <dialog class="cv-dialog" data-review>
       <form method="dialog">
-        <h3>Vorschläge der Rechtschreibprüfung</h3>
+        <h3 data-review-title>Vorschläge</h3>
         <p class="cv-dialog__hint">Rot = vorher, grün = korrigiert. Wähle aus, was übernommen werden soll.</p>
         <div data-changes></div>
         <div class="cv-dialog__actions">
           <button value="cancel" class="btn btn--ghost">Abbrechen</button>
           <button value="ok" class="btn btn--primary" data-apply>Ausgewählte übernehmen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog class="cv-dialog cv-dialog--wide" data-match>
+      <form method="dialog">
+        <h3>An Stellenanzeige anpassen</h3>
+        <p class="cv-dialog__hint">Füge den Text der Stellenanzeige ein. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.</p>
+        <textarea class="cv-ad" data-ad rows="8" placeholder="Stellenanzeige hier einfügen (Aufgaben und Anforderungen) …"></textarea>
+        <div class="cv-dialog__actions cv-dialog__actions--start"><button type="button" class="btn btn--primary" data-run-match>Analysieren</button><span class="cv-dialog__status" data-match-status></span></div>
+        <div data-match-result hidden>
+          <div class="cv-score"><div class="cv-score__bar"><span data-score-bar></span></div><b data-score></b></div>
+          <p class="cv-dialog__hint" data-role></p>
+          <ul class="cv-kws" data-kws></ul>
+          <ul class="cv-tips" data-tips></ul>
+          <h4 data-changes-title>Vorgeschlagene Änderungen</h4>
+          <div data-match-changes></div>
+        </div>
+        <div class="cv-dialog__actions">
+          <button value="cancel" class="btn btn--ghost">Schließen</button>
+          <button value="ok" class="btn btn--primary" data-apply-match hidden>Ausgewählte übernehmen</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog class="cv-dialog cv-dialog--wide" data-letter>
+      <form method="dialog">
+        <h3>Anschreiben</h3>
+        <p class="cv-dialog__hint">Im selben Design wie dein Lebenslauf. Schreib selbst oder lass die KI einen Entwurf aus Lebenslauf und Stellenanzeige erstellen${FREE ? "" : " (Pro)"} – danach kannst du alles ändern.</p>
+        <div class="cv-letter">
+          <div class="cv-letter__form">
+            <div class="cv-field"><label for="cl-rec">Empfänger (Firma, Ansprechpartner, Adresse)</label><textarea id="cl-rec" rows="4" data-l="recipient" placeholder="Muster GmbH&#10;Frau Julia Schmidt&#10;Hauptstraße 1&#10;60311 Frankfurt am Main"></textarea></div>
+            <div class="cv-field"><label for="cl-notes">Notizen für die KI (optional)</label><textarea id="cl-notes" rows="2" data-l="notes" placeholder="z. B. Warum diese Firma? Ab wann verfügbar? Wie viele Stunden?"></textarea></div>
+            <button type="button" class="btn btn--ghost btn--block" data-run-letter>Entwurf mit KI schreiben${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
+            <p class="cv-dialog__status" data-letter-status></p>
+            <div class="cv-field"><label for="cl-date">Ort, Datum</label><input id="cl-date" data-l="date"></div>
+            <div class="cv-field"><label for="cl-sub">Betreff</label><input id="cl-sub" data-l="subject" placeholder="Bewerbung als …"></div>
+            <div class="cv-field"><label for="cl-sal">Anrede</label><input id="cl-sal" data-l="salutation" placeholder="Sehr geehrte Damen und Herren,"></div>
+            <div class="cv-field"><label for="cl-body">Text (Absätze mit Leerzeile trennen)</label><textarea id="cl-body" rows="12" data-l="body"></textarea></div>
+            <div class="cv-field"><label for="cl-close">Grußformel</label><input id="cl-close" data-l="closing" placeholder="Mit freundlichen Grüßen"></div>
+          </div>
+          <div class="cv-letter__preview" data-letter-preview></div>
+        </div>
+        <p class="form-error" data-letter-error role="alert" hidden></p>
+        <div class="cv-dialog__actions">
+          <button value="cancel" class="btn btn--ghost">Schließen</button>
+          <button type="button" class="btn btn--primary" data-letter-pdf>Anschreiben als PDF</button>
         </div>
       </form>
     </dialog>
@@ -603,7 +648,15 @@ function cvWorkspace(t) {
         <p class="cv-info" data-info></p>
         <p class="form-error" data-error role="alert" hidden></p>
         <button type="button" class="btn btn--primary btn--lg btn--block" data-download>PDF herunterladen</button>
-        <button type="button" class="btn btn--ghost btn--block" data-proofread>Rechtschreibung prüfen (KI)</button>
+        <div class="cv-ai">
+          <p><strong>KI-Assistent</strong></p>
+          <button type="button" class="cv-ai__btn" data-proofread>Rechtschreibung prüfen</button>
+          <button type="button" class="cv-ai__btn" data-improve>Formulierungen verbessern${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
+          <button type="button" class="cv-ai__btn" data-open-match>An Stellenanzeige anpassen${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
+          <button type="button" class="cv-ai__btn" data-open-letter>Anschreiben erstellen</button>
+          <button type="button" class="cv-ai__btn" data-translate>Auf Englisch übersetzen${FREE ? "" : ' <span class="pro-badge">Pro</span>'}</button>
+          <p class="cv-ai__hint">Die KI formuliert nur um, was in deinem Lebenslauf steht – sie erfindet keine Erfahrungen. Du bestätigst jede Änderung.</p>
+        </div>
         <button type="button" class="btn btn--ghost btn--block" data-save-draft>Entwurf speichern (zum späteren Bearbeiten)</button>
         <div class="cv-ats">
           <p><strong>ATS-Check</strong> <span data-ats-score></span></p>

@@ -150,6 +150,40 @@ Korrigiere NUR Rechtschreibung, Grammatik, Zeichensetzung und offensichtliche Ti
 Ändere NICHT den Inhalt, den Stil oder die Wortwahl, füge nichts hinzu und lass nichts weg. Behalte Zeilenumbrüche, Stichpunkte ("- "), Zahlen, Namen, Firmennamen, Fachbegriffe und Abkürzungen bei.
 Antworte nur mit JSON: {"items":[{"id":"…","text":"…"}]} – für jedes Feld, auch wenn nichts zu korrigieren ist (dann unverändert).`;
 
+const NO_INVENT = `Absolute Regel: Erfinde nichts. Keine neuen Tätigkeiten, Kenntnisse, Werkzeuge, Zahlen, Prozentangaben, Abschlüsse oder Erfolge, die nicht im Lebenslauf stehen. Du darfst nur umformulieren, gewichten und Begriffe aus der Stellenanzeige verwenden, wenn der Lebenslauf dieselbe Sache bereits belegt.`;
+
+const CV_IMPROVE_PROMPT = `Du bist Bewerbungscoach und verbesserst die Formulierungen in einem Lebenslauf.
+Ziele: klare, aktive Formulierungen mit starken Verben (z. B. „Entwickelt“, „Verantwortet“, „Automatisiert“, „Betreut“), knappe Stichpunkte, Ergebnis vor Tätigkeit, einheitlicher Stil, keine Füllwörter, keine Ich-Form in Stichpunkten.
+${NO_INVENT}
+Behalte die Sprache jedes Feldes, Stichpunkte ("- "), Namen, Firmen und Fachbegriffe bei. Felder, die schon gut sind, gibst du unverändert zurück.
+Antworte nur mit JSON: {"items":[{"id":"…","text":"…"}]} – für jedes Feld.`;
+
+const CV_KEYWORDS_PROMPT = `Du analysierst eine Stellenanzeige für einen ATS-Abgleich. Antworte nur mit JSON:
+{"role":"Stellenbezeichnung","company":"Unternehmen oder leer","keywords":[{"term":"Python","aliases":["Python 3"],"must":true}]}
+- 8 bis 20 konkrete Anforderungen: Fachkenntnisse, Werkzeuge, Methoden, Abschlüsse, Sprachen, wichtige Soft Skills. Keine Allgemeinplätze wie „Teamfähigkeit“, außer sie werden betont.
+- term: so, wie es in der Anzeige steht. aliases: übliche andere Schreibweisen oder Übersetzungen (z. B. "Machine Learning" ↔ "maschinelles Lernen").
+- must: true für ausdrücklich geforderte Punkte („setzen voraus“, „erforderlich“), false für „wünschenswert“, „von Vorteil“.`;
+
+const CV_TAILOR_PROMPT = `Du passt einen Lebenslauf an eine Stellenanzeige an, damit Personaler und ATS die passenden Erfahrungen sofort sehen.
+Du bekommst die Stellenanzeige, die Liste der Anforderungen (mit gefunden/fehlend) und die Textfelder des Lebenslaufs.
+- Formuliere Felder so um, dass vorhandene, zur Stelle passende Erfahrung im Vordergrund steht, und verwende die Begriffe der Anzeige, WENN der Lebenslauf dieselbe Sache belegt.
+- Schreibe das Feld "p.headline" passend zur Stelle (nur wenn der Lebenslauf das hergibt) und das Profil (Kurzprofil) mit Bezug auf die Stelle.
+- Ändere Felder, die nichts mit der Stelle zu tun haben, nicht.
+${NO_INVENT}
+Antworte nur mit JSON: {"items":[{"id":"…","text":"…"}],"tips":["kurzer Hinweis", …]}
+tips: höchstens 4 ehrliche Hinweise, z. B. welche fehlende Anforderung der Bewerber ergänzen sollte, FALLS er sie wirklich hat.`;
+
+const CV_LETTER_PROMPT = `Du schreibst ein Bewerbungsanschreiben auf Grundlage eines Lebenslaufs und einer Stellenanzeige.
+- Sprache: die Sprache der Stellenanzeige.
+- Ton: professionell, konkret, freundlich, ohne Floskeln wie „hiermit bewerbe ich mich“. Etwa 250–350 Wörter, 3–4 Absätze: Einstieg mit Bezug zur Stelle/zum Unternehmen, passende Erfahrungen mit konkreten Beispielen aus dem Lebenslauf, Motivation und Mehrwert, Abschluss mit Verfügbarkeit/Gesprächswunsch.
+- ${NO_INVENT} Nutze nur Angaben aus dem Lebenslauf und den Notizen des Bewerbers.
+Antworte nur mit JSON: {"subject":"Bewerbung als …","salutation":"Sehr geehrte …,","paragraphs":["…","…"],"closing":"Mit freundlichen Grüßen"}
+Ist ein Ansprechpartner bekannt, sprich ihn mit Namen an, sonst „Sehr geehrte Damen und Herren,“ (bzw. „Dear Hiring Team,“).`;
+
+const CV_TRANSLATE_PROMPT = (lang) => `Übersetze die Textfelder eines Lebenslaufs ins ${lang}. Natürlich und professionell, wie ein Muttersprachler einen Lebenslauf schreibt – nicht wörtlich.
+Übersetze Positionen, Abschlüsse (z. B. „Abitur“ → „German university entrance qualification (Abitur)“) und Beschreibungen. Lass Namen, Firmennamen, Hochschulnamen, Orte, E-Mail-Adressen, Links, Produkt- und Technologienamen unverändert. Behalte Stichpunkte ("- ") und Zeilenumbrüche.
+Antworte nur mit JSON: {"items":[{"id":"…","text":"…"}]} – für jedes Feld.`;
+
 const str = (v, max = 400) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 function normalizeCv(j) {
   const entry = (e) => ({
@@ -396,6 +430,130 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
         .filter((o) => o && byId.has(o.id) && typeof o.text === "string" && o.text.trim() && o.text.trim() !== byId.get(o.id).trim())
         .map((o) => ({ id: o.id, before: byId.get(o.id), after: o.text.trim() }));
       res.json({ changes });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // ------------------------------------------------------------------ Lebenslauf: Pro-Funktionen
+  // Mit PAYMENTS_ENABLED=true nur mit Konto + Pro/Tagespass; sonst kostenlos (mit Stundenlimit)
+  const pro = payments.enabled ? [requireDb, requireAccess] : [];
+  const cvJson = express.json({ limit: "400kb" });
+
+  const cleanItems = (raw) =>
+    (Array.isArray(raw) ? raw : [])
+      .filter((i) => i && typeof i.id === "string" && typeof i.text === "string" && i.text.trim())
+      .slice(0, 120)
+      .map((i) => ({ id: i.id.slice(0, 40), text: i.text.slice(0, 3000) }));
+  const checkSize = (items, extra = "") => {
+    if (!items.length) throw new ApiError("Es gibt noch keinen Text im Lebenslauf.");
+    if (items.reduce((n, i) => n + i.text.length, 0) + extra.length > 40000) throw new ApiError("Der Text ist zu lang für eine Anfrage.", 413);
+  };
+  const parseJson = (content) => {
+    try {
+      return JSON.parse(content);
+    } catch {
+      throw new ApiError("Die KI-Antwort war unvollständig. Bitte versuche es noch einmal.", 502);
+    }
+  };
+  // Schutz gegen erfundene Zahlen: Vorschläge mit Zahlen, die nirgends im Lebenslauf stehen, werden verworfen
+  const numbersOf = (t) => (String(t).match(/\d+(?:[.,]\d+)?/g) || []).map((n) => n.replace(",", "."));
+  function changesFrom(items, out, allText) {
+    const known = new Set(numbersOf(allText));
+    const byId = new Map(items.map((i) => [i.id, i.text]));
+    return (Array.isArray(out) ? out : [])
+      .filter((o) => o && byId.has(o.id) && typeof o.text === "string" && o.text.trim() && o.text.trim() !== byId.get(o.id).trim())
+      .filter((o) => numbersOf(o.text).every((n) => known.has(n)))
+      .map((o) => ({ id: o.id, before: byId.get(o.id), after: o.text.trim().slice(0, 3000) }));
+  }
+  const allTextOf = (items, cvText) => items.map((i) => i.text).join("\n") + "\n" + String(cvText || "").slice(0, 40000);
+
+  // Formulierungen verbessern
+  r.post("/cv-improve", ready, ...pro, cvLimiter, cvJson, async (req, res, next) => {
+    try {
+      const items = cleanItems(req.body.items);
+      checkSize(items);
+      const out = parseJson(await chat([{ role: "system", content: CV_IMPROVE_PROMPT }, { role: "user", content: JSON.stringify({ items }) }], { json: true, maxTokens: 6000 }));
+      res.json({ changes: changesFrom(items, out.items, allTextOf(items, req.body.cvText)) });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // An Stellenanzeige anpassen: Anforderungen + Vorschläge (die Trefferquote rechnet der Browser selbst)
+  r.post("/cv-match", ready, ...pro, cvLimiter, cvJson, async (req, res, next) => {
+    try {
+      const ad = String(req.body.ad || "").trim().slice(0, 15000);
+      if (ad.length < 150) throw new ApiError("Bitte füge den vollständigen Text der Stellenanzeige ein (Aufgaben und Anforderungen).");
+      const items = cleanItems(req.body.items);
+      checkSize(items, ad);
+      const cvText = String(req.body.cvText || "").slice(0, 40000);
+      const kw = parseJson(await chat([{ role: "system", content: CV_KEYWORDS_PROMPT }, { role: "user", content: ad }], { json: true, maxTokens: 1500 }));
+      const keywords = (Array.isArray(kw.keywords) ? kw.keywords : [])
+        .filter((k) => k && typeof k.term === "string" && k.term.trim())
+        .slice(0, 25)
+        .map((k) => ({ term: str(k.term, 80), aliases: (Array.isArray(k.aliases) ? k.aliases : []).map((a) => str(a, 80)).filter(Boolean).slice(0, 5), must: k.must === true }));
+      const low = cvText.toLowerCase();
+      const status = keywords.map((k) => ({ term: k.term, must: k.must, found: [k.term, ...k.aliases].some((t) => low.includes(t.toLowerCase())) }));
+      const out = parseJson(
+        await chat(
+          [
+            { role: "system", content: CV_TAILOR_PROMPT },
+            { role: "user", content: JSON.stringify({ stellenanzeige: ad, anforderungen: status, items }) },
+          ],
+          { json: true, maxTokens: 6000 }
+        )
+      );
+      res.json({
+        role: str(kw.role, 150),
+        company: str(kw.company, 150),
+        keywords,
+        changes: changesFrom(items, out.items, allTextOf(items, cvText)),
+        tips: (Array.isArray(out.tips) ? out.tips : []).map((t) => str(t, 300)).filter(Boolean).slice(0, 4),
+      });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // Anschreiben schreiben
+  r.post("/cv-letter", ready, ...pro, cvLimiter, cvJson, async (req, res, next) => {
+    try {
+      const ad = String(req.body.ad || "").trim().slice(0, 15000);
+      if (ad.length < 150) throw new ApiError("Bitte füge den vollständigen Text der Stellenanzeige ein.");
+      const cvText = String(req.body.cvText || "").trim().slice(0, 30000);
+      if (cvText.length < 100) throw new ApiError("Fülle zuerst deinen Lebenslauf aus – das Anschreiben wird daraus erstellt.");
+      const notes = String(req.body.notes || "").slice(0, 2000);
+      const contact = String(req.body.contact || "").slice(0, 120);
+      const out = parseJson(
+        await chat(
+          [
+            { role: "system", content: CV_LETTER_PROMPT },
+            { role: "user", content: JSON.stringify({ stellenanzeige: ad, lebenslauf: cvText, ansprechpartner: contact, notizen_des_bewerbers: notes }) },
+          ],
+          { json: true, maxTokens: 2500 }
+        )
+      );
+      res.json({
+        subject: str(out.subject, 200),
+        salutation: str(out.salutation, 150),
+        paragraphs: (Array.isArray(out.paragraphs) ? out.paragraphs : []).map((p) => str(p, 2500)).filter(Boolean).slice(0, 6),
+        closing: str(out.closing, 80) || "Mit freundlichen Grüßen",
+      });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // Lebenslauf übersetzen (Deutsch ↔ Englisch)
+  r.post("/cv-translate", ready, ...pro, cvLimiter, cvJson, async (req, res, next) => {
+    try {
+      const items = cleanItems(req.body.items);
+      checkSize(items);
+      const lang = req.body.lang === "de" ? "Deutsche" : "Englische";
+      const out = parseJson(await chat([{ role: "system", content: CV_TRANSLATE_PROMPT(lang) }, { role: "user", content: JSON.stringify({ items }) }], { json: true, maxTokens: 8000 }));
+      const ids = new Set(items.map((i) => i.id));
+      res.json({ items: (Array.isArray(out.items) ? out.items : []).filter((o) => o && ids.has(o.id) && typeof o.text === "string").map((o) => ({ id: o.id, text: o.text.slice(0, 3000) })) });
     } catch (e) {
       next(e);
     }

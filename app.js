@@ -273,7 +273,7 @@ const apiLimiter = rateLimit({
   // Schriftdateien für die Editor-Vorschau zählen nicht mit (werden vom Browser zwischengespeichert)
   skip: (req) =>
     (req.method === "GET" && (req.path.startsWith("/sysfont/") || req.originalUrl.startsWith("/api/slides/"))) ||
-    req.originalUrl.startsWith("/api/cv/preview"), // Live-Vorschau hat ein eigenes, großzügigeres Limit
+    req.originalUrl.startsWith("/api/cv/preview") || req.originalUrl.startsWith("/api/cv/letter"), // Live-Vorschau hat ein eigenes, großzügigeres Limit
 });
 const cvPreviewLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
@@ -506,6 +506,24 @@ api.post(
       .normalize("NFKD").replace(/[\u0300-\u036f]/g, ""); // Dateiname nur mit ASCII-Zeichen (sicher für alle Browser)
     const file = (ascii ? `Lebenslauf_${ascii}` : "Lebenslauf").replace(/[^A-Za-z0-9_-]+/g, "_").slice(0, 80);
     await sendFile(res, out, `${file}.pdf`);
+  })
+);
+
+// Anschreiben im Stil des Lebenslaufs (Text kommt aus dem Browser – selbst geschrieben oder von der KI vorgeschlagen)
+api.post(
+  "/cv/letter",
+  cvPreviewLimiter,
+  cvJson,
+  wrap(async (req, res) => {
+    const data = req.body && typeof req.body.data === "object" ? req.body.data : null;
+    if (!data) throw new UserError("Keine Daten erhalten.");
+    const input = path.join(req.jobDir, "letter.json");
+    const out = path.join(req.jobDir, "anschreiben.pdf");
+    await fsp.writeFile(input, JSON.stringify(data));
+    const preview = req.body.preview === true;
+    const { stdout } = await run(PYTHON, [CV, "letter", input, out, ...(preview ? ["--preview"] : [])], { maxBuffer: 20 * 1024 * 1024 });
+    if (preview) return res.json(JSON.parse(stdout.trim().split("\n").pop()));
+    await sendFile(res, out, "Anschreiben.pdf");
   })
 );
 

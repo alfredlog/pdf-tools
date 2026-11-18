@@ -417,48 +417,294 @@
     return out;
   }
 
-  $("[data-proofread]").addEventListener("click", async (ev) => {
-    const btn = ev.currentTarget;
+  // Fehler von der KI-API; bei Pro-Funktionen (401/402) mit Link zu Anmeldung bzw. Preisen
+  async function aiPost(url, body) {
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const j = await res.json().catch(() => ({}));
+    if (res.ok) return j;
+    const err = new Error(j.error || "Die KI-Anfrage ist fehlgeschlagen.");
+    if (res.status === 401) err.link = { href: `/anmelden.html?next=${encodeURIComponent(location.pathname)}`, label: "Anmelden" };
+    if (res.status === 402) err.link = { href: "/preise.html", label: "Tarife ansehen" };
+    throw err;
+  }
+  function fail(e, el = $("[data-error]")) {
+    el.textContent = e.message + " ";
+    if (e.link) el.append(h("a", { href: e.link.href }, e.link.label));
+    el.hidden = false;
+  }
+  // gesamter sichtbarer Lebenslauf als Text (für Abgleich, Zahlenschutz und Anschreiben)
+  function cvText() {
+    const p = data.person;
+    const lines = [p.name, p.headline, p.location];
+    for (const sec of data.sections) {
+      if (sec.hidden) continue;
+      lines.push(`## ${sec.title || SECTION_NAMES[sec.type]}`);
+      if (sec.text) lines.push(sec.text);
+      for (const it of sec.items || []) lines.push([it.title, it.org, it.place, [it.from, it.current ? "heute" : it.to].filter(Boolean).join(" – "), it.label, it.value, it.text].filter(Boolean).join(" | "));
+    }
+    return lines.filter(Boolean).join("\n");
+  }
+
+  // Liste von Änderungen mit Häkchen anzeigen; gibt die angehakten zurück
+  function changeList(container, changes) {
+    container.textContent = "";
+    changes.forEach((c, k) => {
+      const box = h("div", { class: "cv-change__diff" });
+      box.innerHTML = diffHtml(c.before, c.after);
+      container.append(h("label", { class: "cv-change" }, h("input", { type: "checkbox", checked: true, "data-k": k }), box));
+    });
+    return () => [...container.querySelectorAll("input[data-k]")].filter((cb) => cb.checked).map((cb) => changes[+cb.dataset.k]);
+  }
+  function applyChanges(fields, chosen) {
+    const byId = new Map(fields.map((f) => [f.id, f]));
+    let n = 0;
+    for (const c of chosen) {
+      const f = byId.get(c.id);
+      if (f) { f.obj[f.key] = c.after; n++; }
+    }
+    if (n) { renderForm(); changed(); notice(`${n} ${n === 1 ? "Änderung" : "Änderungen"} übernommen.`, "ok"); }
+  }
+
+  // Rechtschreibung prüfen / Formulierungen verbessern: gleicher Ablauf, anderer Endpunkt
+  async function review(btn, url, title, emptyMsg) {
     const fields = textFields();
     if (!fields.length) return showError("Es gibt noch keinen Text zum Prüfen.");
-    const label = btn.textContent;
+    const label = btn.innerHTML;
     btn.disabled = true;
-    btn.textContent = "Wird geprüft …";
+    btn.textContent = "Einen Moment …";
     showError("");
     try {
-      const res = await fetch("/api/ai/cv-proofread", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items: fields.map(({ id, text }) => ({ id, text })) }) });
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(j.error || "Die Prüfung ist fehlgeschlagen.");
-      if (!j.changes.length) return notice("Keine Fehler gefunden – sehr gut!", "ok");
-      const list = $("[data-changes]");
-      list.textContent = "";
-      j.changes.forEach((c, k) => {
-        const row = h("label", { class: "cv-change" }, h("input", { type: "checkbox", checked: true, "data-k": k }));
-        const box = h("div", { class: "cv-change__diff" });
-        box.innerHTML = diffHtml(c.before, c.after);
-        row.append(box);
-        list.append(row);
-      });
+      const j = await aiPost(url, { items: fields.map(({ id, text }) => ({ id, text })), cvText: cvText() });
+      if (!j.changes.length) return notice(emptyMsg, "ok");
+      $("[data-review-title]").textContent = title;
+      const chosen = changeList($("[data-changes]"), j.changes);
       const dlg = $("[data-review]");
-      dlg.onclose = () => {
-        if (dlg.returnValue !== "ok") return;
-        const byId = new Map(fields.map((f) => [f.id, f]));
-        let n = 0;
-        list.querySelectorAll("input[data-k]").forEach((cb) => {
-          const c = j.changes[+cb.dataset.k];
-          const f = byId.get(c.id);
-          if (cb.checked && f) { f.obj[f.key] = c.after; n++; }
-        });
-        if (n) { renderForm(); changed(); notice(`${n} ${n === 1 ? "Korrektur" : "Korrekturen"} übernommen.`, "ok"); }
-      };
+      dlg.onclose = () => dlg.returnValue === "ok" && applyChanges(fields, chosen());
       dlg.showModal();
     } catch (e) {
-      showError(e.message);
+      fail(e);
     } finally {
       btn.disabled = false;
-      btn.textContent = label;
+      btn.innerHTML = label;
+    }
+  }
+  $("[data-proofread]").addEventListener("click", (ev) => review(ev.currentTarget, "/api/ai/cv-proofread", "Vorschläge der Rechtschreibprüfung", "Keine Fehler gefunden – sehr gut!"));
+  $("[data-improve]").addEventListener("click", (ev) => review(ev.currentTarget, "/api/ai/cv-improve", "Bessere Formulierungen", "Deine Formulierungen sind schon gut – keine Vorschläge."));
+
+  // ---------------------------------------------------------------- An Stellenanzeige anpassen
+  // Die KI liefert die Anforderungen der Anzeige; ob sie im Lebenslauf vorkommen, rechnet der Browser selbst –
+  // so aktualisiert sich die Trefferquote sofort, wenn du Änderungen übernimmst oder selbst ergänzt.
+  let match = null;
+  const matchDlg = $("[data-match]");
+  const adBox = $("[data-ad]");
+  function scoreOf(keywords) {
+    const low = cvText().toLowerCase();
+    let got = 0, all = 0;
+    const list = keywords.map((k) => {
+      const found = [k.term, ...(k.aliases || [])].some((t) => low.includes(t.toLowerCase()));
+      const w = k.must ? 2 : 1;
+      all += w;
+      if (found) got += w;
+      return { ...k, found };
+    });
+    return { list, score: all ? Math.round((100 * got) / all) : 0 };
+  }
+  function drawMatch() {
+    if (!match) return;
+    const { list, score } = scoreOf(match.keywords);
+    $("[data-score]").textContent = `${score} % Übereinstimmung`;
+    $("[data-score-bar]").style.width = score + "%";
+    $("[data-score-bar]").style.background = score >= 70 ? "#16a34a" : score >= 45 ? "#d97706" : "#dc2626";
+    $("[data-role]").textContent = [match.role, match.company].filter(Boolean).join(" · ");
+    const ul = $("[data-kws]");
+    ul.textContent = "";
+    for (const k of list) {
+      const li = h("li", { class: "cv-kw" + (k.found ? " is-found" : "") + (k.must ? " is-must" : ""), title: k.must ? "Gefordert" : "Wünschenswert" }, (k.found ? "✓ " : "") + k.term);
+      if (!k.found)
+        li.append(h("button", { type: "button", class: "cv-kw__add", title: "Zu den Kenntnissen hinzufügen", onclick: () => addSkill(k.term) }, "+"));
+      ul.append(li);
+    }
+  }
+  function addSkill(term) {
+    if (!confirm(`„${term}“ zu deinen Kenntnissen hinzufügen?\n\nBitte nur, wenn du das wirklich kannst – im Vorstellungsgespräch wird danach gefragt.`)) return;
+    let sec = data.sections.find((x) => x.type === "skills");
+    if (!sec) data.sections.push((sec = { type: "skills", items: [] }));
+    let row = sec.items.find((i) => /^(weitere|sonstige|other)/i.test(i.label || "")) || sec.items.find((i) => !i.label && !i.value);
+    if (!row) sec.items.push((row = { label: data.lang === "en" ? "Other" : "Weitere", value: "" }));
+    if (!row.label && !row.value) row.label = data.lang === "en" ? "Other" : "Weitere";
+    row.value = [row.value, term].filter(Boolean).join(", ");
+    renderForm();
+    changed();
+    drawMatch();
+  }
+  $("[data-open-match]").addEventListener("click", () => {
+    adBox.value = data.jobAd || "";
+    showError("");
+    matchDlg.showModal();
+  });
+  adBox.addEventListener("input", () => { data.jobAd = adBox.value; save(); });
+  let pickMatch = () => [];
+  let matchFields = [];
+  $("[data-run-match]").addEventListener("click", async (ev) => {
+    const btn = ev.currentTarget;
+    const status = $("[data-match-status]");
+    btn.disabled = true;
+    status.textContent = "Die Anzeige wird analysiert … (ca. 20 Sekunden)";
+    try {
+      matchFields = textFields();
+      const j = await aiPost("/api/ai/cv-match", { ad: adBox.value, items: matchFields.map(({ id, text }) => ({ id, text })), cvText: cvText() });
+      match = j;
+      $("[data-match-result]").hidden = false;
+      drawMatch();
+      const tips = $("[data-tips]");
+      tips.textContent = "";
+      j.tips.forEach((t) => tips.append(h("li", {}, t)));
+      $("[data-changes-title]").textContent = j.changes.length ? "Vorgeschlagene Änderungen" : "Keine Textänderungen nötig";
+      pickMatch = changeList($("[data-match-changes]"), j.changes);
+      $("[data-apply-match]").hidden = !j.changes.length;
+      status.textContent = "";
+    } catch (e) {
+      status.textContent = "";
+      fail(e, status);
+      status.hidden = false;
+    } finally {
+      btn.disabled = false;
     }
   });
+  matchDlg.addEventListener("close", () => {
+    if (matchDlg.returnValue === "ok") applyChanges(matchFields, pickMatch());
+    matchDlg.returnValue = "";
+  });
+
+  // ---------------------------------------------------------------- Anschreiben
+  const letterDlg = $("[data-letter]");
+  const L = () => (data.letter = data.letter || {});
+  const lf = (k) => letterDlg.querySelector(`[data-l="${k}"]`);
+  function letterData() {
+    const l = L();
+    return {
+      template: data.template,
+      accent: data.accent,
+      person: data.person,
+      letter: { recipient: l.recipient, date: l.date, subject: l.subject, salutation: l.salutation, closing: l.closing, paragraphs: String(l.body || "").split(/\n\s*\n/).map((x) => x.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean) },
+    };
+  }
+  let lTimer;
+  async function letterPreview() {
+    try {
+      const res = await fetch("/api/cv/letter", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: letterData(), preview: true }) });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error);
+      const box = $("[data-letter-preview]");
+      box.textContent = "";
+      j.pages.forEach((src) => box.append(h("img", { src, alt: "Vorschau Anschreiben", class: "cv-page" })));
+    } catch {
+      /* Vorschau ist nur Komfort */
+    }
+  }
+  letterDlg.querySelectorAll("[data-l]").forEach((el) =>
+    el.addEventListener("input", () => {
+      L()[el.dataset.l] = el.value;
+      save();
+      clearTimeout(lTimer);
+      lTimer = setTimeout(letterPreview, 600);
+    })
+  );
+  $("[data-open-letter]").addEventListener("click", () => {
+    const l = L();
+    if (!l.date) l.date = `${data.person.location || ""}${data.person.location ? ", " : ""}${new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`;
+    if (!l.closing) l.closing = data.lang === "en" ? "Kind regards" : "Mit freundlichen Grüßen";
+    for (const k of ["recipient", "notes", "date", "subject", "salutation", "body", "closing"]) lf(k).value = l[k] || "";
+    $("[data-letter-error]").hidden = true;
+    letterDlg.showModal();
+    letterPreview();
+  });
+  $("[data-run-letter]").addEventListener("click", async (ev) => {
+    const btn = ev.currentTarget;
+    const status = $("[data-letter-status]");
+    if (!(data.jobAd || "").trim()) {
+      status.textContent = "Füge zuerst unter „An Stellenanzeige anpassen“ die Stellenanzeige ein.";
+      return;
+    }
+    if ((lf("body").value || "").trim() && !confirm("Der bisherige Text des Anschreibens wird ersetzt. Fortfahren?")) return;
+    btn.disabled = true;
+    status.textContent = "Das Anschreiben wird geschrieben … (ca. 20 Sekunden)";
+    try {
+      const rec = (L().recipient || "").split("\n").map((x) => x.trim()).filter(Boolean);
+      const contact = rec.find((x) => /^(frau|herr|mr|ms|mrs)\b/i.test(x)) || "";
+      const j = await aiPost("/api/ai/cv-letter", { ad: data.jobAd, cvText: cvText(), notes: L().notes || "", contact });
+      Object.assign(L(), { subject: j.subject, salutation: j.salutation, body: j.paragraphs.join("\n\n"), closing: j.closing });
+      for (const k of ["subject", "salutation", "body", "closing"]) lf(k).value = L()[k] || "";
+      save();
+      letterPreview();
+      status.textContent = "Entwurf fertig – lies ihn in Ruhe durch und passe ihn an dich an.";
+    } catch (e) {
+      status.textContent = "";
+      fail(e, status);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $("[data-letter-pdf]").addEventListener("click", async () => {
+    const err = $("[data-letter-error]");
+    err.hidden = true;
+    try {
+      const res = await fetch("/api/cv/letter", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data: letterData() }) });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Die PDF konnte nicht erstellt werden.");
+      const n = (data.person.name || "").trim().replace(/\s+/g, "_").replace(/[^\p{L}\p{N}_-]/gu, "");
+      const a = h("a", { href: URL.createObjectURL(await res.blob()), download: n ? `Anschreiben_${n}.pdf` : "Anschreiben.pdf" });
+      document.body.append(a);
+      a.click();
+      a.remove();
+    } catch (e) {
+      fail(e, err);
+    }
+  });
+
+  // ---------------------------------------------------------------- Übersetzen
+  function translateLabel() {
+    $("[data-translate]").firstChild.textContent = data.lang === "en" ? "Auf Deutsch übersetzen" : "Auf Englisch übersetzen";
+  }
+  $("[data-translate]").addEventListener("click", async (ev) => {
+    const target = data.lang === "en" ? "de" : "en";
+    const fields = textFields();
+    // auch Kenntnisse/Sprachen und Überschriften übersetzen
+    data.sections.forEach((sec, si) => {
+      if (sec.hidden) return;
+      if (sec.title) fields.push({ id: `s${si}.title`, obj: sec, key: "title", text: sec.title });
+      if (sec.type === "skills" || sec.type === "languages")
+        (sec.items || []).forEach((it, ii) => {
+          if (it.label) fields.push({ id: `s${si}.i${ii}.label`, obj: it, key: "label", text: it.label });
+          if (it.value) fields.push({ id: `s${si}.i${ii}.value`, obj: it, key: "value", text: it.value });
+        });
+      if (["experience", "education", "projects"].includes(sec.type)) (sec.items || []).forEach((it, ii) => it.place && fields.push({ id: `s${si}.i${ii}.place`, obj: it, key: "place", text: it.place }));
+    });
+    if (!fields.length) return showError("Es gibt noch keinen Text zum Übersetzen.");
+    if (!confirm(`Lebenslauf ${target === "en" ? "ins Englische" : "ins Deutsche"} übersetzen?\n\nTipp: Speichere vorher mit „Entwurf speichern“ die aktuelle Fassung, damit du beide Versionen hast.`)) return;
+    const btn = ev.currentTarget;
+    btn.disabled = true;
+    notice("Der Lebenslauf wird übersetzt … (ca. 20–40 Sekunden)", "busy");
+    try {
+      const j = await aiPost("/api/ai/cv-translate", { items: fields.map(({ id, text }) => ({ id, text })), lang: target });
+      const byId = new Map(fields.map((f) => [f.id, f]));
+      for (const it of j.items) {
+        const f = byId.get(it.id);
+        if (f && it.text.trim()) f.obj[f.key] = it.text.trim();
+      }
+      data.lang = target;
+      renderForm();
+      changed();
+      translateLabel();
+      notice("Übersetzt. Bitte lies den Lebenslauf einmal komplett durch.", "ok");
+    } catch (e) {
+      notice("", "");
+      fail(e);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $("[data-lang]").addEventListener("change", translateLabel);
+  translateLabel();
 
   // Entwurf als eigene Datei speichern – getrennt vom Lebenslauf, der an Firmen geht
   $("[data-save-draft]").addEventListener("click", () => {

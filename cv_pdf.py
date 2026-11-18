@@ -291,6 +291,61 @@ def cmd_render(src, dst, preview=False):
     return 0
 
 
+def letter_html(d):
+    """Anschreiben im Stil des Lebenslaufs (gleiche Schrift, Farbe und Kopfzeile)."""
+    p = d.get("person") or {}
+    contact = [e(p.get(k)) for k in ("email", "phone", "location")]
+    contact = [c for c in contact if c]
+    L = d.get("letter") or {}
+    rec = "<br/>".join(e(l) for l in str(L.get("recipient") or "").splitlines() if l.strip())
+    paras = "".join(f'<p class="lp">{e(x)}</p>' for x in (L.get("paragraphs") or []) if str(x).strip())
+    return (
+        f'<h1>{e(p.get("name")) or "&nbsp;"}</h1>'
+        + (f'<p class="contact">{" &nbsp;·&nbsp; ".join(contact)}</p>' if contact else "")
+        + f'<div class="rec">{rec or "&nbsp;"}</div>'
+        + f'<p class="date">{e(L.get("date"))}</p>'
+        + (f'<p class="subject"><b>{e(L.get("subject"))}</b></p>' if L.get("subject") else "")
+        + f'<p class="lp">{e(L.get("salutation"))}</p>{paras}'
+        + f'<p class="lp">{e(L.get("closing") or "Mit freundlichen Grüßen")}</p>'
+        + f'<p class="sign">{e(p.get("name"))}</p>'
+    )
+
+
+def cmd_letter(src, dst, preview=False):
+    with open(src, encoding="utf-8") as fh:
+        d = json.load(fh)
+    tpl = d.get("template") if d.get("template") in FONTS else "modern"
+    accent = color(d.get("accent"), {"modern": "#1f4fa3", "akademisch": "#2b4c7e"}.get(tpl, "#2b4c7e"))
+    css = build_css(tpl, accent) + """
+.contact { border-bottom: 0.6px solid #bbb; padding-bottom: 6px; }
+.rec { margin: 36px 0 26px 0; min-height: 60px; }
+.date { text-align: right; margin-bottom: 18px; }
+.subject { margin-bottom: 16px; }
+.lp { margin-bottom: 10px; }
+.sign { margin-top: 28px; }
+"""
+    story = pymupdf.Story(html=f"<body>{letter_html(d)}</body>", user_css=css, archive=pymupdf.Archive(FONT_DIR))
+    out = io.BytesIO()
+    writer = pymupdf.DocumentWriter(out)
+    page = pymupdf.paper_rect("a4")
+    where = page + (64, 50, -64, -56)
+    more, n = 1, 0
+    while more and n < 3:
+        dev = writer.begin_page(page)
+        more, _ = story.place(where)
+        story.draw(dev)
+        writer.end_page()
+        n += 1
+    writer.close()
+    doc = pymupdf.open("pdf", out.getvalue())
+    name = str((d.get("person") or {}).get("name") or "").strip()
+    doc.set_metadata({"title": f"Anschreiben {name}".strip(), "author": name, "creator": "PDF Libre – Anschreiben", "producer": "PDF Libre"})
+    doc.save(dst, garbage=3, deflate=True)
+    if preview:
+        print(json.dumps({"pages": ["data:image/png;base64," + base64.b64encode(pg.get_pixmap(dpi=96).tobytes("png")).decode() for pg in doc]}))
+    return 0
+
+
 def cmd_extract(src):
     doc = pymupdf.open(src)
     if DATA_NAME in doc.embfile_names():
@@ -304,6 +359,8 @@ if __name__ == "__main__":
     c = sys.argv[1]
     if c == "render":
         sys.exit(cmd_render(sys.argv[2], sys.argv[3], "--preview" in sys.argv))
+    if c == "letter":
+        sys.exit(cmd_letter(sys.argv[2], sys.argv[3], "--preview" in sys.argv))
     if c == "extract":
         sys.exit(cmd_extract(sys.argv[2]))
     sys.exit(2)

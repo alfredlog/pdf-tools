@@ -698,6 +698,20 @@ module.exports = [
         ],
       },
       {
+        h: "Lebenslauf an die Stellenanzeige anpassen – mit Trefferquote",
+        p: [
+          "Füge unter „An Stellenanzeige anpassen“ den Text einer Stellenanzeige ein. Die KI liest die Anforderungen heraus – zum Beispiel Programmiersprachen, Tools, Abschlüsse und Sprachkenntnisse – und zeigt dir, welche davon dein Lebenslauf schon abdeckt. Daraus ergibt sich eine Trefferquote in Prozent, so wie ein ATS sie ähnlich berechnet. Fehlende Begriffe kannst du mit einem Klick zu deinen Kenntnissen hinzufügen – aber bitte nur, wenn du sie wirklich beherrschst.",
+          "Zusätzlich schlägt die KI vor, wie du deine Titelzeile, dein Kurzprofil und deine Stationen so formulierst, dass die passende Erfahrung sofort ins Auge fällt. Erfundene Angaben sind ausgeschlossen: Vorschläge mit Zahlen, die nicht in deinem Lebenslauf stehen, werden automatisch verworfen.",
+        ],
+      },
+      {
+        h: "Anschreiben im gleichen Design – selbst schreiben oder mit KI",
+        p: [
+          "Zum Lebenslauf gehört meist ein Anschreiben. Unter „Anschreiben erstellen“ setzt PDF Libre deinen Brief in dieselbe Schrift und Farbe wie den Lebenslauf – mit Empfängeradresse, Ort und Datum, Betreff und Grußformel. Du kannst den Text selbst schreiben oder die KI einen Entwurf aus deinem Lebenslauf und der Stellenanzeige schreiben lassen und ihn dann persönlich anpassen.",
+          "Und wenn du dich international bewirbst, übersetzt die KI deinen ganzen Lebenslauf mit einem Klick ins Englische – oder zurück ins Deutsche.",
+        ],
+      },
+      {
         h: "Lebenslauf mit oder ohne Foto?",
         p: [
           "Ein Bewerbungsfoto ist in Deutschland freiwillig. Viele Arbeitgeber und ATS-Systeme bevorzugen Lebensläufe ohne Foto, um fair auszuwählen; in manchen Branchen ist ein professionelles Foto aber weiterhin üblich. Mit PDF Libre entscheidest du selbst: Foto hinzufügen oder einfach weglassen.",
@@ -719,6 +733,8 @@ module.exports = [
       ["Enthält die PDF versteckte Daten?", "Nein. Die PDF für deine Bewerbung enthält nur den sichtbaren Lebenslauf – keine Anhänge und keine ausgeblendeten Abschnitte."],
       ["Werden meine Daten gespeichert?", "Nein. Deine Angaben werden nur zum Erstellen der PDF an den Server geschickt und sofort wieder gelöscht. Der Entwurf liegt ausschließlich in deinem Browser."],
       ["Kann ich meinen alten Lebenslauf übernehmen?", "Ja. Über „Lebenslauf importieren“ lädst du eine PDF oder Word-Datei hoch; die KI überträgt alle Angaben ins Formular. Prüfe danach kurz, ob alles richtig zugeordnet ist."],
+      ["Erfindet die KI Erfahrungen oder Kenntnisse?", "Nein. Sie formuliert nur um, was in deinem Lebenslauf steht. Vorschläge mit neuen Zahlen werden automatisch aussortiert, und du bestätigst jede Änderung einzeln."],
+      ["Wie funktioniert die Trefferquote?", "Die KI liest die Anforderungen aus der Stellenanzeige. Dann wird geprüft, welche davon in deinem Lebenslauf vorkommen; geforderte Punkte zählen doppelt. Die Quote aktualisiert sich sofort, wenn du etwas ergänzt."],
       ["Verändert die Rechtschreibprüfung meine Inhalte?", "Nein. Sie korrigiert nur Rechtschreibung, Grammatik und Zeichensetzung. Du siehst jede Änderung vorher und entscheidest selbst."],
       ["Wie füge ich Anschreiben und Zeugnisse hinzu?", "Lade den fertigen Lebenslauf zusammen mit Anschreiben und Zeugnissen in „Bewerbungsmappe erstellen“ – dort wird alles zu einer PDF zusammengefügt."],
     ],
