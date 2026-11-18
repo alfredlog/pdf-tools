@@ -55,6 +55,10 @@ function setFreeMode() {
 // Icons
 // ---------------------------------------------------------------------------
 const GLYPHS = {
+  ocr: '<path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><path d="M8 9h8M8 12h8M8 15h5"/>',
+  redact: '<path d="M5 6h9M5 18h11"/><rect x="5" y="9.5" width="14" height="5" rx="1" fill="#fff"/>',
+  archive: '<rect x="4" y="5" width="16" height="4" rx="1"/><path d="M5.5 9v9.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V9M10 13h4"/>',
+  phone: '<rect x="7" y="3.5" width="10" height="17" rx="2"/><circle cx="12" cy="10.5" r="2.5"/><path d="M11 17.5h2"/>',
   einvoiceView: '<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/>',
   einvoiceCheck: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',
   merge: '<path d="M7 5v4a3 3 0 0 0 3 3h4a3 3 0 0 1 3 3v4M17 5v4a3 3 0 0 1-3 3"/><path d="m14 16 3 3 3-3"/>',

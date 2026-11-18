@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="/assets/style.css?v=4145bb68">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"PDF Libre","url":"https://pdf-libre.de/","inLanguage":"de-DE"}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"PDF Libre","url":"https://pdf-libre.de/","logo":"https://pdf-libre.de/apple-touch-icon.png"}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist PDF Libre kostenlos?","acceptedAnswer":{"@type":"Answer","text":"Ja. Alle 28 Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt."}},{"@type":"Question","name":"Was passiert mit meinen Dateien?","acceptedAnswer":{"@type":"Answer","text":"Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."}},{"@type":"Question","name":"Brauche ich ein Programm oder eine App?","acceptedAnswer":{"@type":"Answer","text":"Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."}},{"@type":"Question","name":"Wie groß dürfen meine Dateien sein?","acceptedAnswer":{"@type":"Answer","text":"Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist PDF Libre kostenlos?","acceptedAnswer":{"@type":"Answer","text":"Ja. Alle 32 Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt."}},{"@type":"Question","name":"Was passiert mit meinen Dateien?","acceptedAnswer":{"@type":"Answer","text":"Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."}},{"@type":"Question","name":"Brauche ich ein Programm oder eine App?","acceptedAnswer":{"@type":"Answer","text":"Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."}},{"@type":"Question","name":"Wie groß dürfen meine Dateien sein?","acceptedAnswer":{"@type":"Answer","text":"Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt."}}]}</script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
   gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
   gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);</script>
@@ -61,11 +61,11 @@
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--edit">Bearbeiten &amp; Unterschreiben</p>
-          <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/sign.html">PDF unterschreiben</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
+          <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/sign.html">PDF unterschreiben</a></li><li><a href="/ocr.html">PDF durchsuchbar machen (OCR)</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--topdf">In PDF umwandeln</p>
-          <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li></ul>
+          <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li><li><a href="/heic-to-pdf.html">HEIC in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li><li><a href="/pdfa.html">PDF in PDF/A umwandeln</a></li></ul>
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--frompdf">Aus PDF umwandeln</p>
@@ -77,7 +77,7 @@
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--security">Sicherheit</p>
-          <ul><li><a href="/protect.html">PDF schützen</a></li><li><a href="/unlock.html">PDF entsperren</a></li></ul>
+          <ul><li><a href="/protect.html">PDF schützen</a></li><li><a href="/redact.html">PDF schwärzen</a></li><li><a href="/unlock.html">PDF entsperren</a></li></ul>
         </div>
         <div class="mega__col">
           <p class="mega__cat mega__cat--erechnung">E-Rechnung</p>
@@ -246,6 +246,17 @@
         </a>
       </li>
       <li class="tcard" data-cat="edit">
+        <a href="/ocr.html">
+          <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+<path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
+<path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
+<g transform="translate(10 17) scale(1)" class="ficon__glyph"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><path d="M8 9h8M8 12h8M8 15h5"/></g>
+</svg>
+          <span class="tcard__name">PDF durchsuchbar machen (OCR) <span class="new-badge">Neu</span></span>
+          <span class="tcard__text">Gescannte PDFs mit Texterkennung durchsuchbar und kopierbar machen.</span>
+        </a>
+      </li>
+      <li class="tcard" data-cat="edit">
         <a href="/create.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -306,6 +317,17 @@
         </a>
       </li>
       <li class="tcard" data-cat="to-pdf">
+        <a href="/heic-to-pdf.html">
+          <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+<path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
+<path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
+<g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="7" y="3.5" width="10" height="17" rx="2"/><circle cx="12" cy="10.5" r="2.5"/><path d="M11 17.5h2"/></g>
+</svg>
+          <span class="tcard__name">HEIC in PDF <span class="new-badge">Neu</span></span>
+          <span class="tcard__text">iPhone-Fotos (HEIC) und andere Bilder in eine PDF umwandeln.</span>
+        </a>
+      </li>
+      <li class="tcard" data-cat="to-pdf">
         <a href="/excel-to-pdf.html">
           <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -325,6 +347,17 @@
 </svg>
           <span class="tcard__name">PowerPoint in PDF</span>
           <span class="tcard__text">Präsentationen als PDF speichern und teilen.</span>
+        </a>
+      </li>
+      <li class="tcard" data-cat="to-pdf">
+        <a href="/pdfa.html">
+          <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+<path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
+<path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
+<g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="4" y="5" width="16" height="4" rx="1"/><path d="M5.5 9v9.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V9M10 13h4"/></g>
+</svg>
+          <span class="tcard__name">PDF in PDF/A umwandeln <span class="new-badge">Neu</span></span>
+          <span class="tcard__text">Archivtaugliche PDF/A für Behörden, Gerichte und die digitale Ablage.</span>
         </a>
       </li>
     </ul>
@@ -420,6 +453,17 @@
         </a>
       </li>
       <li class="tcard" data-cat="security">
+        <a href="/redact.html">
+          <svg class="ficon ficon--security" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+<path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
+<path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
+<g transform="translate(10 17) scale(1)" class="ficon__glyph"><path d="M5 6h9M5 18h11"/><rect x="5" y="9.5" width="14" height="5" rx="1" fill="#fff"/></g>
+</svg>
+          <span class="tcard__name">PDF schwärzen <span class="new-badge">Neu</span></span>
+          <span class="tcard__text">Namen, IBAN, E-Mail und Telefonnummern endgültig unkenntlich machen.</span>
+        </a>
+      </li>
+      <li class="tcard" data-cat="security">
         <a href="/unlock.html">
           <svg class="ficon ficon--security" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -495,7 +539,7 @@
   <h2 id="faq-title">Häufige Fragen</h2>
   <details>
     <summary>Ist PDF Libre kostenlos?</summary>
-    <p>Ja. Alle 28 Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.</p>
+    <p>Ja. Alle 32 Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.</p>
   </details>
   <details>
     <summary>Was passiert mit meinen Dateien?</summary>
@@ -516,7 +560,7 @@
     <div class="site-footer__grid">
       <div class="site-footer__about">
         <a href="/" class="brand brand--footer"><svg class="brand__mark" viewBox="0 0 32 36" aria-hidden="true"><path d="M3 2h17l9 9v22a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M20 2v8a1 1 0 0 0 1 1h8Z" fill="#fff" opacity=".45"/><path d="M9 25V14h4.5a3.5 3.5 0 0 1 0 7H9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>PDF Libre</span></a>
-        <p>28 kostenlose PDF-Werkzeuge ohne Anmeldung. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <p>32 kostenlose PDF-Werkzeuge ohne Anmeldung. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
       </div>
       <div>
         <p class="site-footer__head">Zusammenfügen &amp; Organisieren</p>
@@ -528,11 +572,11 @@
       </div>
       <div>
         <p class="site-footer__head">Bearbeiten &amp; Unterschreiben</p>
-        <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/sign.html">PDF unterschreiben</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
+        <ul><li><a href="/edit.html">PDF bearbeiten</a></li><li><a href="/sign.html">PDF unterschreiben</a></li><li><a href="/ocr.html">PDF durchsuchbar machen (OCR)</a></li><li><a href="/create.html">PDF erstellen</a></li><li><a href="/page-numbers.html">Seitenzahlen einfügen</a></li><li><a href="/watermark.html">Wasserzeichen</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">In PDF umwandeln</p>
-        <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li></ul>
+        <ul><li><a href="/docx-to-pdf.html">Word in PDF</a></li><li><a href="/jpg-to-pdf.html">Bilder in PDF</a></li><li><a href="/heic-to-pdf.html">HEIC in PDF</a></li><li><a href="/excel-to-pdf.html">Excel in PDF</a></li><li><a href="/ppt-to-pdf.html">PowerPoint in PDF</a></li><li><a href="/pdfa.html">PDF in PDF/A umwandeln</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">Aus PDF umwandeln</p>
@@ -544,7 +588,7 @@
       </div>
       <div>
         <p class="site-footer__head">Sicherheit</p>
-        <ul><li><a href="/protect.html">PDF schützen</a></li><li><a href="/unlock.html">PDF entsperren</a></li></ul>
+        <ul><li><a href="/protect.html">PDF schützen</a></li><li><a href="/redact.html">PDF schwärzen</a></li><li><a href="/unlock.html">PDF entsperren</a></li></ul>
       </div>
       <div>
         <p class="site-footer__head">E-Rechnung</p>

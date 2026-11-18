@@ -22,11 +22,11 @@ const categories = [
 const ORDER = [
   "merge", "bewerbungsmappe", "split", "organize", "rotate", "remove-pages", "extract-pages",
   "compress", "merge-compress",
-  "edit", "sign", "create", "page-numbers", "watermark",
-  "docx-to-pdf", "jpg-to-pdf", "excel-to-pdf", "ppt-to-pdf",
+  "edit", "sign", "ocr", "create", "page-numbers", "watermark",
+  "docx-to-pdf", "jpg-to-pdf", "heic-to-pdf", "excel-to-pdf", "ppt-to-pdf", "pdfa",
   "pdf-to-docx", "pdf-to-excel", "pdf-to-powerpoint", "pdf-to-jpg",
   "summarize", "translate",
-  "protect", "unlock",
+  "protect", "redact", "unlock",
   "xrechnung-anzeigen", "e-rechnung-pruefen",
 ];
 

@@ -120,6 +120,7 @@ const EXT = {
   excel: [".xls", ".xlsx", ".ods", ".csv"],
   mappe: [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx", ".odt", ".rtf"],
   einvoice: [".xml", ".pdf"],
+  photos: [".heic", ".heif", ".jpg", ".jpeg", ".png", ".webp"],
 };
 
 function uploader(kind, { multiple = false } = {}) {
@@ -454,6 +455,132 @@ api.post(
       throw e;
     }
     await sendFile(res, out, outName(file.originalname, "", ".xlsx"));
+  })
+);
+
+// Weitere Werkzeuge (pdf_more.py): OCR, Schwärzen, Fotos/HEIC → PDF; PDF/A mit Ghostscript ----
+const MORE = path.join(__dirname, "pdf_more.py");
+const PW_ERR = "Diese PDF ist passwortgeschützt. Entsperre sie zuerst mit „PDF entsperren“.";
+
+api.post(
+  "/ocr",
+  uploader("pdf"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    const out = path.join(req.jobDir, "out.pdf");
+    const langs = { deu: "deu+eng", eng: "eng", fra: "fra+eng", mix: "deu+eng+fra" };
+    try {
+      await run(PYTHON, [MORE, "ocr", file.path, out, langs[req.body.lang] || "deu+eng"]);
+    } catch (e) {
+      const err = e.stderr || "";
+      if (/password/.test(err)) throw new UserError(PW_ERR);
+      if (/already-text/.test(err)) throw new UserError("Diese PDF enthält bereits Text – sie ist schon durchsuchbar. Texterkennung ist nur für gescannte Seiten nötig.");
+      if (/ocr-missing/.test(err)) throw new UserError("Die Texterkennung ist auf dem Server gerade nicht eingerichtet.", 503);
+      throw e;
+    }
+    await sendFile(res, out, outName(file.originalname, "_durchsuchbar", ".pdf"));
+  })
+);
+
+api.post(
+  "/redact",
+  uploader("pdf"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    const terms = String(req.body.terms || "")
+      .split(/[\n,;]+/)
+      .map((t) => t.trim())
+      .filter((t) => t.length >= 2)
+      .slice(0, 50);
+    const presets = req.body.auto === "no" ? [] : ["email", "phone", "iban"];
+    if (!terms.length && !presets.length) throw new UserError("Gib mindestens einen Begriff ein, der geschwärzt werden soll.");
+    const optsFile = path.join(req.jobDir, "redact.json");
+    await fsp.writeFile(optsFile, JSON.stringify({ terms, presets }));
+    const out = path.join(req.jobDir, "out.pdf");
+    try {
+      await run(PYTHON, [MORE, "redact", file.path, out, optsFile]);
+    } catch (e) {
+      const err = e.stderr || "";
+      if (/password/.test(err)) throw new UserError(PW_ERR);
+      if (/nothing-found/.test(err)) throw new UserError("Nichts gefunden: Keiner der Begriffe kommt als Text in der PDF vor. Bei gescannten Dokumenten zuerst „PDF durchsuchbar machen“ (OCR) verwenden.");
+      throw e;
+    }
+    await sendFile(res, out, outName(file.originalname, "_geschwaerzt", ".pdf"));
+  })
+);
+
+api.post(
+  "/photos-to-pdf",
+  uploader("photos", { multiple: true }),
+  wrap(async (req, res) => {
+    const files = requireFiles(req);
+    const out = path.join(req.jobDir, "out.pdf");
+    try {
+      await run(PYTHON, [MORE, "images", out, ...files.map((f) => f.path)]);
+    } catch (e) {
+      if (/missing-module/.test(e.stderr || "")) throw new UserError("HEIC-Fotos werden auf dem Server gerade nicht unterstützt.", 503);
+      if (/cannot identify image|UnidentifiedImageError/.test(e.stderr || "")) throw new UserError("Eines der Bilder konnte nicht gelesen werden.");
+      throw e;
+    }
+    await sendFile(res, out, outName(files[0].originalname, "", ".pdf"));
+  })
+);
+
+// PDF/A für Behörden, Gerichte und Archivierung: Ghostscript mit sRGB-Farbprofil
+let srgbIcc = null;
+async function srgbProfile() {
+  if (srgbIcc && fs.existsSync(srgbIcc)) return srgbIcc;
+  const file = path.join(TMP_ROOT, "srgb.icc");
+  if (!fs.existsSync(file)) {
+    await fsp.mkdir(TMP_ROOT, { recursive: true });
+    await run(PYTHON, ["-c", "import sys; from PIL import ImageCms; open(sys.argv[1],'wb').write(ImageCms.ImageCmsProfile(ImageCms.createProfile('sRGB')).tobytes())", file]);
+  }
+  return (srgbIcc = file);
+}
+
+api.post(
+  "/pdfa",
+  uploader("pdf"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    const level = req.body.level === "1" ? "1" : req.body.level === "3" ? "3" : "2";
+    const icc = await srgbProfile();
+    const def = path.join(req.jobDir, "PDFA_def.ps");
+    await fsp.writeFile(
+      def,
+      `%!
+[/_objdef {icc_PDFA} /type /stream /OBJ pdfmark
+[{icc_PDFA} <</N 3>> /PUT pdfmark
+[{icc_PDFA} (${icc}) (r) file /PUT pdfmark
+[/_objdef {OutputIntent_PDFA} /type /dict /OBJ pdfmark
+[{OutputIntent_PDFA} << /Type /OutputIntent /S /GTS_PDFA1 /DestOutputProfile {icc_PDFA} /OutputConditionIdentifier (sRGB) /Info (sRGB IEC61966-2.1) >> /PUT pdfmark
+[{Catalog} <</OutputIntents [ {OutputIntent_PDFA} ]>> /PUT pdfmark
+`
+    );
+    const out = path.join(req.jobDir, "out.pdf");
+    try {
+      await run(GS, [
+        `-dPDFA=${level}`,
+        "-dBATCH",
+        "-dNOPAUSE",
+        "-dQUIET",
+        "-dSAFER",
+        `--permit-file-read=${icc}`,
+        "-dNOOUTERSAVE",
+        "-sColorConversionStrategy=RGB",
+        "-sProcessColorModel=DeviceRGB",
+        "-dPDFACompatibilityPolicy=1",
+        "-dAutoRotatePages=/None",
+        "-sDEVICE=pdfwrite",
+        `-sOutputFile=${out}`,
+        def,
+        file.path,
+      ]);
+    } catch (e) {
+      if (/password|Encrypt/i.test(e.stderr || "")) throw new UserError(PW_ERR);
+      throw e;
+    }
+    await sendFile(res, out, outName(file.originalname, `_PDFA-${level}b`, ".pdf"));
   })
 );
 

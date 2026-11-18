@@ -396,4 +396,256 @@ module.exports = [
       faq: { 0: ["Was kostet die Übersetzung?", "Nichts. PDF übersetzen ist kostenlos und ohne Anmeldung nutzbar (mit einer fairen Begrenzung pro Stunde)."] },
     },
   },
+  // ------------------------------------------------------------------ OCR
+  {
+    slug: "ocr",
+    name: "PDF durchsuchbar machen (OCR)",
+    short: "Gescannte PDFs mit Texterkennung durchsuchbar und kopierbar machen.",
+    cat: "edit",
+    isNew: true,
+    badge: "OCR",
+    glyph: "ocr",
+    title: "OCR online: PDF durchsuchbar machen – Texterkennung kostenlos | PDF Libre",
+    description:
+      "Gescannte PDF durchsuchbar machen: Die OCR-Texterkennung erkennt den Text in Scans und Fotos – danach kannst du suchen, markieren und kopieren. Deutsch, Englisch, Französisch. Kostenlos, ohne Anmeldung.",
+    h1: "PDF durchsuchbar machen – OCR-Texterkennung",
+    lead: "Aus einem Scan wird eine PDF, in der du mit Strg+F suchen und Text kopieren kannst. Das Aussehen der Seiten bleibt genau gleich.",
+    ui: {
+      mode: "server",
+      endpoint: "/api/ocr",
+      input: PDF,
+      action: "Text erkennen",
+      dropHint: "Gescannte PDF, bis zu 50 MB",
+      options: [
+        {
+          type: "select",
+          name: "lang",
+          label: "Sprache des Dokuments",
+          choices: [
+            { value: "deu", label: "Deutsch (und Englisch)" },
+            { value: "eng", label: "Englisch" },
+            { value: "fra", label: "Französisch (und Englisch)" },
+            { value: "mix", label: "Gemischt: Deutsch, Englisch, Französisch" },
+          ],
+        },
+      ],
+    },
+    steps: [
+      ["Scan hochladen", "Wähle die gescannte PDF aus – zum Beispiel einen Vertrag, ein Zeugnis, einen Brief oder eine Rechnung."],
+      ["Sprache wählen", "Wähle die Sprache des Dokuments. So erkennt die Texterkennung Umlaute und Sonderzeichen richtig."],
+      ["Durchsuchbare PDF herunterladen", "Die Seiten sehen genauso aus wie vorher, enthalten jetzt aber eine unsichtbare Textebene zum Suchen und Kopieren."],
+    ],
+    article: [
+      {
+        h: "Was ist OCR?",
+        p: [
+          "OCR steht für „Optical Character Recognition“, auf Deutsch Texterkennung. Ein Scan oder ein Handyfoto ist für den Computer nur ein Bild – man kann darin nicht suchen und keinen Text kopieren. Die OCR erkennt die Buchstaben im Bild und legt den erkannten Text unsichtbar über die Seite. So bleibt das Original unverändert, und trotzdem funktionieren Suche, Markieren und Kopieren.",
+        ],
+      },
+      {
+        h: "Wofür braucht man eine durchsuchbare PDF?",
+        p: [
+          "Für das papierlose Büro und die digitale Ablage, um in alten Verträgen, Kontoauszügen und Briefen schnell eine Stelle zu finden, um Text aus einem Scan in Word zu übernehmen, und weil viele Behörden, Steuerberater und Bewerbungsportale durchsuchbare PDFs bevorzugen. Auch Screenreader können nur PDFs mit Textebene vorlesen – OCR macht Dokumente also barrierefreier.",
+        ],
+      },
+      {
+        h: "Tipps für eine gute Texterkennung",
+        p: [
+          "Scanne mit mindestens 300 dpi, gerade und ohne Schatten. Bei Handyfotos hilft gutes Tageslicht. Handschrift wird nur eingeschränkt erkannt; gedruckter Text in Deutsch, Englisch und Französisch funktioniert sehr zuverlässig. Seiten, die schon Text enthalten, werden nicht verändert.",
+        ],
+      },
+    ],
+    faq: [
+      ["Verändert die OCR das Aussehen meiner PDF?", "Nein. Die Seiten bleiben Bild für Bild gleich. Es kommt nur eine unsichtbare Textebene dazu."],
+      ["Kann ich danach Text in Word kopieren?", "Ja. Markiere den Text in deinem PDF-Programm und kopiere ihn, oder wandle die durchsuchbare PDF mit „PDF in Word“ um."],
+      ["Welche Sprachen werden erkannt?", "Deutsch, Englisch und Französisch – auch gemischt in einem Dokument."],
+      ["Wird Handschrift erkannt?", "Nur eingeschränkt. Die Texterkennung ist für gedruckten Text gemacht."],
+      ["Was passiert mit meinem Dokument?", "Es wird verschlüsselt übertragen, verarbeitet und direkt danach gelöscht."],
+    ],
+    related: ["redact", "pdf-to-docx", "compress", "pdfa"],
+  },
+
+  // ------------------------------------------------------------------ SCHWÄRZEN
+  {
+    slug: "redact",
+    name: "PDF schwärzen",
+    short: "Namen, IBAN, E-Mail und Telefonnummern endgültig unkenntlich machen.",
+    cat: "security",
+    isNew: true,
+    badge: "PDF",
+    glyph: "redact",
+    title: "PDF schwärzen – Namen, IBAN & Daten endgültig entfernen, kostenlos | PDF Libre",
+    description:
+      "PDF schwärzen online: Namen, Adressen, IBAN, E-Mail-Adressen und Telefonnummern endgültig aus der PDF entfernen – DSGVO-konform anonymisieren. Kostenlos, ohne Anmeldung.",
+    h1: "PDF schwärzen – Daten endgültig entfernen",
+    lead: "Gib die Begriffe ein, die verschwinden sollen. E-Mail-Adressen, Telefonnummern und IBANs werden auf Wunsch automatisch gefunden. Der Text wird nicht nur überdeckt, sondern wirklich gelöscht.",
+    ui: {
+      mode: "server",
+      endpoint: "/api/redact",
+      input: PDF,
+      action: "PDF schwärzen",
+      options: [
+        { type: "text", name: "terms", label: "Zu schwärzende Begriffe", placeholder: "z. B. Max Mustermann, Musterstraße 1", maxlength: 1000, hint: "Mehrere Begriffe mit Komma trennen." },
+        {
+          type: "select",
+          name: "auto",
+          label: "Automatisch finden",
+          choices: [
+            { value: "yes", label: "E-Mail, Telefonnummern und IBAN mitschwärzen" },
+            { value: "no", label: "Nur meine Begriffe" },
+          ],
+        },
+      ],
+    },
+    steps: [
+      ["PDF hochladen", "Wähle das Dokument aus, das du weitergeben möchtest – etwa einen Vertrag, eine Rechnung oder einen Kontoauszug."],
+      ["Begriffe eingeben", "Trage Namen, Adressen oder Kundennummern ein. E-Mail-Adressen, Telefonnummern und IBANs werden automatisch erkannt."],
+      ["Geschwärzte PDF herunterladen", "Alle Fundstellen sind schwarz und der Text darunter ist endgültig gelöscht. Auch die Dokumenteigenschaften (Autor, Titel) werden geleert."],
+    ],
+    article: [
+      {
+        h: "Richtig schwärzen statt nur übermalen",
+        p: [
+          "Ein schwarzer Balken, den man in einem PDF-Programm einfach über den Text legt, ist keine echte Schwärzung: Der Text darunter bleibt erhalten und lässt sich kopieren oder herauslösen. PDF Libre löscht den Text an den geschwärzten Stellen tatsächlich aus der Datei und färbt auch betroffene Bildbereiche schwarz. Danach ist die Information nicht mehr wiederherstellbar.",
+        ],
+      },
+      {
+        h: "Wann sollte man eine PDF schwärzen?",
+        p: [
+          "Bevor du Unterlagen weitergibst, die Daten anderer Personen enthalten: Kontoauszüge für den Mietantrag oder die Wohnungsbewerbung, Gehaltsnachweise, Verträge, Arztbriefe, Gerichtsunterlagen oder Dokumente für eine Veröffentlichung. Schwärzen hilft dabei, nur das Nötigste zu zeigen – im Sinne der Datensparsamkeit nach DSGVO.",
+        ],
+      },
+      {
+        h: "Gescannte Dokumente schwärzen",
+        p: [
+          "Die Suche funktioniert nur, wenn die PDF echten Text enthält. Bei einem Scan wandelst du die Datei deshalb zuerst mit „PDF durchsuchbar machen (OCR)“ um und schwärzt sie danach.",
+        ],
+      },
+    ],
+    faq: [
+      ["Kann man die Schwärzung rückgängig machen?", "Nein. Der Text unter den schwarzen Balken wird gelöscht, nicht nur verdeckt. Bewahre deshalb dein Original auf."],
+      ["Welche Daten werden automatisch erkannt?", "E-Mail-Adressen, Telefonnummern und IBANs. Namen, Adressen und andere Angaben gibst du selbst als Begriffe ein."],
+      ["Warum wurde nichts gefunden?", "Wahrscheinlich ist die PDF ein Scan ohne Textebene. Mache sie zuerst mit der OCR durchsuchbar."],
+      ["Wird meine Datei gespeichert?", "Nein. Sie wird direkt nach dem Schwärzen gelöscht."],
+    ],
+    related: ["ocr", "protect", "edit", "remove-pages"],
+  },
+
+  // ------------------------------------------------------------------ PDF/A
+  {
+    slug: "pdfa",
+    name: "PDF in PDF/A umwandeln",
+    short: "Archivtaugliche PDF/A für Behörden, Gerichte und die digitale Ablage.",
+    cat: "to-pdf",
+    isNew: true,
+    badge: "PDF/A",
+    glyph: "archive",
+    title: "PDF in PDF/A umwandeln – online & kostenlos (PDF/A-1b, 2b, 3b) | PDF Libre",
+    description:
+      "PDF in PDF/A konvertieren: archivierbare PDF/A-2b, PDF/A-1b oder PDF/A-3b für Behörden, Gerichte, Elster, Bewerbungen und die revisionssichere Ablage. Kostenlos, ohne Anmeldung.",
+    h1: "PDF in PDF/A umwandeln",
+    lead: "Behörde, Gericht oder Archiv verlangen PDF/A? Lade deine PDF hoch und bekomme eine archivtaugliche Datei mit eingebetteten Schriften und festem Farbprofil.",
+    ui: {
+      mode: "server",
+      endpoint: "/api/pdfa",
+      input: PDF,
+      action: "In PDF/A umwandeln",
+      options: [
+        {
+          type: "select",
+          name: "level",
+          label: "PDF/A-Version",
+          choices: [
+            { value: "2", label: "PDF/A-2b (empfohlen)" },
+            { value: "1", label: "PDF/A-1b (ältere Vorgabe)" },
+            { value: "3", label: "PDF/A-3b" },
+          ],
+        },
+      ],
+    },
+    steps: [
+      ["PDF auswählen", "Lade die PDF hoch, die archiviert oder bei einer Stelle eingereicht werden soll."],
+      ["Version wählen", "PDF/A-2b passt für fast alle Fälle. Nur wenn ausdrücklich PDF/A-1 verlangt wird, wähle diese Version."],
+      ["PDF/A herunterladen", "Schriften werden eingebettet, Farben auf ein festes Profil gebracht und die Datei als PDF/A gekennzeichnet."],
+    ],
+    article: [
+      {
+        h: "Was ist PDF/A?",
+        p: [
+          "PDF/A ist eine genormte Form von PDF (ISO 19005) für die Langzeitarchivierung. Eine PDF/A-Datei enthält alles, was sie zum Anzeigen braucht – Schriften, Farbprofil, Bilder – und verzichtet auf Dinge, die später Probleme machen könnten, etwa externe Inhalte oder Verschlüsselung. So sieht das Dokument auch in 20 Jahren noch genauso aus wie heute.",
+        ],
+      },
+      {
+        h: "Wo wird PDF/A verlangt?",
+        p: [
+          "Bei Gerichten und im elektronischen Rechtsverkehr (beA), bei vielen Behörden und Ämtern, bei Ausschreibungen, Förderanträgen und Abschlussarbeiten an Hochschulen sowie für die revisionssichere Archivierung von Geschäftsunterlagen nach GoBD. Auch die E-Rechnung im ZUGFeRD-Format basiert auf PDF/A-3.",
+        ],
+      },
+      {
+        h: "PDF/A-1b, 2b oder 3b?",
+        p: [
+          "PDF/A-2b ist heute der Standard und unterstützt Transparenzen und moderne Kompression. PDF/A-1b ist die älteste und strengste Version – nur wählen, wenn sie ausdrücklich gefordert ist. PDF/A-3b erlaubt zusätzlich eingebettete Dateien. Das „b“ steht für „basic“: Das Aussehen des Dokuments ist dauerhaft gesichert.",
+        ],
+      },
+    ],
+    faq: [
+      ["Ist meine Datei danach wirklich PDF/A-konform?", "Die Umwandlung erzeugt eine PDF/A-Datei mit eingebetteten Schriften und Farbprofil. Bei ungewöhnlichen Dateien (z. B. mit Formularen oder Anhängen) empfiehlt sich eine Prüfung mit einem Validator wie veraPDF."],
+      ["Kann ich eine passwortgeschützte PDF umwandeln?", "Nein, PDF/A erlaubt keine Verschlüsselung. Entsperre die Datei zuerst mit „PDF entsperren“."],
+      ["Wird die Datei größer?", "Oft etwas, weil alle Schriften vollständig eingebettet werden. Das ist gewollt."],
+      ["Was passiert mit meiner Datei?", "Sie wird nach der Umwandlung sofort gelöscht."],
+    ],
+    related: ["compress", "ocr", "merge", "e-rechnung-pruefen"],
+  },
+
+  // ------------------------------------------------------------------ FOTOS / HEIC → PDF
+  {
+    slug: "heic-to-pdf",
+    name: "HEIC in PDF",
+    short: "iPhone-Fotos (HEIC) und andere Bilder in eine PDF umwandeln.",
+    cat: "to-pdf",
+    isNew: true,
+    badge: "HEIC",
+    glyph: "phone",
+    title: "HEIC in PDF umwandeln – iPhone-Fotos zu PDF, kostenlos | PDF Libre",
+    description:
+      "HEIC in PDF umwandeln: iPhone-Fotos (HEIC/HEIF) sowie JPG, PNG und WebP zu einer PDF zusammenfassen – richtig gedreht, auf A4 und klein genug zum Versenden. Kostenlos, ohne Anmeldung.",
+    h1: "HEIC in PDF umwandeln",
+    lead: "Dein iPhone speichert Fotos als HEIC – viele Portale nehmen das nicht an. Lade die Fotos hoch und bekomme eine saubere PDF mit A4-Seiten.",
+    ui: {
+      mode: "server",
+      endpoint: "/api/photos-to-pdf",
+      input: { accept: ".heic,.heif,.jpg,.jpeg,.png,.webp,image/heic,image/heif,image/jpeg,image/png,image/webp", label: "Foto" },
+      multiple: true,
+      sortable: true,
+      min: 1,
+      action: "In PDF umwandeln",
+      dropHint: "HEIC, JPG, PNG oder WebP – bis zu 50 MB pro Datei",
+    },
+    steps: [
+      ["Fotos auswählen", "Wähle die Fotos vom iPhone oder aus deinem Ordner aus – HEIC, JPG, PNG und WebP gehen gemischt."],
+      ["Reihenfolge festlegen", "Ziehe die Fotos in die gewünschte Reihenfolge. Jedes Foto wird eine Seite."],
+      ["PDF herunterladen", "Die Fotos werden automatisch richtig gedreht, auf A4 gesetzt und verkleinert."],
+    ],
+    article: [
+      {
+        h: "Was ist HEIC?",
+        p: [
+          "HEIC (High Efficiency Image Container) ist das Standard-Fotoformat auf iPhone und iPad. Es spart viel Speicherplatz, wird aber von vielen Webseiten, Behördenportalen und Windows-Programmen nicht unterstützt. Wenn du ein Dokument, einen Ausweis, eine Quittung oder ein Zeugnis mit dem iPhone fotografiert hast, ist eine PDF meist die einfachste Lösung.",
+        ],
+      },
+      {
+        h: "iPhone-Fotos als PDF für Bewerbung, Uni und Amt",
+        p: [
+          "Ob Krankmeldung für den Arbeitgeber, Nachweis für die Uni, Belege für die Steuererklärung oder Unterlagen für das Bürgeramt: Mit diesem Werkzeug wandelst du mehrere Fotos in einem Schritt in eine einzige PDF um. Querformat-Fotos bekommen eine Querformat-Seite, alles andere wird auf A4 hochkant gesetzt.",
+        ],
+      },
+    ],
+    faq: [
+      ["Kann ich HEIC und JPG mischen?", "Ja. HEIC, HEIF, JPG, PNG und WebP können gemischt hochgeladen werden."],
+      ["Werden die Fotos richtig herum gedreht?", "Ja. Die Ausrichtung aus den Kameradaten wird berücksichtigt."],
+      ["Wie groß wird die PDF?", "Die Fotos werden auf eine für A4 passende Auflösung verkleinert. Ist die PDF trotzdem zu groß, nutze danach „PDF komprimieren“."],
+      ["Werden meine Fotos gespeichert?", "Nein. Sie werden direkt nach der Umwandlung gelöscht."],
+    ],
+    related: ["jpg-to-pdf", "zeugnisse-als-pdf", "compress", "merge"],
+  },
 ];
