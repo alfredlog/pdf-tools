@@ -44,7 +44,7 @@ T.setBuildId(assetHash.digest("hex").slice(0, 8));
 
 console.log("Seiten:");
 write("index.html", T.homePage());
-for (const tool of T.tools) write(`${tool.slug}.html`, T.toolPage(tool));
+for (const tool of [...T.tools, ...T.landingPages]) write(`${tool.slug}.html`, T.toolPage(tool));
 write("impressum.html", T.impressum());
 write("Datenschutz.html", T.datenschutz());
 write("404.html", T.notFound());
@@ -60,6 +60,7 @@ function sitemap(free, base) {
   const urls = [
     { loc: T.absUrl(""), priority: "1.0" },
     ...T.tools.map((t) => ({ loc: T.absUrl(t.slug), priority: "0.9" })),
+    ...T.landingPages.map((t) => ({ loc: T.absUrl(t.slug), priority: "0.8" })),
     ...(free ? [] : [{ loc: T.absUrl("preise"), priority: "0.6" }]),
     { loc: T.absUrl("impressum"), priority: "0.2" },
     ...(free ? [] : [{ loc: T.absUrl("agb"), priority: "0.2" }]),
@@ -89,7 +90,7 @@ const FREE = path.join(PUBLIC, "_free");
 fs.rmSync(FREE, { recursive: true, force: true });
 T.setFreeMode();
 write("index.html", T.homePage(), FREE);
-for (const tool of T.tools) write(`${tool.slug}.html`, T.toolPage(tool), FREE);
+for (const tool of [...T.tools, ...T.landingPages]) write(`${tool.slug}.html`, T.toolPage(tool), FREE);
 write("impressum.html", T.impressum(), FREE);
 write("Datenschutz.html", T.datenschutz(), FREE);
 write("404.html", T.notFound(), FREE);

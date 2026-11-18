@@ -11,6 +11,23 @@ const esc = (s) =>
 const url = (slug) => (slug === "" ? "/" : `/${slug}.html`);
 const absUrl = (slug) => config.domain + url(slug);
 const bySlug = Object.fromEntries(tools.map((t) => [t.slug, t]));
+
+// Ratgeber-Seiten (site/landings.js): gleiche Oberfläche wie das Basis-Werkzeug, eigene Texte für Google
+const landingPages = require("./landings").landings.map((l) => {
+  const base = bySlug[l.base];
+  if (!base) throw new Error(`Ratgeber ${l.slug}: Werkzeug ${l.base} fehlt`);
+  const ui = { ...base.ui };
+  if (base.ui.options && l.defaults) {
+    // vorausgewählte Option nach vorne, damit sie beim Laden aktiv ist
+    ui.options = base.ui.options.map((o) => {
+      const want = l.defaults[o.name];
+      if (!want || !o.choices) return o;
+      return { ...o, choices: [...o.choices.filter((c) => c.value === want), ...o.choices.filter((c) => c.value !== want)] };
+    });
+  }
+  return { ...base, ...l, ui, short: l.guide, isNew: false, landingOf: base.slug, promo: base.promo };
+});
+for (const l of landingPages) bySlug[l.slug] = l;
 const catById = Object.fromEntries(categories.map((c) => [c.id, c]));
 
 /** „A“, „B“ und „C“ – die Namen aller Pro-Werkzeuge (für Texte) */
@@ -659,16 +676,22 @@ function toolPage(t) {
       "@type": "BreadcrumbList",
       itemListElement: [
         { "@type": "ListItem", position: 1, name: config.name, item: config.domain + "/" },
-        { "@type": "ListItem", position: 2, name: t.name, item: absUrl(t.slug) },
+        ...(t.landingOf ? [{ "@type": "ListItem", position: 2, name: bySlug[t.landingOf].name, item: absUrl(t.landingOf) }] : []),
+        { "@type": "ListItem", position: t.landingOf ? 3 : 2, name: t.name, item: absUrl(t.slug) },
       ],
     },
     faqLd(t.faq),
   ];
 
   const related = t.related.map((s) => bySlug[s]).filter(Boolean);
+  // Ratgeber zum selben Werkzeug verlinken (auf der Werkzeugseite und auf den Ratgeberseiten untereinander)
+  const home = t.landingOf || t.slug;
+  const guides = landingPages.filter((g) => (g.landingOf === home || g.related.includes(home)) && g.slug !== t.slug && !t.related.includes(g.slug));
 
   const body = `<div class="tool-head wrap">
-  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>${esc(cat.name)}</span></nav>
+  <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span>${
+    t.landingOf ? `<a href="${url(t.landingOf)}">${esc(bySlug[t.landingOf].name)}</a><span aria-hidden="true">/</span><span>${esc(t.name)}</span>` : `<span>${esc(cat.name)}</span>`
+  }</nav>
   <h1>${esc(t.h1)}</h1>
   <p class="tool-head__lead">${esc(t.lead)}</p>
 </div>
@@ -694,7 +717,17 @@ ${t.promo ? promoBox(t.promo) : ""}
   ${faqHtml(t.faq)}
 </section>
 
-<section class="wrap related" aria-labelledby="related-title">
+${
+  guides.length
+    ? `<section class="wrap article guides" aria-labelledby="guides-title">
+  <h2 id="guides-title">Ratgeber</h2>
+  <ul>
+    ${guides.map((g) => `<li><a href="${url(g.slug)}">${esc(g.guide)}</a></li>`).join("\n    ")}
+  </ul>
+</section>
+`
+    : ""
+}<section class="wrap related" aria-labelledby="related-title">
   <h2 id="related-title">Passende Werkzeuge</h2>
   <ul class="tgrid tgrid--compact">
       ${related.map(toolCard).join("\n      ")}
@@ -1195,4 +1228,4 @@ function setBuildId(id) {
   BUILD_ID = id;
 }
 
-module.exports = { setFreeMode, homePage, toolPage, impressum, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, url, absUrl };
+module.exports = { setFreeMode, homePage, toolPage, impressum, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, landingPages, url, absUrl };

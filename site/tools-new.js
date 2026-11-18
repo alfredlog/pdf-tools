@@ -147,11 +147,27 @@ module.exports = [
           "Bewährt hat sich: Deckblatt (optional), Anschreiben, Lebenslauf, dann die Zeugnisse – das neueste Arbeitszeugnis zuerst, danach Abschluss- und Schulzeugnisse – und am Ende Zertifikate und Nachweise. Benenne deine Dateien sinnvoll (z. B. „Lebenslauf“ statt „Scan_0042“), denn die Dateinamen erscheinen im Inhaltsverzeichnis des Deckblatts.",
         ],
       },
+
+      {
+        h: "Bewerbungsmappe online erstellen – für jede Art von Bewerbung",
+        p: [
+          "Ob Bewerbung für eine Ausbildung, ein Praktikum, einen Werkstudentenjob, einen Nebenjob, ein duales Studium oder eine Festanstellung: Eine vollständige Bewerbungsmappe als PDF ist heute der Standard. Auch für die Initiativbewerbung, die Bewerbung um einen Studienplatz oder ein Stipendium brauchst du meist eine einzige, übersichtliche PDF-Datei.",
+          "Die Bewerbungsmappe von PDF Libre läuft komplett online im Browser – am PC, am Mac, auf dem Tablet und auf dem Handy. Du musst kein Programm installieren und kein Konto anlegen.",
+        ],
+      },
+      {
+        h: "Was gehört in eine Bewerbungsmappe?",
+        p: [
+          "Pflicht sind Anschreiben und Lebenslauf. Dazu kommen die Nachweise, die zur Stelle passen: Arbeitszeugnisse, Ausbildungs- oder Hochschulzeugnis, das letzte Schulzeugnis (vor allem bei Bewerbungen für eine Ausbildung), Sprachzertifikate, Weiterbildungen und Praktikumsbescheinigungen. Ein Deckblatt und ein Motivationsschreiben („dritte Seite“) sind optional.",
+        ],
+      },
     ],
     faq: [
       ["Welche Dateien kann ich hochladen?", "PDF, Word (DOC, DOCX, ODT, RTF) sowie Fotos und Scans als JPG oder PNG. Fotos werden auf A4-Seiten gesetzt."],
       ["Wie wird die Datei unter 5 MB gebracht?", "Bilder in den Dokumenten werden schrittweise verkleinert, bis die gewünschte Größe erreicht ist. Text bleibt scharf und durchsuchbar."],
       ["Woher kommt das Inhaltsverzeichnis?", "Aus den Dateinamen. „Lebenslauf_Max_Mustermann.pdf“ erscheint als „Lebenslauf Max Mustermann“."],
+      ["Wie groß darf eine Bewerbungsmappe als PDF sein?", "Die meisten Bewerbungsportale erlauben 2 bis 5 MB. Wähle einfach die passende Grenze – die Mappe wird automatisch verkleinert."],
+      ["Kann ich die Bewerbungsmappe auf dem Handy erstellen?", "Ja. Die Seite funktioniert auch auf dem Smartphone: Fotos von Zeugnissen direkt aus der Galerie auswählen, Reihenfolge festlegen, fertig."],
       ["Werden meine Unterlagen gespeichert?", "Nein. Alle Dateien werden direkt nach dem Erstellen gelöscht."],
     ],
     related: ["merge", "compress", "jpg-to-pdf", "docx-to-pdf"],
