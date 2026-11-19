@@ -14,10 +14,20 @@ const ROOT = path.join(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
 const NM = path.join(ROOT, "node_modules");
 
+// Inhalts-Fingerabdruck jeder HTML-Seite → echtes „lastmod“ in der Sitemap (siehe pageDate)
+const PAGE_HASH = new Map();
+function contentHash(html) {
+  // Was sich bei jedem Build ändert, ohne dass sich der Inhalt ändert, zählt nicht:
+  // Versionsnummern der CSS/JS-Dateien (?v=…)
+  const norm = html.replace(/\?v=[0-9a-f]+/g, "");
+  return crypto.createHash("sha1").update(norm).digest("hex");
+}
+
 function write(rel, content, base = PUBLIC) {
   const file = path.join(base, rel);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content);
+  if (file.endsWith(".html")) PAGE_HASH.set(path.relative(PUBLIC, file), contentHash(String(content)));
   console.log("  ✓", path.relative(PUBLIC, file));
 }
 
@@ -72,6 +82,40 @@ function buildLang(lang, free) {
   }
 }
 
+// Echtes Änderungsdatum je Seite. .lastmod.json (nicht in git, bleibt auf dem Server liegen) merkt sich
+// Fingerabdruck und Datum: Ändert sich der Inhalt, gilt heute – sonst bleibt das alte Datum stehen.
+// So sieht Google nur bei wirklich geänderten Seiten ein neues Datum und vertraut den Angaben.
+const LASTMOD_FILE = path.join(ROOT, ".lastmod.json");
+let lastmod = {};
+try {
+  lastmod = JSON.parse(fs.readFileSync(LASTMOD_FILE, "utf8"));
+} catch {
+  /* erster Build: Datum aus der git-Geschichte der Seite */
+}
+const { execFileSync } = require("child_process");
+function gitDate(rel) {
+  try {
+    const d = execFileSync("git", ["log", "-1", "--format=%cs", "--", path.join("public", rel)], { cwd: ROOT, encoding: "utf8" }).trim();
+    return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : today;
+  } catch {
+    return today;
+  }
+}
+function pageDate(rel) {
+  const hash = PAGE_HASH.get(rel);
+  const old = lastmod[rel];
+  if (!hash) return (old && old.date) || today;
+  if (old && old.hash === hash) return old.date;
+  const date = old ? today : gitDate(rel);
+  lastmod[rel] = { hash, date };
+  return date;
+}
+// Datei zu einer URL: „/“ → index.html, „/fr/merge.html“ → fr/merge.html (bzw. in _free/)
+const fileOf = (slug, lang, free) => {
+  const u = T.url(slug, lang).replace(/^\//, "");
+  return path.join(free ? "_free" : "", u === "" || u.endsWith("/") ? u + "index.html" : u);
+};
+
 // Sitemap mit allen Sprachfassungen (hreflang), damit Google jedem Besucher die passende Sprache zeigt
 function sitemap(free) {
   T.prepare({ lang: "de", free });
@@ -88,7 +132,7 @@ function sitemap(free) {
   for (const [slug, priority] of slugs) {
     const langs = T.LANGS.filter((l) => T.availableIn(slug, l) && (l === "de" || !["preise", "agb", "impressum", "Datenschutz"].includes(slug)));
     const alt = langs.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${T.absUrl(slug, l)}"/>`).join("\n");
-    for (const l of langs) entries.push(`  <url>\n    <loc>${T.absUrl(slug, l)}</loc>\n${langs.length > 1 ? alt + "\n" : ""}    <lastmod>${today}</lastmod>\n    <priority>${priority}</priority>\n  </url>`);
+    for (const l of langs) entries.push(`  <url>\n    <loc>${T.absUrl(slug, l)}</loc>\n${langs.length > 1 ? alt + "\n" : ""}    <lastmod>${pageDate(fileOf(slug, l, free))}</lastmod>\n    <priority>${priority}</priority>\n  </url>`);
   }
   write("sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.join("\n")}\n</urlset>\n`, free ? FREE : PUBLIC);
 }
@@ -101,6 +145,7 @@ for (const lang of ["de", "en", "fr"]) buildLang(lang, true);
 console.log("SEO:");
 sitemap(false);
 sitemap(true);
+fs.writeFileSync(LASTMOD_FILE, JSON.stringify(lastmod, null, 1) + "\n");
 // sw.js: Der alte Push-Werbe-Service-Worker meldet sich bei Besuchern, die ihn noch haben, selbst ab
 write("sw.js", `self.addEventListener("install", () => self.skipWaiting());\nself.addEventListener("activate", () => self.registration.unregister());\n`);
 // ads.txt: Pflicht für AdSense

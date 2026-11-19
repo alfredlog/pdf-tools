@@ -9,3 +9,6 @@ uploads/
 # wird bei jedem Build mit aktuellem Datum neu erzeugt
 public/sitemap.xml
 public/_free/sitemap.xml
+
+# Fingerabdruck und Datum jeder Seite für das echte lastmod der Sitemap (bleibt auf dem Server)
+.lastmod.json
