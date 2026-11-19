@@ -199,15 +199,15 @@ const tools = [
   {
     slug: "extract-pages",
     name: "Seiten extrahieren",
-    short: "Ausgewählte Seiten als neue PDF speichern.",
+    short: "Einzelne Seiten aus einer PDF herauslösen und als neue PDF speichern.",
     cat: "organize",
     badge: "PDF",
     glyph: "extract",
-    title: "PDF-Seiten extrahieren – kostenlos online | PDF Libre",
+    title: "PDF-Seiten extrahieren – einzelne Seiten als neue PDF speichern | PDF Libre",
     description:
-      "Einzelne Seiten aus einer PDF extrahieren und als neue PDF speichern. Seiten per Klick auswählen – kostenlos und direkt im Browser.",
+      "Seiten aus PDF extrahieren: einzelne Seiten per Klick auswählen und als neue PDF oder als einzelne Dateien speichern – z. B. die Unterschriftenseite oder ein Kapitel. Kostenlos, im Browser, ohne Upload.",
     h1: "Seiten aus PDF extrahieren",
-    lead: "Wähle genau die Seiten aus, die du brauchst, und speichere sie als neue PDF.",
+    lead: "Brauchst du aus einer langen PDF nur ein paar Seiten? Klicke sie an und speichere sie als neue PDF – das Original bleibt unverändert, die Datei verlässt dein Gerät nicht.",
     ui: {
       mode: "client",
       input: PDF,
@@ -228,23 +228,43 @@ const tools = [
       ],
     },
     steps: [
-      ["PDF auswählen", "Lade die PDF hoch – die Seiten werden als Vorschau angezeigt."],
-      ["Seiten anklicken", "Markiere die gewünschten Seiten oder tippe die Seitenzahlen ein."],
-      ["Extrahieren", "Entscheide, ob du eine gemeinsame PDF oder einzelne Dateien möchtest, und klicke auf „Seiten extrahieren“."],
-      ["Herunterladen", "Speichere das Ergebnis auf deinem Gerät."],
+      ["PDF auswählen", "Lade die PDF hoch – alle Seiten werden als kleine Vorschau angezeigt."],
+      ["Seiten anklicken", "Markiere die gewünschten Seiten in der Vorschau oder tippe die Seitenzahlen ein, zum Beispiel „1, 3-5, 12“."],
+      ["Ergebnis wählen", "Eine gemeinsame PDF mit allen ausgewählten Seiten – oder jede Seite als eigene PDF (als ZIP-Archiv)."],
+      ["Herunterladen", "Klicke auf „Seiten extrahieren“ und speichere die neue PDF. Deine Original-PDF bleibt unverändert."],
     ],
     article: [
       {
-        h: "Extrahieren oder Teilen?",
+        h: "Wann ist Seiten extrahieren sinnvoll?",
         p: [
-          "Beim Extrahieren wählst du einzelne Seiten gezielt aus, zum Beispiel die Unterschriftenseite eines Vertrags oder ein bestimmtes Kapitel. Beim Teilen wird dagegen das ganze Dokument in mehrere Stücke zerlegt. Für „ich brauche nur Seite 4 und 12“ ist Extrahieren der kürzere Weg.",
+          "Oft braucht man aus einem langen Dokument nur einen kleinen Teil: die Unterschriftenseite eines Mietvertrags für den Vermieter, die eine Seite mit dem Kontoauszug für den Antrag beim Amt, das Zeugnis aus einer gescannten Bewerbungsmappe, ein Kapitel aus einem Skript für die Lerngruppe oder die Rechnung aus einem mehrseitigen Bestellbeleg.",
+          "Statt die ganze Datei zu verschicken – mit Informationen, die den Empfänger nichts angehen –, extrahierst du genau die Seiten, die gebraucht werden. Das ist übersichtlicher, die Datei ist kleiner und du gibst weniger persönliche Daten weiter.",
+        ],
+      },
+      {
+        h: "Extrahieren, Teilen oder Seiten entfernen – was ist der Unterschied?",
+        p: [
+          "„Seiten extrahieren“ (diese Seite): Du wählst die Seiten aus, die du behalten willst, und bekommst nur diese als neue PDF. Ideal, wenn du wenige Seiten aus einem langen Dokument brauchst.",
+          "„PDF teilen“: Das ganze Dokument wird in mehrere Teile zerlegt, zum Beispiel nach Seitenbereichen oder alle 10 Seiten. Ideal, wenn eine große PDF für ein Upload-Portal in Stücke muss.",
+          "„Seiten entfernen“: Du wählst die Seiten aus, die weg sollen, und behältst den Rest. Ideal für leere Rückseiten, Werbung oder veraltete Abschnitte.",
+        ],
+      },
+      {
+        h: "Sicher und ohne Qualitätsverlust",
+        p: [
+          "Die Seiten werden 1:1 übernommen: Text bleibt durchsuchbar, Bilder behalten ihre Auflösung, Links funktionieren weiter. Weil alles direkt in deinem Browser passiert, wird die PDF nicht auf einen Server hochgeladen – auch bei vertraulichen Dokumenten wie Verträgen, Kontoauszügen oder Arztbriefen.",
+          "Tipp: Willst du die extrahierten Seiten in eine andere Reihenfolge bringen oder mit einer anderen Datei kombinieren, nutze danach „PDF organisieren“ oder „PDF zusammenfügen“.",
         ],
       },
     ],
     faq: [
+      ["Wie extrahiere ich eine einzelne Seite aus einer PDF?", "PDF auswählen, die Seite in der Vorschau anklicken und auf „Seiten extrahieren“ klicken. Du erhältst eine neue PDF, die nur diese Seite enthält."],
+      ["Kann ich mehrere nicht zusammenhängende Seiten extrahieren?", "Ja. Klicke einfach alle gewünschten Seiten an oder tippe z. B. „2, 5, 9-11“ ein."],
+      ["Kann ich jede Seite als eigene PDF speichern?", "Ja. Wähle unter „Ergebnis“ die Option „Einzelne PDFs“ – du bekommst ein ZIP-Archiv mit einer Datei pro Seite."],
       ["In welcher Reihenfolge landen die Seiten in der neuen PDF?", "In der Reihenfolge des Originals. Wenn du sie umsortieren möchtest, nutze danach „PDF organisieren“."],
       ["Verändert sich die Qualität?", "Nein, die Seiten werden 1:1 übernommen."],
       ["Wird meine Datei auf einen Server geladen?", "Nein, das Extrahieren läuft komplett in deinem Browser."],
+      ["Funktioniert das auch auf dem Handy?", "Ja, auf allen aktuellen Smartphones und Tablets – Seiten antippen, extrahieren, fertig."],
     ],
     related: ["split", "remove-pages", "organize", "merge"],
   },
@@ -502,6 +522,13 @@ const tools = [
           "Verwende möglichst verbreitete Schriften wie Arial, Calibri oder Times New Roman. Seltene Schriften, die nicht in die Datei eingebettet sind, werden bei der Umwandlung durch eine ähnliche Schrift ersetzt. Prüfe die PDF daher kurz, bevor du sie verschickst.",
         ],
       },
+      {
+        h: "Word in PDF für Bewerbung, Uni und Behörden",
+        p: [
+          "Bewerbungsportale, Hochschulen und Ämter verlangen fast immer PDF statt Word: Anschreiben und Lebenslauf sehen dann bei jedem Personaler gleich aus, Hausarbeiten lassen sich nicht versehentlich ändern, Anträge kommen vollständig an. Wandle deine DOCX-Datei hier um und füge sie danach mit „Bewerbungsmappe erstellen“ oder „PDF zusammenfügen“ zu einer Datei zusammen.",
+          "Verlangt eine Behörde oder ein Gericht ausdrücklich PDF/A, wandle die fertige PDF anschließend mit „PDF in PDF/A umwandeln“ um. Ist die Datei zu groß für ein Upload-Portal, hilft „PDF komprimieren“.",
+        ],
+      },
     ],
     faq: [
       ["Wie wandle ich DOCX in PDF um?", "DOCX-Datei oben auswählen, auf „In PDF umwandeln“ klicken und die PDF herunterladen. Kostenlos, ohne Anmeldung und ohne Wasserzeichen."],
@@ -510,6 +537,8 @@ const tools = [
       ["Bleiben Links und Inhaltsverzeichnis erhalten?", "Ja, Hyperlinks und Überschriften werden in die PDF übernommen."],
       ["Warum sieht meine PDF leicht anders aus als in Word?", "Meist liegt es an einer Schrift, die auf dem Server nicht installiert ist. Mit einer Standardschrift oder mit in Word eingebetteten Schriften passiert das nicht."],
       ["Wird meine Datei gespeichert?", "Nein, sie wird direkt nach der Umwandlung gelöscht."],
+      ["Kann ich mehrere Word-Dateien in eine PDF umwandeln?", "Wandle die Dateien nacheinander um und füge die PDFs dann mit „PDF zusammenfügen“ zusammen – oder nutze „Bewerbungsmappe erstellen“, das Word-Dateien direkt annimmt."],
+      ["Funktioniert die Umwandlung auf dem Handy?", "Ja. Wähle die DOCX-Datei auf dem Smartphone aus, zum Beispiel aus der Mail-App oder aus Google Drive, und lade die PDF herunter."],
     ],
     related: ["pdf-to-docx", "ppt-to-pdf", "excel-to-pdf", "merge"],
   },

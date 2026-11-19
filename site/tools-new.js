@@ -30,15 +30,15 @@ module.exports = [
     isNew: true,
     badge: "PDF",
     glyph: "sign",
-    title: "PDF unterschreiben – kostenlos online, ohne Anmeldung | PDF Libre",
+    title: "PDF unterschreiben – online am Handy oder PC, ohne Drucken | PDF Libre",
     description:
-      "PDF online unterschreiben: Unterschrift mit Maus oder Finger zeichnen oder als Foto einfügen, Datum ergänzen und speichern. Kostenlos, die Datei verlässt dein Gerät nicht.",
-    h1: "PDF unterschreiben",
-    lead: "Unterschreibe Verträge, Formulare und Mietunterlagen direkt im Browser – ohne Drucken und Scannen.",
+      "PDF online unterschreiben: Unterschrift mit Finger oder Maus zeichnen, Namen in Handschrift tippen oder als Foto einfügen, Datum ergänzen und speichern. Kostenlos, ohne Anmeldung – die Datei verlässt dein Gerät nicht.",
+    h1: "PDF unterschreiben – ohne Drucken und Scannen",
+    lead: "Unterschreibe Mietvertrag, Arbeitsvertrag oder Formular direkt im Browser: zeichnen, tippen oder als Foto einfügen – am Handy mit großem Unterschriftsfeld.",
     ui: { mode: "editor", start: "upload", sign: true, input: PDF },
     steps: [
       ["PDF öffnen", "Wähle die PDF aus, die du unterschreiben möchtest. Sie wird nur in deinem Browser geöffnet."],
-      ["Unterschrift erstellen", "Klicke auf „Unterschrift“ und zeichne mit Maus, Touchpad oder Finger – oder lade ein Foto deiner Unterschrift hoch."],
+      ["Unterschrift erstellen", "Klicke auf „Unterschrift“: zeichne mit Finger oder Maus, tippe deinen Namen in einer Handschrift oder lade ein Foto deiner Unterschrift hoch."],
       ["Platzieren", "Ziehe die Unterschrift an die richtige Stelle und passe die Größe an. Mit „Text“ ergänzt du Ort und Datum."],
       ["Herunterladen", "Klicke auf „Herunterladen“. Die unterschriebene PDF wird direkt auf deinem Gerät erstellt."],
     ],
@@ -46,18 +46,34 @@ module.exports = [
       {
         h: "Unterschreiben ohne Drucker",
         p: [
-          "Mietvertrag, Arbeitsvertrag, Einverständniserklärung oder Formular vom Amt: Oft reicht es, die PDF mit einer eingefügten Unterschrift zurückzuschicken. Statt auszudrucken, zu unterschreiben und wieder einzuscannen, setzt du deine Unterschrift hier in wenigen Sekunden in das Dokument.",
-          "Auf dem Handy oder Tablet zeichnest du einfach mit dem Finger. Ein Foto deiner Unterschrift auf weißem Papier funktioniert auch – der weiße Hintergrund wird automatisch entfernt.",
+          "Mietvertrag, Arbeitsvertrag, Einverständniserklärung, Vollmacht oder Formular vom Amt: Oft reicht es, die PDF mit einer eingefügten Unterschrift zurückzuschicken. Statt auszudrucken, zu unterschreiben und wieder einzuscannen, setzt du deine Unterschrift hier in wenigen Sekunden in das Dokument – und kannst Ort und Datum gleich dazuschreiben.",
+        ],
+      },
+      {
+        h: "Drei Wege zur Unterschrift",
+        p: [
+          "Zeichnen: Am Handy oder Tablet unterschreibst du mit dem Finger. Tippe auf „Großes Feld“ – dann füllt das Unterschriftsfeld den ganzen Bildschirm, auf Android dreht es sich automatisch ins Querformat. Am Computer musst du die Maustaste nicht gedrückt halten: einmal klicken, die Maus bewegen, zum Absetzen erneut klicken.",
+          "Tippen: Schreib deinen Namen und wähle eine von vier Handschriften. Das ist am PC der schnellste Weg zu einer sauberen Unterschrift.",
+          "Foto: Unterschreibe auf weißem Papier, fotografiere es und lade das Bild hoch. Der weiße Hintergrund wird automatisch entfernt, sodass nur die Unterschrift übrig bleibt.",
         ],
       },
       {
         h: "Ist eine eingefügte Unterschrift rechtsgültig?",
         p: [
-          "Eine eingefügte Unterschrift ist eine „einfache elektronische Signatur“. Sie genügt für die meisten Alltagsfälle, etwa Formulare, Einwilligungen, Angebote oder viele Verträge ohne Formvorschrift. Für Dokumente, bei denen das Gesetz die Schriftform verlangt (z. B. Kündigung eines Arbeitsvertrags oder Bürgschaft), brauchst du weiterhin eine handschriftliche Unterschrift auf Papier oder eine qualifizierte elektronische Signatur.",
+          "Eine eingefügte Unterschrift ist eine „einfache elektronische Signatur“. Sie genügt für die meisten Alltagsfälle, etwa Formulare, Einwilligungen, Angebote, Auftragsbestätigungen oder viele Verträge ohne Formvorschrift. Für Dokumente, bei denen das Gesetz die Schriftform verlangt (z. B. Kündigung eines Arbeitsvertrags oder Bürgschaft), brauchst du weiterhin eine handschriftliche Unterschrift auf Papier oder eine qualifizierte elektronische Signatur.",
+        ],
+      },
+      {
+        h: "Deine Unterschrift bleibt bei dir",
+        p: [
+          "Die PDF wird nicht hochgeladen: Öffnen, Unterschreiben und Speichern passieren komplett in deinem Browser. Wenn du möchtest, merkt sich dein Browser die Unterschrift für das nächste Mal – gespeichert wird sie nur auf deinem Gerät, nicht bei uns.",
         ],
       },
     ],
     faq: [
+      ["Wie unterschreibe ich eine PDF am Handy?", "PDF öffnen, auf „Unterschrift“ tippen, dann „Großes Feld“ wählen und mit dem Finger unterschreiben. Mit „Einfügen“ setzt du sie ins Dokument und schiebst sie an die richtige Stelle."],
+      ["Muss ich beim Zeichnen die Maustaste gedrückt halten?", "Nein. Einmal ins Feld klicken, dann einfach die Maus bewegen – erneut klicken hebt den Stift ab. Gedrückt halten und ziehen funktioniert aber auch."],
+      ["Kann ich meine Unterschrift tippen statt zeichnen?", "Ja. Im Reiter „Tippen“ schreibst du deinen Namen und wählst eine Handschrift aus."],
       ["Wird meine PDF hochgeladen?", "Nein. Unterschreiben und Speichern passieren komplett in deinem Browser – die Datei verlässt dein Gerät nicht."],
       ["Kann ich meine Unterschrift speichern?", "Ja, auf Wunsch merkt sich dein Browser die Unterschrift für das nächste Mal. Sie wird nur auf deinem Gerät gespeichert."],
       ["Kann ich mehrere Seiten unterschreiben?", "Ja. Füge die Unterschrift auf jeder Seite ein, auf der sie gebraucht wird – zum Beispiel auch als Paraphe unten auf jeder Seite."],
