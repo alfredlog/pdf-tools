@@ -785,14 +785,28 @@ api.post(
   })
 );
 
-// PDF → Word (Python pdf2docx) ------------------------------------------------------
+// PDF → Word (pdf_to_word.py: pdf2docx bzw. LibreOffice, gescannte Seiten vorher per OCR neu aufgebaut) ---
+const PDF_TO_WORD = path.join(__dirname, "pdf_to_word.py");
+const OCR_LANGS = { deu: "deu+eng", fra: "fra+eng", mix: "deu+eng+fra", eng: "eng" };
 api.post(
   "/pdf-to-word",
   uploader("pdf"),
   wrap(async (req, res) => {
     const [file] = requireFiles(req);
     const out = path.join(req.jobDir, "out.docx");
-    await run(PYTHON, [path.join(__dirname, "convert_pdf2docx.py"), file.path, out]);
+    const mode = req.body.mode === "exact" ? "exact" : "flow";
+    const ocr = req.body.ocr === "off" ? "off" : "auto";
+    const lang = OCR_LANGS[req.body.ocr] || "deu+eng";
+    try {
+      // Texterkennung braucht ~3–4 s pro gescannter Seite → mehr Zeit als andere Werkzeuge
+      await run(PYTHON, [PDF_TO_WORD, file.path, out, "--mode", mode, "--ocr", ocr, "--lang", lang], { timeout: 6 * 60 * 1000 });
+    } catch (e) {
+      const err = e.stderr || "";
+      if (/password/.test(err)) throw new UserError(PW_ERR);
+      if (/too-many-scans/.test(err)) throw new UserError("Diese PDF hat zu viele gescannte Seiten für eine Umwandlung (höchstens 40). Teile sie zuerst mit „PDF teilen“.");
+      if (/ocr-missing/.test(err)) throw new UserError("Die Texterkennung ist auf dem Server gerade nicht eingerichtet.", 503);
+      throw e;
+    }
     await sendFile(res, out, outName(file.originalname, "", ".docx"));
   })
 );
@@ -855,7 +869,7 @@ app.get("/api/health", async (req, res) => {
   const [ghostscript, libreoffice, pdf2docx] = await Promise.all([
     check(GS, ["--version"]),
     check(SOFFICE, ["--version"]),
-    check(PYTHON, ["-c", "import pdf2docx"]),
+    check(PYTHON, ["-c", "import pdf2docx, numpy"]),
   ]);
   const pymupdf = await check(PYTHON, ["-c", "import pymupdf"]);
   let erechnung = false;

@@ -674,45 +674,86 @@ const tools = [
   {
     slug: "pdf-to-docx",
     name: "PDF in Word",
-    short: "PDFs in bearbeitbare DOCX-Dateien umwandeln.",
+    short: "PDFs in bearbeitbare DOCX-Dateien umwandeln – auch gescannte (OCR).",
     cat: "from-pdf",
     badge: "DOC",
     glyph: "word",
-    title: "PDF in Word umwandeln – PDF zu DOCX kostenlos | PDF Libre",
+    title: "PDF in Word umwandeln – auch Scans mit OCR, Layout bleibt | PDF Libre",
     description:
-      "PDF in Word umwandeln: PDF online in ein bearbeitbares DOCX-Dokument konvertieren – mit Tabellen, Bildern und Formatierung. Kostenlos, ohne Anmeldung.",
-    h1: "PDF in Word umwandeln",
-    lead: "Mach aus einer PDF wieder ein bearbeitbares Word-Dokument – mit Absätzen, Tabellen und Bildern.",
+      "PDF in Word umwandeln: PDF online in ein bearbeitbares DOCX konvertieren – Tabellen, Bilder und Layout bleiben erhalten. Gescannte PDFs werden per Texterkennung (OCR) bearbeitbar. Kostenlos, ohne Anmeldung.",
+    h1: "PDF in Word umwandeln – auch gescannte PDFs",
+    lead: "Mach aus einer PDF wieder ein bearbeitbares Word-Dokument – mit Absätzen, Tabellen und Bildern. Gescannte Seiten werden automatisch per Texterkennung (OCR) in echten Text umgewandelt.",
     ui: {
       mode: "server",
       endpoint: "/api/pdf-to-word",
       input: PDF,
       action: "In Word umwandeln",
-      dropHint: "PDF-Datei, bis zu 50 MB",
+      dropHint: "PDF-Datei, bis zu 50 MB – auch Scans",
+      options: [
+        {
+          type: "radio",
+          name: "mode",
+          label: "Layout",
+          choices: [
+            { value: "flow", label: "Bearbeitbar", hint: "Echte Absätze und Tabellen – zum Weiterschreiben (empfohlen)" },
+            { value: "exact", label: "Wie im Original", hint: "Jeder Textblock an seiner genauen Stelle – ideal für Formulare und Flyer" },
+          ],
+        },
+        {
+          type: "select",
+          name: "ocr",
+          label: "Texterkennung für gescannte Seiten",
+          choices: [
+            { value: "deu", label: "Automatisch – Deutsch und Englisch" },
+            { value: "fra", label: "Automatisch – Französisch und Englisch" },
+            { value: "mix", label: "Automatisch – Deutsch, Englisch, Französisch" },
+            { value: "eng", label: "Automatisch – nur Englisch" },
+            { value: "off", label: "Aus – Scans als Bild übernehmen" },
+          ],
+        },
+      ],
     },
     steps: [
-      ["PDF auswählen", "Wähle die PDF aus, die du bearbeiten möchtest."],
-      ["Umwandeln", "Klicke auf „In Word umwandeln“. Je nach Seitenzahl dauert das einige Sekunden."],
+      ["PDF auswählen", "Wähle die PDF aus, die du bearbeiten möchtest – digital erstellt oder eingescannt."],
+      ["Layout wählen", "„Bearbeitbar“ baut echte Absätze und Tabellen, „Wie im Original“ setzt jeden Textblock an seine genaue Stelle."],
+      ["Umwandeln", "Klicke auf „In Word umwandeln“. Gescannte Seiten werden automatisch erkannt, gerade gerichtet und per OCR in Text umgewandelt."],
       ["Herunterladen", "Öffne die DOCX-Datei in Word, LibreOffice oder Google Docs und bearbeite sie."],
     ],
     article: [
       {
-        h: "Was wird übernommen?",
+        h: "PDF in Word umwandeln – ohne Word, ohne Software",
         p: [
-          "Die Umwandlung erkennt Absätze, Überschriften, Tabellen und Bilder und baut daraus ein Word-Dokument mit echtem Fließtext auf. Schriftgrößen, Fettdruck und Farben werden übernommen. Bei aufwendigen Layouts mit vielen Spalten oder Textfeldern kann Nacharbeit nötig sein.",
+          "Du hast einen Vertrag, eine Rechnung, eine Hausarbeit oder einen Lebenslauf nur noch als PDF und musst etwas ändern? Mit PDF Libre wandelst du die PDF kostenlos in ein bearbeitbares Word-Dokument (DOCX) um – direkt im Browser, am PC, am Mac und auf dem Handy. Das Ergebnis öffnest du in Microsoft Word, LibreOffice, Google Docs oder Pages.",
+          "Die Umwandlung erkennt Absätze, Überschriften, Aufzählungen, Tabellen und Bilder und baut daraus ein Word-Dokument mit echtem Fließtext. Schriftgrößen, Fettdruck, Farben und mehrspaltige Bereiche werden übernommen. Schriftnamen werden so angepasst, dass Word sie kennt – aus „ArialMT“ wird zum Beispiel wieder „Arial“.",
         ],
       },
       {
-        h: "Wichtig bei gescannten PDFs",
+        h: "Gescannte PDF in Word umwandeln – mit Texterkennung (OCR)",
         p: [
-          "Eine eingescannte Seite ist für den Computer nur ein Foto. Ohne Texterkennung (OCR) landet sie als Bild im Word-Dokument und der Text ist nicht bearbeitbar. Ob deine PDF echten Text enthält, erkennst du daran, ob du darin Text markieren und kopieren kannst.",
+          "Eine eingescannte Seite oder ein Handyfoto ist für den Computer nur ein Bild. Viele Umwandler legen dieses Bild einfach in das Word-Dokument – bearbeiten kannst du dann nichts. PDF Libre erkennt gescannte Seiten automatisch und baut sie neu auf: Das Bild wird gerade gerichtet, der Text per OCR erkannt und als echter Text an dieselbe Stelle gesetzt, in passender Größe und Farbe.",
+          "Tabellenlinien werden nachgezeichnet, damit Word daraus richtige Tabellen mit Zellen macht. Logos, Fotos, Stempel und Unterschriften bleiben als Bilder an ihrem Platz. So wird aus einem gescannten Angebot, Brief oder Formular ein Dokument, in dem du Text und Zahlen direkt ändern kannst. Unterstützt werden Deutsch, Englisch und Französisch – auch gemischt.",
+        ],
+      },
+      {
+        h: "Layout behalten: „Bearbeitbar“ oder „Wie im Original“?",
+        p: [
+          "„Bearbeitbar“ (empfohlen) erzeugt echten Fließtext: Wenn du einen Satz ergänzt, rutscht der Rest automatisch weiter, Tabellen wachsen mit. Das ist ideal für Briefe, Verträge, Hausarbeiten und Berichte, die du weiterschreiben möchtest.",
+          "„Wie im Original“ setzt jeden Textblock genau an seine Stelle – das Word-Dokument sieht dann aus wie die PDF. Das passt zu Flyern, Formularen, Präsentationen und Dokumenten mit freiem Layout, in denen du nur einzelne Wörter austauschen willst. Dafür ist der Text in Textfelder aufgeteilt und längeres Weiterschreiben mühsamer.",
+        ],
+      },
+      {
+        h: "Tipps für das beste Ergebnis",
+        p: [
+          "Scanne mit mindestens 200 dpi, möglichst gerade und ohne Schatten. Bei Handyfotos hilft gutes Tageslicht. Handschrift wird nur eingeschränkt erkannt. Passwortgeschützte PDFs entsperrst du vorher mit „PDF entsperren“. Brauchst du keinen Word-Text, sondern nur eine durchsuchbare PDF, ist „PDF durchsuchbar machen (OCR)“ der schnellere Weg.",
         ],
       },
     ],
     faq: [
-      ["Kann ich gescannte PDFs umwandeln?", "Die Umwandlung funktioniert, aber gescannte Seiten erscheinen als Bild. Für bearbeitbaren Text braucht die PDF vorher eine Texterkennung (OCR)."],
-      ["Funktioniert es mit Google Docs?", "Ja. Lade die DOCX-Datei in Google Drive hoch und öffne sie mit Google Docs."],
-      ["Warum ist das Layout nicht 100 % identisch?", "PDFs speichern die genaue Position jedes Zeichens, Word arbeitet mit Fließtext. Bei komplexen Layouts muss die Umwandlung deshalb Kompromisse machen."],
+      ["Kann ich gescannte PDFs in Word umwandeln?", "Ja. Gescannte Seiten werden automatisch erkannt und per Texterkennung (OCR) in echten, bearbeitbaren Text umgewandelt – mit Tabellen und Bildern an ihrem Platz."],
+      ["Bleibt das Layout erhalten?", "Ja, so weit wie möglich. Mit „Bearbeitbar“ entstehen echte Absätze und Tabellen, mit „Wie im Original“ steht jeder Textblock genau an seiner Stelle."],
+      ["Funktioniert es mit Google Docs und LibreOffice?", "Ja. Die DOCX-Datei öffnet sich in Word, LibreOffice, Google Docs und Pages."],
+      ["Welche Sprachen erkennt die Texterkennung?", "Deutsch, Englisch und Französisch – auch gemischt in einem Dokument. Umlaute, Akzente und das €-Zeichen werden richtig erkannt."],
+      ["Warum ist das Layout nicht 100 % identisch?", "PDFs speichern die genaue Position jedes Zeichens, Word arbeitet mit Fließtext. Bei sehr komplexen Layouts muss die Umwandlung Kompromisse machen – dann hilft „Wie im Original“."],
       ["Wird meine PDF gespeichert?", "Nein, sie wird direkt nach der Umwandlung gelöscht."],
     ],
     related: ["docx-to-pdf", "pdf-to-jpg", "unlock", "compress"],

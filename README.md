@@ -82,7 +82,7 @@ Während der Entwicklung: `npm run dev` (startet bei Änderungen an `app.js` neu
 ```
 app.js               Server (Express): API für die Server-Werkzeuge unter /api/*
 server/              Konten (auth.js), Stripe (billing.js), Editor-Export (editor.js), Datenbank (db.js)
-convert_pdf2docx.py  PDF → Word (wird von app.js aufgerufen)
+pdf_to_word.py       PDF → Word mit OCR für Scans (wird von app.js aufgerufen)
 pdf_edit.py          PDF-Editor: Inhalte echt entfernen, neue Elemente zeichnen (PyMuPDF)
 site/config.js       Domain, Analytics, AdSense, Impressum-Daten
 site/tools.js        ALLE Texte der Werkzeuge (Titel, SEO, Anleitung, FAQ)
