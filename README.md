@@ -2,7 +2,15 @@
 
 Kostenlose PDF-Werkzeuge online – [pdf-libre.de](https://pdf-libre.de)
 
-20 Werkzeuge – 18 kostenlos, dazu **PDF bearbeiten** und **PDF erstellen** als Pro (14 Tage gratis, dann 4,99 €/Monat oder Tagespass 2,99 €): zusammenfügen, komprimieren, teilen, Seiten entfernen/extrahieren, organisieren, drehen, Word/PowerPoint/Excel/Bilder → PDF, PDF → Word/JPG, Seitenzahlen, Wasserzeichen, schützen, entsperren.
+Über 35 Werkzeuge auf Deutsch, Englisch und Französisch – ohne Anmeldung, ohne Wasserzeichen. Beliebt sind:
+
+- [PDF in Word umwandeln – auch gescannte PDFs mit OCR](https://pdf-libre.de/pdf-to-docx.html)
+- [Lebenslauf erstellen (ATS-freundlich)](https://pdf-libre.de/lebenslauf-erstellen.html) und [Bewerbungsmappe als PDF](https://pdf-libre.de/bewerbungsmappe.html)
+- [PDF komprimieren](https://pdf-libre.de/compress.html) · [PDF zusammenfügen](https://pdf-libre.de/merge.html) · [PDF unterschreiben](https://pdf-libre.de/sign.html) · [Seiten extrahieren](https://pdf-libre.de/extract-pages.html)
+- [Word in PDF](https://pdf-libre.de/docx-to-pdf.html) · [PDF durchsuchbar machen (OCR)](https://pdf-libre.de/ocr.html) · [Alle Werkzeuge rund um Bewerbung](https://pdf-libre.de/bewerbung.html)
+- In English: [pdf-libre.de/en/](https://pdf-libre.de/en/) · En français : [pdf-libre.de/fr/](https://pdf-libre.de/fr/)
+
+Entwickelt von [Alfred Mushagalusa Munganga](https://alfredlog.github.io).
 
 ## Lokal testen
 
