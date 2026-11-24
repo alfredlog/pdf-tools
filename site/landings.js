@@ -8,6 +8,121 @@
  *   guide     Linktext im Abschnitt „Ratgeber“ auf der Werkzeugseite
  */
 const landings = [
+  // ------------------------------------------------------------------ BRIEFE
+  {
+    slug: "kuendigung-schreiben",
+    base: "musterbrief",
+    defaults: { type: "kuendigung" },
+    guide: "Kündigung schreiben (Handy, Fitnessstudio, Abo …)",
+    name: "Kündigung schreiben",
+    title: "Kündigung schreiben – Vorlage für Handyvertrag, Fitnessstudio & Abo als PDF | PDF Libre",
+    description: "Kündigung online schreiben: Vorlage für Handyvertrag, Internet, Strom, Fitnessstudio, Versicherung oder Abo. Fristgerecht zum nächstmöglichen Termin, mit Bitte um Bestätigung. Kostenlos als PDF.",
+    h1: "Kündigung schreiben – kostenlose Vorlage",
+    lead: "Ob Handyvertrag, Fitnessstudio, Streaming-Abo oder Versicherung: Trage Anbieter und Vertragsnummer ein und lade eine eindeutige Kündigung als PDF herunter.",
+    steps: [["Angaben eintragen", "Anbieter, Vertrag und Kunden- oder Vertragsnummer. Lässt du das Datum leer, wird „zum nächstmöglichen Zeitpunkt“ gekündigt."], ["Vorschau prüfen", "Rechts siehst du den fertigen Brief. Den Text kannst du frei anpassen."], ["Herunterladen und verschicken", "PDF ausdrucken, unterschreiben und am besten per Einschreiben verschicken."]],
+    article: [
+      { h: "Was in eine Kündigung gehört", p: ["Eine wirksame Kündigung braucht nicht viel: deinen Namen und deine Anschrift, die Kunden- oder Vertragsnummer, die eindeutige Erklärung „hiermit kündige ich“ und den Zeitpunkt. Die Formulierung „fristgerecht zum nächstmöglichen Zeitpunkt“ sorgt dafür, dass die Kündigung auch dann gilt, wenn du dich beim Datum verrechnet hast.", "Sinnvoll sind außerdem die Bitte um eine schriftliche Bestätigung mit dem genauen Vertragsende und der Widerruf des Lastschriftmandats – so wird nach dem Ende nichts mehr abgebucht."] },
+      { h: "Kündigungsfristen bei Handy, Internet und Fitnessstudio", p: ["Für Verträge, die ab dem 1. März 2022 geschlossen wurden, gilt in vielen Fällen: Nach der Mindestlaufzeit verlängern sie sich nur noch auf unbestimmte Zeit und sind dann mit einer Frist von einem Monat kündbar. Das betrifft zum Beispiel Handy- und Internetverträge, Fitnessstudios und Zeitschriften-Abos. Die genaue Frist steht in deinem Vertrag oder den AGB."] },
+      { h: "Brief, E-Mail oder Kündigungsbutton?", p: ["Die meisten Verbraucherverträge kannst du in Textform kündigen, also auch per E-Mail. Online-Anbieter müssen zudem einen Kündigungsbutton auf ihrer Website haben. Ein Brief per Einschreiben hat den Vorteil, dass du den Zugang sicher nachweisen kannst – gerade kurz vor Ablauf der Frist."] }
+    ],
+    faq: [["Muss ich einen Grund für die Kündigung angeben?", "Nein. Bei einer ordentlichen Kündigung ist kein Grund nötig."], ["Was bedeutet „hilfsweise zum nächstmöglichen Zeitpunkt“?", "Ist das von dir genannte Datum zu früh, gilt die Kündigung automatisch zum nächsten möglichen Termin – sie ist also nicht unwirksam."], ["Wie beweise ich, dass die Kündigung angekommen ist?", "Am sichersten mit Einwurf-Einschreiben oder per Fax mit Sendebericht. Bewahre den Beleg bis zum Vertragsende auf."]],
+    related: ["wohnung-kuendigen", "arbeitsvertrag-kuendigen", "musterbrief", "sign"],
+  },
+  {
+    slug: "wohnung-kuendigen",
+    base: "musterbrief",
+    defaults: { type: "wohnung" },
+    guide: "Wohnung kündigen (Mieter)",
+    name: "Wohnung kündigen",
+    title: "Wohnung kündigen – Vorlage für Mieter mit Fristberechnung, als PDF | PDF Libre",
+    description: "Mietwohnung kündigen: Kündigungsschreiben für Mieter mit automatisch berechneter Frist (3 Monate), Wohnungsübergabe und Kaution. Kostenlos als PDF zum Unterschreiben.",
+    h1: "Wohnung kündigen – Vorlage für Mieter",
+    lead: "Das Kündigungsdatum wird nach der gesetzlichen Frist berechnet, alle Mieter bekommen eine Unterschriftszeile – du musst nur noch ausdrucken und unterschreiben.",
+    steps: [["Angaben eintragen", "Anschrift der Wohnung, weitere Mieter laut Mietvertrag und auf Wunsch deine IBAN für die Kaution. Das Kündigungsdatum wird vorgeschlagen."], ["Vorschau prüfen", "Rechts siehst du den fertigen Brief. Den Text kannst du frei anpassen."], ["Herunterladen und verschicken", "PDF ausdrucken, unterschreiben und am besten per Einschreiben verschicken."]],
+    article: [
+      { h: "Kündigungsfrist für Mieter: drei Monate", p: ["Als Mieter kannst du eine unbefristete Wohnung mit einer Frist von drei Monaten kündigen (§ 573c BGB), ohne Grund. Entscheidend ist, wann die Kündigung beim Vermieter ankommt: Erreicht sie ihn spätestens am dritten Werktag eines Monats, zählt dieser Monat schon mit. Beispiel: Kommt die Kündigung bis zum 3. Werktag im März an, endet das Mietverhältnis am 31. Mai.", "Das Werkzeug schlägt das Datum nach dieser Regel vor (Feiertage sind nicht berücksichtigt). Hast du einen Zeitmietvertrag oder einen Kündigungsverzicht vereinbart, gelten andere Regeln – schau in deinen Mietvertrag."] },
+      { h: "Alle Mieter müssen unterschreiben", p: ["Die Kündigung muss schriftlich erfolgen und eigenhändig unterschrieben sein – E-Mail, Fax oder WhatsApp reichen nicht. Haben mehrere Personen den Mietvertrag unterschrieben, zum Beispiel Paare oder eine WG mit gemeinsamem Vertrag, müssen alle kündigen und unterschreiben. Trage dafür die weiteren Mieter ein, das Schreiben bekommt dann automatisch für jeden eine Unterschriftszeile."] },
+      { h: "Übergabe und Kaution", p: ["Im Brief kannst du gleich um einen Termin für die Wohnungsübergabe bitten und eine Kontoverbindung für die Rückzahlung der Kaution angeben. Der Vermieter darf die Kaution erst nach einer angemessenen Prüfzeit abrechnen – oft einige Monate, wenn noch eine Nebenkostenabrechnung aussteht."] }
+    ],
+    faq: [["Kann ich die Wohnung per E-Mail kündigen?", "Nein. Die Kündigung eines Wohnraummietvertrags braucht die Schriftform mit eigenhändiger Unterschrift (§ 568 BGB)."], ["Zählt der Samstag als Werktag?", "Für die Kündigungsfrist im Mietrecht zählt der Samstag nach der Rechtsprechung des BGH nicht als Werktag. Das Werkzeug zählt deshalb nur Montag bis Freitag."], ["Wie verschicke ich die Kündigung am besten?", "Per Einwurf-Einschreiben oder persönlich mit einem Zeugen übergeben, der den Inhalt kennt – so kannst du den rechtzeitigen Zugang beweisen."]],
+    related: ["kuendigung-schreiben", "musterbrief", "sign", "pdf-formular-ausfuellen"],
+  },
+  {
+    slug: "arbeitsvertrag-kuendigen",
+    base: "musterbrief",
+    defaults: { type: "arbeit" },
+    guide: "Arbeitsvertrag kündigen (Arbeitnehmer)",
+    name: "Arbeitsvertrag kündigen",
+    title: "Arbeitsvertrag kündigen – Kündigungsschreiben für Arbeitnehmer als PDF | PDF Libre",
+    description: "Kündigungsschreiben für Arbeitnehmer: Arbeitsvertrag fristgerecht kündigen, mit Bitte um Arbeitszeugnis und Resturlaub. Frist wird vorgeschlagen. Kostenlos als PDF.",
+    h1: "Arbeitsvertrag kündigen – Vorlage für Arbeitnehmer",
+    lead: "Ein klares, höfliches Kündigungsschreiben mit Fristvorschlag, Bitte um ein qualifiziertes Arbeitszeugnis und auf Wunsch einem Dank an das Team.",
+    steps: [["Angaben eintragen", "Deine Tätigkeit und das Kündigungsdatum (wird nach der gesetzlichen Frist vorgeschlagen). Wähle, ob Arbeitszeugnis und Resturlaub erwähnt werden."], ["Vorschau prüfen", "Rechts siehst du den fertigen Brief. Den Text kannst du frei anpassen."], ["Herunterladen und verschicken", "PDF ausdrucken, unterschreiben und am besten per Einschreiben verschicken."]],
+    article: [
+      { h: "Welche Kündigungsfrist gilt?", p: ["Für Arbeitnehmer gilt gesetzlich eine Grundfrist von vier Wochen zum 15. oder zum Ende eines Kalendermonats (§ 622 Abs. 1 BGB) – auch nach vielen Jahren im Betrieb. Die längeren Fristen nach Betriebszugehörigkeit gelten nur für Kündigungen durch den Arbeitgeber, außer der Arbeitsvertrag sieht etwas anderes vor. In der Probezeit sind es meist zwei Wochen.", "Arbeits- und Tarifverträge können längere Fristen festlegen. Das Werkzeug schlägt die gesetzliche Grundfrist vor; prüfe deinen Vertrag und passe das Datum bei Bedarf an."] },
+      { h: "Schriftform: ausdrucken und unterschreiben", p: ["Eine Kündigung des Arbeitsverhältnisses ist nur in Schriftform wirksam (§ 623 BGB). Eine E-Mail, eine eingescannte Unterschrift oder eine Nachricht im Chat reichen nicht. Drucke das PDF aus, unterschreibe eigenhändig und übergib es persönlich (am besten gegen Empfangsbestätigung) oder schicke es per Einschreiben."] },
+      { h: "Danach: Zeugnis und Arbeitsagentur", p: ["Du hast Anspruch auf ein qualifiziertes Arbeitszeugnis – es ist sinnvoll, es gleich in der Kündigung anzufordern. Wenn du noch keine neue Stelle hast, melde dich bei der Agentur für Arbeit arbeitsuchend: spätestens drei Monate vor dem Ende, oder innerhalb von drei Tagen, wenn die Frist kürzer ist."] }
+    ],
+    faq: [["Muss ich meine Kündigung begründen?", "Nein, als Arbeitnehmer musst du bei einer ordentlichen Kündigung keinen Grund nennen."], ["Kann ich per E-Mail kündigen?", "Nein. Die Kündigung muss eigenhändig unterschrieben auf Papier vorliegen."], ["Was passiert mit meinem Resturlaub?", "Resturlaub wird in der Regel bis zum Ende gewährt; ist das nicht möglich, muss er ausgezahlt werden. Du kannst das im Schreiben ansprechen."]],
+    related: ["kuendigung-schreiben", "lebenslauf-erstellen", "anschreiben-erstellen", "musterbrief"],
+  },
+  {
+    slug: "widerspruch-schreiben",
+    base: "musterbrief",
+    defaults: { type: "widerspruch" },
+    guide: "Widerspruch gegen einen Bescheid",
+    name: "Widerspruch schreiben",
+    title: "Widerspruch schreiben – Vorlage gegen Bescheid (Jobcenter, Wohngeld, Steuer) | PDF Libre",
+    description: "Widerspruch gegen einen Bescheid schreiben: Vorlage für Jobcenter, Wohngeld, BAföG, Krankenkasse und andere Behörden. Fristwahrend, Begründung kann nachgereicht werden. Kostenlos als PDF.",
+    h1: "Widerspruch gegen einen Bescheid schreiben",
+    lead: "Fristwahrend Widerspruch einlegen – auch ohne Begründung. Aktenzeichen und Datum des Bescheids eintragen, PDF herunterladen, unterschreiben, abschicken.",
+    steps: [["Angaben eintragen", "Welcher Bescheid, sein Datum und das Aktenzeichen. Eine Begründung kannst du gleich schreiben oder nachreichen."], ["Vorschau prüfen", "Rechts siehst du den fertigen Brief. Den Text kannst du frei anpassen."], ["Herunterladen und verschicken", "PDF ausdrucken, unterschreiben und am besten per Einschreiben verschicken."]],
+    article: [
+      { h: "Die Frist ist das Wichtigste", p: ["Gegen einen Bescheid einer Behörde – zum Beispiel vom Jobcenter, der Wohngeldstelle, dem BAföG-Amt, der Krankenkasse oder der Familienkasse – kannst du in der Regel innerhalb eines Monats nach Bekanntgabe Widerspruch einlegen. Die genaue Frist und die Stelle, an die du den Widerspruch schicken musst, stehen in der Rechtsbehelfsbelehrung am Ende des Bescheids.", "Gegen Steuerbescheide heißt das Rechtsmittel übrigens „Einspruch“ – die Vorlage kannst du dafür anpassen, indem du den Text änderst."] },
+      { h: "Erst Widerspruch einlegen, dann begründen", p: ["Um die Frist zu wahren, reicht ein kurzer Widerspruch ohne Begründung. Du kannst schreiben, dass du die Begründung nachreichst, und gleichzeitig Akteneinsicht beantragen. So hast du Zeit, den Bescheid in Ruhe zu prüfen oder dir Hilfe zu holen – etwa bei einer Beratungsstelle, einem Sozialverband oder der Verbraucherzentrale."] },
+      { h: "So verschickst du den Widerspruch", p: ["Der Widerspruch muss schriftlich (unterschrieben) oder zur Niederschrift bei der Behörde eingelegt werden. Schicke ihn per Post, am besten per Einschreiben, oder gib ihn persönlich ab und lass dir den Eingang auf einer Kopie bestätigen."] }
+    ],
+    faq: [["Muss der Widerspruch begründet werden?", "Für die Frist nicht. Eine Begründung erhöht aber die Chancen und kann nachgereicht werden."], ["Kann ich per E-Mail Widerspruch einlegen?", "Eine einfache E-Mail reicht meist nicht. Nutze den Brief mit Unterschrift oder – falls die Behörde es anbietet – ein Online-Formular mit sicherer Anmeldung."], ["Was ist, wenn die Frist abgelaufen ist?", "Dann ist der Bescheid meist bestandskräftig. Bei Sozialleistungen gibt es aber oft einen Überprüfungsantrag (§ 44 SGB X) – lass dich dazu beraten."]],
+    related: ["musterbrief", "sign", "pdf-formular-ausfuellen", "merge"],
+  },
+  {
+    slug: "mahnung-schreiben",
+    base: "musterbrief",
+    defaults: { type: "mahnung" },
+    guide: "Mahnung schreiben (Zahlungserinnerung)",
+    name: "Mahnung schreiben",
+    title: "Mahnung schreiben – Vorlage für Zahlungserinnerung, Mahnung & letzte Mahnung | PDF Libre",
+    description: "Mahnung online schreiben: Zahlungserinnerung, 1. Mahnung oder letzte Mahnung mit Rechnungsnummer, Betrag, Frist und IBAN. Kostenlos als PDF – für Freelancer, Vermieter und kleine Betriebe.",
+    h1: "Mahnung schreiben – Vorlage in drei Stufen",
+    lead: "Vom freundlichen Hinweis bis zur letzten Mahnung: Rechnungsdaten eintragen, Stufe wählen, PDF herunterladen. Die Zahlungsfrist wird vorgeschlagen.",
+    steps: [["Angaben eintragen", "Stufe (Zahlungserinnerung, Mahnung, letzte Mahnung), Rechnungsnummer, Datum, offener Betrag und deine IBAN."], ["Vorschau prüfen", "Rechts siehst du den fertigen Brief. Den Text kannst du frei anpassen."], ["Herunterladen und verschicken", "PDF ausdrucken, unterschreiben und am besten per Einschreiben verschicken."]],
+    article: [
+      { h: "Zahlungserinnerung, Mahnung, letzte Mahnung", p: ["Üblich sind drei Stufen: Zuerst eine freundliche Zahlungserinnerung („sicher ist es Ihrer Aufmerksamkeit entgangen“), dann eine Mahnung mit neuer Frist und zum Schluss eine letzte Mahnung, in der du rechtliche Schritte wie das gerichtliche Mahnverfahren ankündigst. Gesetzlich vorgeschrieben ist diese Reihenfolge nicht – sie hat sich aber bewährt und hält die Kundenbeziehung freundlich."] },
+      { h: "Wann ist der Kunde in Verzug?", p: ["Steht auf der Rechnung ein konkretes Zahlungsdatum, ist der Kunde ab dem Tag danach im Verzug. Fehlt ein Datum, tritt Verzug bei Unternehmen spätestens 30 Tage nach Zugang der Rechnung ein, bei Verbrauchern nur, wenn auf der Rechnung auf diese Folge hingewiesen wurde – sonst durch die erste Mahnung. Ab Verzug kannst du Verzugszinsen verlangen; gegenüber Unternehmen zusätzlich eine Pauschale von 40 €."] },
+      { h: "Und wenn trotzdem nicht gezahlt wird?", p: ["Nach der letzten Mahnung kannst du online einen gerichtlichen Mahnbescheid beantragen (online-mahnantrag.de). Das ist günstig und geht ohne Anwalt. Bei Geschäftskunden lohnt sich außerdem ein Blick auf die E-Rechnung: Rechnungen, die direkt in der Buchhaltung des Kunden landen, werden oft schneller bezahlt."] }
+    ],
+    faq: [["Wie lang sollte die Zahlungsfrist sein?", "Üblich sind 7 bis 14 Tage. Das Werkzeug schlägt 10 Tage vor."], ["Darf ich Mahngebühren verlangen?", "Ab Verzug darfst du den tatsächlichen Schaden verlangen, z. B. Porto. Pauschale Mahngebühren sind nur in angemessener Höhe zulässig; gegenüber Unternehmen gibt es die gesetzliche Pauschale von 40 €."], ["Kann ich die Mahnung per E-Mail schicken?", "Ja, eine Mahnung ist formfrei. Ein Brief oder PDF-Anhang wirkt aber verbindlicher und lässt sich besser nachweisen."]],
+    related: ["e-rechnung-erstellen", "musterbrief", "e-rechnung-pruefen", "sign"],
+  },
+  {
+    slug: "widerruf-schreiben",
+    base: "musterbrief",
+    defaults: { type: "widerruf" },
+    guide: "Widerruf einer Online-Bestellung",
+    name: "Widerruf schreiben",
+    title: "Widerruf schreiben – Muster-Widerrufsformular für Online-Bestellungen als PDF | PDF Libre",
+    description: "Widerruf einer Online-Bestellung schreiben: Vorlage nach dem gesetzlichen Muster-Widerrufsformular mit Bestellnummer, Bestell- und Lieferdatum und Bitte um Erstattung. Kostenlos als PDF.",
+    h1: "Widerruf einer Online-Bestellung schreiben",
+    lead: "Ware zurückschicken und Geld zurück: Bestellnummer und Artikel eintragen, PDF herunterladen und per Post oder als Anhang an den Händler schicken.",
+    steps: [["Angaben eintragen", "Bestellnummer, Bestell- und Lieferdatum und die Artikel, die du zurückgeben möchtest."], ["Vorschau prüfen", "Rechts siehst du den fertigen Brief. Den Text kannst du frei anpassen."], ["Herunterladen und verschicken", "PDF ausdrucken, unterschreiben und am besten per Einschreiben verschicken."]],
+    article: [
+      { h: "14 Tage Widerrufsrecht", p: ["Bei Käufen im Internet, per Telefon oder Katalog hast du als Verbraucher ein Widerrufsrecht von 14 Tagen. Die Frist beginnt in der Regel mit Erhalt der Ware. Hat der Händler nicht richtig über das Widerrufsrecht belehrt, verlängert sich die Frist auf bis zu zwölf Monate und 14 Tage.", "Ausnahmen gibt es zum Beispiel bei individuell angefertigten Waren, schnell verderblichen Lebensmitteln oder entsiegelter Software."] },
+      { h: "Den Widerruf ausdrücklich erklären", p: ["Die Ware einfach zurückzuschicken reicht nicht immer – der Widerruf muss eindeutig erklärt werden. Die Vorlage orientiert sich am gesetzlichen Muster-Widerrufsformular und enthält alle wichtigen Angaben: Bestellung, Datum, Artikel, Name und Anschrift."] },
+      { h: "Erstattung", p: ["Nach dem Widerruf muss der Händler den Kaufpreis und die Kosten für den Standardversand innerhalb von 14 Tagen erstatten, in der Regel über dasselbe Zahlungsmittel. Er darf die Zahlung zurückhalten, bis die Ware wieder bei ihm ist oder du die Rücksendung nachgewiesen hast."] }
+    ],
+    faq: [["Muss ich den Widerruf begründen?", "Nein, ein Grund ist nicht nötig."], ["Reicht eine E-Mail?", "Ja, der Widerruf ist formfrei. Du kannst das PDF auch als Anhang per E-Mail schicken."], ["Wer zahlt die Rücksendung?", "Das hängt von den Bedingungen des Händlers ab. Viele übernehmen die Kosten freiwillig; sonst trägst du sie, wenn der Händler vorher darauf hingewiesen hat."]],
+    related: ["musterbrief", "kuendigung-schreiben", "sign", "merge"],
+  },
   // ------------------------------------------------------------------ FORMULARE
   {
     slug: "pdf-ausfuellbar-machen",

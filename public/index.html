@@ -26,10 +26,10 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=d50d63af">
+  <link rel="stylesheet" href="/assets/style.css?v=f0c95b6f">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"PDF Libre","url":"https://pdf-libre.de/","inLanguage":"de-DE"}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"PDF Libre","url":"https://pdf-libre.de/","logo":"https://pdf-libre.de/apple-touch-icon.png"}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist PDF Libre kostenlos?","acceptedAnswer":{"@type":"Answer","text":"Fast alles: 33 Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur „PDF bearbeiten“, „PDF erstellen“, „PDF zusammenfassen“ und „PDF übersetzen“ gehören zu PDF Libre Pro: 14 Tage kostenlos testen, danach 4,99 € im Monat oder 2,99 € für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt."}},{"@type":"Question","name":"Was passiert mit meinen Dateien?","acceptedAnswer":{"@type":"Answer","text":"Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."}},{"@type":"Question","name":"Brauche ich ein Programm oder eine App?","acceptedAnswer":{"@type":"Answer","text":"Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."}},{"@type":"Question","name":"Wie groß dürfen meine Dateien sein?","acceptedAnswer":{"@type":"Answer","text":"Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist PDF Libre kostenlos?","acceptedAnswer":{"@type":"Answer","text":"Fast alles: 34 Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur „PDF bearbeiten“, „PDF erstellen“, „PDF zusammenfassen“ und „PDF übersetzen“ gehören zu PDF Libre Pro: 14 Tage kostenlos testen, danach 4,99 € im Monat oder 2,99 € für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt."}},{"@type":"Question","name":"Was passiert mit meinen Dateien?","acceptedAnswer":{"@type":"Answer","text":"Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."}},{"@type":"Question","name":"Brauche ich ein Programm oder eine App?","acceptedAnswer":{"@type":"Answer","text":"Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."}},{"@type":"Question","name":"Wie groß dürfen meine Dateien sein?","acceptedAnswer":{"@type":"Answer","text":"Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt."}}]}</script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
   gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
   gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);</script>
@@ -96,6 +96,10 @@
           <p class="mega__cat mega__cat--erechnung">E-Rechnung</p>
           <ul><li><a href="/e-rechnung-erstellen.html">E-Rechnung erstellen</a></li><li><a href="/xrechnung-anzeigen.html">XRechnung anzeigen</a></li><li><a href="/e-rechnung-pruefen.html">E-Rechnung prüfen</a></li></ul>
         </div>
+        <div class="mega__col">
+          <p class="mega__cat mega__cat--edit">Briefe &amp; Vorlagen</p>
+          <ul><li><a href="/musterbrief.html">Musterbrief erstellen</a></li></ul>
+        </div>
     </div>
   </div>
 </header>
@@ -124,6 +128,7 @@
     <button type="button" class="chip chip--ai" aria-pressed="false" data-filter="ai">KI</button>
     <button type="button" class="chip chip--security" aria-pressed="false" data-filter="security">Sicherheit</button>
     <button type="button" class="chip chip--erechnung" aria-pressed="false" data-filter="erechnung">E-Rechnung</button>
+    <button type="button" class="chip chip--edit" aria-pressed="false" data-filter="briefe">Briefe</button>
   </div>
   <div class="tgroup" data-group="bewerbung">
     <h3 class="tgroup__title tgroup__title--career">Bewerbung &amp; Lebenslauf</h3>
@@ -155,7 +160,7 @@
           <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
-<g transform="translate(10 17) scale(1)" class="ficon__glyph"><rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="m4.5 7 7.5 6 7.5-6"/></g>
+<g transform="translate(10 17) scale(1)" class="ficon__glyph"><path d="M4 6h16v12H4z"/><path d="m4.5 7 7.5 6 7.5-6M7 15.5h4"/></g>
 </svg>
           <span class="tcard__name">Anschreiben erstellen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Bewerbungsanschreiben im Design deines Lebenslaufs – selbst oder mit KI.</span>
@@ -578,6 +583,22 @@
       </li>
     </ul>
   </div>
+  <div class="tgroup" data-group="briefe">
+    <h3 class="tgroup__title tgroup__title--edit">Briefe &amp; Vorlagen</h3>
+    <ul class="tgrid">
+      <li class="tcard" data-cat="briefe">
+        <a href="/musterbrief.html">
+          <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+<path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
+<path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
+<g transform="translate(10 17) scale(1)" class="ficon__glyph"><path d="M4 6h16v12H4z"/><path d="m4.5 7 7.5 6 7.5-6M7 15.5h4"/></g>
+</svg>
+          <span class="tcard__name">Musterbrief erstellen <span class="new-badge">Neu</span></span>
+          <span class="tcard__text">Kündigung, Widerspruch, Mahnung oder Widerruf als fertiger Brief im PDF – mit Live-Vorschau.</span>
+        </a>
+      </li>
+    </ul>
+  </div>
 </section>
 
 <section class="wrap pro-band" aria-labelledby="pro-title">
@@ -614,7 +635,7 @@
   <h2 id="faq-title">Häufige Fragen</h2>
   <details>
     <summary>Ist PDF Libre kostenlos?</summary>
-    <p>Fast alles: 33 Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur „PDF bearbeiten“, „PDF erstellen“, „PDF zusammenfassen“ und „PDF übersetzen“ gehören zu PDF Libre Pro: 14 Tage kostenlos testen, danach 4,99 € im Monat oder 2,99 € für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.</p>
+    <p>Fast alles: 34 Werkzeuge wie Zusammenfügen, Komprimieren, Unterschreiben und Umwandeln sind kostenlos und ohne Anmeldung nutzbar. Nur „PDF bearbeiten“, „PDF erstellen“, „PDF zusammenfassen“ und „PDF übersetzen“ gehören zu PDF Libre Pro: 14 Tage kostenlos testen, danach 4,99 € im Monat oder 2,99 € für einen Tagespass. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt.</p>
   </details>
   <details>
     <summary>Was passiert mit meinen Dateien?</summary>
@@ -635,7 +656,7 @@
     <div class="site-footer__grid">
       <div class="site-footer__about">
         <a href="/" class="brand brand--footer"><svg class="brand__mark" viewBox="0 0 32 36" aria-hidden="true"><path d="M3 2h17l9 9v22a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor"/><path d="M20 2v8a1 1 0 0 0 1 1h8Z" fill="#fff" opacity=".45"/><path d="M9 25V14h4.5a3.5 3.5 0 0 1 0 7H9" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>PDF Libre</span></a>
-        <p>33 kostenlose PDF-Werkzeuge ohne Anmeldung, dazu PDF Libre Pro mit PDF-Editor und KI-Werkzeugen. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
+        <p>34 kostenlose PDF-Werkzeuge ohne Anmeldung, dazu PDF Libre Pro mit PDF-Editor und KI-Werkzeugen. Hochgeladene Dateien werden nach der Verarbeitung gelöscht.</p>
       </div>
       <div>
         <p class="site-footer__head">Bewerbung &amp; Lebenslauf</p>
@@ -673,6 +694,10 @@
         <p class="site-footer__head">E-Rechnung</p>
         <ul><li><a href="/e-rechnung-erstellen.html">E-Rechnung erstellen</a></li><li><a href="/xrechnung-anzeigen.html">XRechnung anzeigen</a></li><li><a href="/e-rechnung-pruefen.html">E-Rechnung prüfen</a></li></ul>
       </div>
+      <div>
+        <p class="site-footer__head">Briefe &amp; Vorlagen</p>
+        <ul><li><a href="/musterbrief.html">Musterbrief erstellen</a></li></ul>
+      </div>
     </div>
     <div class="site-footer__legal">
       <p>© <span data-year>2026</span> PDF Libre · Entwickelt von <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
@@ -680,6 +705,6 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=d50d63af" defer></script>
+<script src="/assets/site.js?v=f0c95b6f" defer></script>
 </body>
 </html>

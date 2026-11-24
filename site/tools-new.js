@@ -23,6 +23,61 @@ const LANG_CHOICES = [
 module.exports = [
   // ------------------------------------------------------------------ PDF UNTERSCHREIBEN
   {
+    slug: "musterbrief",
+    name: "Musterbrief erstellen",
+    short: "Kündigung, Widerspruch, Mahnung oder Widerruf als fertiger Brief im PDF – mit Live-Vorschau.",
+    cat: "briefe",
+    isNew: true,
+    badge: "PDF",
+    glyph: "letter",
+    title: "Musterbrief erstellen – Kündigung, Widerspruch, Mahnung als PDF | PDF Libre",
+    description:
+      "Musterbriefe kostenlos online ausfüllen: Kündigung (Vertrag, Wohnung, Job), Widerspruch, Mahnung und Widerruf. Fertiger Brief nach DIN 5008 als PDF, mit Live-Vorschau. Ohne Anmeldung, ohne Upload.",
+    h1: "Musterbrief erstellen",
+    lead: "Vorlage wählen, Lücken ausfüllen, fertig: Du siehst den Brief sofort so, wie er gedruckt aussieht – sauber nach DIN 5008 gesetzt, passend für Fensterumschläge.",
+    ui: { mode: "letter" },
+    steps: [
+      ["Vorlage wählen", "Kündigung eines Vertrags, der Wohnung oder des Jobs, Widerspruch gegen einen Bescheid, Mahnung oder Widerruf eines Online-Kaufs."],
+      ["Angaben eintragen", "Absender, Empfänger und die wichtigsten Daten. Fristen wie das Kündigungsdatum werden vorgeschlagen. Den Text kannst du frei anpassen."],
+      ["PDF herunterladen", "Drucken, unterschreiben und verschicken – am besten per Einschreiben. Die Vorschau zeigt genau das PDF, das du herunterlädst."],
+    ],
+    article: [
+      {
+        h: "Briefe, die man nicht jeden Tag schreibt",
+        p: [
+          "Eine Kündigung, ein Widerspruch oder eine Mahnung – solche Briefe schreibt man selten, aber dann müssen sie stimmen: richtiger Aufbau, eindeutige Formulierung, alle wichtigen Angaben wie Vertragsnummer, Aktenzeichen oder Frist. PDF Libre gibt dir dafür geprüfte Formulierungen, die du nur noch ergänzen musst.",
+          "Der Brief wird nach DIN 5008 gesetzt: Absender oben, Empfängeranschrift genau im Fenster eines Briefumschlags (DIN lang), Ort und Datum, Betreff fett, Falz- und Lochmarken am Rand. So sieht er professionell aus und kommt ohne extra Adressaufkleber an.",
+        ],
+      },
+      {
+        h: "Fristen automatisch berechnet",
+        p: [
+          "Bei der Kündigung einer Mietwohnung schlägt das Werkzeug das Datum nach der gesetzlichen Frist von drei Monaten vor, beim Arbeitsvertrag die gesetzliche Grundfrist von vier Wochen zum 15. oder zum Monatsende. Bei einer Mahnung wird eine Zahlungsfrist von zehn Tagen vorgeschlagen. Alle Daten kannst du ändern – maßgeblich sind immer dein Vertrag und das Gesetz.",
+        ],
+      },
+      {
+        h: "Unterschreiben nicht vergessen",
+        p: [
+          "Für die Kündigung einer Wohnung und eines Arbeitsvertrags schreibt das Gesetz die Schriftform vor: Der Brief muss ausgedruckt und eigenhändig unterschrieben werden, eine E-Mail reicht nicht. Bei anderen Verträgen genügt oft auch Textform (E-Mail oder Kündigungsbutton) – ein unterschriebener Brief per Einschreiben ist aber der sicherste Nachweis.",
+        ],
+      },
+      {
+        h: "Privat und kostenlos",
+        p: [
+          "Der Brief wird komplett in deinem Browser erstellt. Deine Adresse, Vertragsnummern oder Gründe für einen Widerspruch werden nicht hochgeladen. Damit du deine Adresse nicht jedes Mal neu eingeben musst, kann sie dein Browser speichern.",
+        ],
+      },
+    ],
+    faq: [
+      ["Sind die Musterbriefe kostenlos?", "Ja, alle Vorlagen sind kostenlos, ohne Anmeldung und ohne Wasserzeichen."],
+      ["Kann ich den Text ändern?", "Ja. Der Brieftext ist frei bearbeitbar. Mit „Vorlage wiederherstellen“ kommst du zur ursprünglichen Formulierung zurück."],
+      ["Passt die Adresse in einen Fensterumschlag?", "Ja. Die Empfängeranschrift steht nach DIN 5008 (Form B) genau im Fenster eines Umschlags DIN lang oder C5/6. Den Brief zweimal an den Falzmarken falten."],
+      ["Ersetzt das eine Rechtsberatung?", "Nein. Die Vorlagen decken die üblichen Fälle ab. Bei Streit oder besonderen Verträgen hilft eine Beratung, z. B. beim Mieterverein oder bei der Verbraucherzentrale."],
+      ["Wird mein Brief gespeichert?", "Nein. Alles passiert in deinem Browser. Nur wenn du möchtest, merkt sich dein Browser deine Absenderadresse."],
+    ],
+    related: ["sign", "pdf-formular-ausfuellen", "merge", "compress"],
+  },
+  {
     slug: "pdf-formular-ausfuellen",
     name: "PDF-Formular ausfüllen",
     short: "Ausfüllbare PDF-Formulare direkt im Browser ausfüllen und speichern – ohne Adobe.",

@@ -964,3 +964,19 @@ textarea.fm-field { padding-top: 2px; }
   .iv-missing ul { columns: 1; }
 }
 @media (max-width: 520px) { .iv-grid > .iv-f, .iv-grid > .iv-f--s, .iv-grid > .iv-f--wide { grid-column: span 6; } .iv-grid--4 { grid-template-columns: 1fr 1fr; } }
+
+/* Musterbriefe */
+.lt { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 440px); gap: 20px; align-items: start; }
+.lt-type { width: 100%; padding: 10px 12px; border: 1px solid var(--line-2); border-radius: 8px; font: inherit; font-weight: 600; margin-bottom: 12px; background: #fff; }
+.lt-own { margin-bottom: 4px; }
+.lt-own .iv-check { grid-column: span 6; margin-top: 2px; }
+.lt-own select { width: 100%; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 8px; font: inherit; background: #fff; }
+.lt-hint { margin: 12px 0 0; padding: 10px 12px; font-size: .88rem; background: var(--bg); border-left: 3px solid var(--brand); border-radius: 6px; }
+.lt-text textarea { font-size: .92rem; line-height: 1.45; }
+.lt-side { position: sticky; top: 84px; display: grid; gap: 10px; }
+.lt-paper { background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.14); border-radius: 2px; overflow: hidden; }
+.lt-paper canvas { display: block; width: 100%; }
+.lt-pages { margin: 0; text-align: center; font-size: .85rem; color: var(--ink-3); min-height: 1em; }
+.lt-dl { justify-content: center; }
+.lt-note { margin: 0; font-size: .82rem; color: var(--ink-3); }
+@media (max-width: 900px) { .lt { grid-template-columns: 1fr; } .lt-side { position: static; } }

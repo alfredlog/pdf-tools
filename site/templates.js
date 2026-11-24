@@ -156,6 +156,7 @@ const GLYPHS = {
   archive: '<rect x="4" y="5" width="16" height="4" rx="1"/><path d="M5.5 9v9.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V9M10 13h4"/>',
   phone: '<rect x="7" y="3.5" width="10" height="17" rx="2"/><circle cx="12" cy="10.5" r="2.5"/><path d="M11 17.5h2"/>',
   einvoiceNew: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h4M16.5 14.5v4M14.5 16.5h4"/>',
+  letter: '<path d="M4 6h16v12H4z"/><path d="m4.5 7 7.5 6 7.5-6M7 15.5h4"/>',
   einvoiceView: '<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/>',
   einvoiceCheck: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',
   merge: '<path d="M7 5v4a3 3 0 0 0 3 3h4a3 3 0 0 1 3 3v4M17 5v4a3 3 0 0 1-3 3"/><path d="m14 16 3 3 3-3"/>',
@@ -567,6 +568,7 @@ function workspace(t) {
   if (t.ui.mode === "cv") return cvWorkspace(t);
   if (t.ui.mode === "form") return formWorkspace(t);
   if (t.ui.mode === "invoice") return invoiceWorkspace(t);
+  if (t.ui.mode === "letter") return letterWorkspace(t);
   const ui = t.ui;
   const c = catById[t.cat].color;
   const data = {
@@ -898,6 +900,61 @@ function formWorkspace(t) {
         <p><a class="btn btn--primary btn--lg" data-download download>${T("Herunterladen")}</a></p>
         <p><button type="button" class="btn btn--link" data-back>${T("Zurück zum Formular")}</button></p>
         <p class="done__next">${T("Weiter mit:")} <a href="${url("sign")}">${esc(bySlug.sign ? bySlug.sign.name : "PDF unterschreiben")}</a> · <a href="${url("compress")}">${esc(bySlug.compress.name)}</a> · <a href="${url("merge")}">${esc(bySlug.merge.name)}</a></p>
+      </div>
+    </div>
+  </section>`;
+}
+
+// Musterbriefe (Logik und Brieftexte: public/assets/letter.js). data-default = Vorlage der Ratgeberseite
+function letterWorkspace(t) {
+  const c = catById[t.cat].color;
+  const g = (k, label, o = {}) => `<label class="iv-f${o.wide ? " iv-f--wide" : ""}"><span>${T(label)}</span><input data-g="${k}" type="${o.type || "text"}"${o.ph ? ` placeholder="${esc(T(o.ph))}"` : ""}${o.ac ? ` autocomplete="${o.ac}"` : ""}${o.val ? ` value="${esc(o.val)}"` : ""}></label>`;
+  return `<section class="tool tool--${c}" data-letter data-default="${esc((t.defaults && t.defaults.type) || "")}" aria-label="${esc(t.name)}">
+    <div class="lt">
+      <div class="lt-form iv">
+        <fieldset class="iv-box">
+          <legend>${T("Vorlage")}</legend>
+          <select data-type class="lt-type" aria-label="${T("Vorlage")}"></select>
+          <div class="iv-grid lt-own" data-own></div>
+          <p class="lt-hint" data-hint></p>
+        </fieldset>
+        <fieldset class="iv-box">
+          <legend>${T("Absender (du)")}</legend>
+          <div class="iv-grid">
+            ${g("s_name", "Vor- und Nachname", { wide: true, ac: "name" })}
+            ${g("s_street", "Straße und Hausnummer", { wide: true, ac: "street-address" })}
+            ${g("s_city", "PLZ und Ort", { wide: true, ph: "z. B. 64283 Darmstadt" })}
+            ${g("s_contact", "E-Mail oder Telefon (optional)", { wide: true })}
+          </div>
+          <label class="iv-check"><input type="checkbox" data-remember checked> ${T("Meine Angaben in diesem Browser merken")}</label>
+        </fieldset>
+        <fieldset class="iv-box">
+          <legend>${T("Empfänger")}</legend>
+          <div class="iv-grid">
+            ${g("r_name", "Firma / Behörde / Name", { wide: true })}
+            ${g("r_extra", "Zusatz (optional)", { wide: true, ph: "z. B. Kundenservice oder z. Hd. Frau Müller" })}
+            ${g("r_street", "Straße und Hausnummer oder Postfach", { wide: true })}
+            ${g("r_city", "PLZ und Ort", { wide: true })}
+          </div>
+        </fieldset>
+        <fieldset class="iv-box">
+          <legend>${T("Brief")}</legend>
+          <div class="iv-grid">
+            ${g("place", "Ort", { ph: "z. B. Darmstadt" })}
+            ${g("date", "Datum", { type: "date" })}
+            ${g("salutation", "Anrede", { wide: true, val: "Sehr geehrte Damen und Herren," })}
+          </div>
+          <label class="iv-f iv-f--wide lt-text"><span>${T("Brieftext – du kannst ihn frei ändern")}</span><textarea data-text rows="10"></textarea></label>
+          <button type="button" class="btn btn--link" data-restore hidden>${T("Vorlage wiederherstellen")}</button>
+        </fieldset>
+      </div>
+      <div class="lt-side">
+        <div class="lt-paper"><canvas data-preview aria-label="${T("Vorschau des Briefs")}"></canvas></div>
+        <p class="lt-pages" data-pages></p>
+        <button type="button" class="btn btn--primary btn--lg lt-dl" data-download>${ICON.download || ""}<span>${T("Brief als PDF herunterladen")}</span></button>
+        <p class="privacy">${ICON.shield}<span>${T("<strong>Im Browser:</strong> Der Brief wird auf deinem Gerät erstellt, nichts wird hochgeladen.")}</span></p>
+        ${LANG === "de" ? "" : `<p class="lt-note">${T("Der Brief selbst wird auf Deutsch erstellt – so, wie ihn deutsche Firmen und Behörden erwarten.")}</p>`}
+        <p class="lt-note">${T("Keine Rechtsberatung: Die Vorlagen decken übliche Fälle ab. Prüfe Fristen und Besonderheiten deines Vertrags.")}</p>
       </div>
     </div>
   </section>`;
@@ -1263,6 +1320,10 @@ ${
   }
   if (t.ui.mode === "cv") {
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/cv.js?v=${BUILD_ID}" defer></script>` });
+  }
+  if (t.ui.mode === "letter") {
+    const scripts = ["/vendor/pdf.min.js", "/vendor/pdf-lib.min.js", `/assets/letter.js?v=${BUILD_ID}`].map((x) => `\n<script src="${x}" defer></script>`).join("");
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts });
   }
   if (t.ui.mode === "invoice") {
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/invoice.js?v=${BUILD_ID}" defer></script>` });

@@ -46,7 +46,7 @@ function copy(from, toRel) {
 
 // Cache-Busting: Hash über CSS und JS, damit Browser nach Änderungen neu laden
 const assetHash = crypto.createHash("sha1");
-for (const f of ["assets/style.css", "assets/site.js", "assets/tool.js", "assets/editor.js", "assets/account.js", "assets/slides.js", "assets/cv.js", "assets/form.js", "assets/form-detect.js", "assets/invoice.js"]) {
+for (const f of ["assets/style.css", "assets/site.js", "assets/tool.js", "assets/editor.js", "assets/account.js", "assets/slides.js", "assets/cv.js", "assets/form.js", "assets/form-detect.js", "assets/invoice.js", "assets/letter.js"]) {
   const p = path.join(PUBLIC, f);
   if (fs.existsSync(p)) assetHash.update(fs.readFileSync(p));
 }

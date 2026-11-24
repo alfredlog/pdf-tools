@@ -17,6 +17,7 @@ const categories = [
   { id: "ai", name: "KI-Werkzeuge", short: "KI", color: "ai" },
   { id: "security", name: "Sicherheit", short: "Sicherheit", color: "security" },
   { id: "erechnung", name: "E-Rechnung", short: "E-Rechnung", color: "erechnung" },
+  { id: "briefe", name: "Briefe & Vorlagen", short: "Briefe", color: "edit" },
 ];
 
 // Reihenfolge der Werkzeuge innerhalb der Kategorien (beliebteste zuerst)
@@ -28,7 +29,7 @@ const ORDER = [
   "pdf-to-docx", "pdf-to-excel", "pdf-to-powerpoint", "pdf-to-jpg",
   "summarize", "translate",
   "protect", "redact", "unlock",
-  "e-rechnung-erstellen", "xrechnung-anzeigen", "e-rechnung-pruefen",
+  "e-rechnung-erstellen", "xrechnung-anzeigen", "e-rechnung-pruefen", "musterbrief",
 ];
 
 const PDF = { accept: ".pdf,application/pdf", label: "PDF" };
