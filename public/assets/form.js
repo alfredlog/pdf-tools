@@ -27,7 +27,10 @@
 
   let bytes = null; // Original-PDF
   let fileName = "formular.pdf";
-  let fields = new Map(); // Feldname → { type, value, options, widgets: [HTML-Elemente] }
+  let fields = new Map(); // Feldname → { type, value, options, widgets: [HTML-Elemente], detected? }
+  let pages = []; // pro Seite: { page (pdf.js), vp (Anzeige), vp1 (Maßstab 1), wrap }
+  let adding = null; // "text" | "check" während „Feld hinzufügen“
+  let counter = 0;
   let downloadUrl = null;
 
   // ------------------------------------------------------------------ Datei laden
@@ -59,6 +62,9 @@
   async function render() {
     pagesEl.innerHTML = "";
     fields = new Map();
+    pages = [];
+    counter = 0;
+    setAdding(null);
     const doc = await pdfjsLib.getDocument({ data: bytes.slice(), isEvalSupported: false }).promise;
     // Breite der sichtbaren Werkzeug-Box (die Arbeitsfläche ist beim Laden noch versteckt → clientWidth wäre 0)
     const width = Math.min((root.clientWidth || window.innerWidth) - 4, 1000);
@@ -83,6 +89,8 @@
       label.textContent = tr("Seite {n}", { n });
       wrap.appendChild(label);
       pagesEl.appendChild(wrap);
+      pages.push({ page, vp, vp1: base, wrap });
+      wrap.addEventListener("click", (e) => addAt(n, e));
       // annotationMode DISABLE: die Felder zeichnen wir selbst (sonst stünden alte Werte doppelt da)
       await page.render({ canvasContext: canvas.getContext("2d"), viewport: vp, transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null, annotationMode: pdfjsLib.AnnotationMode.DISABLE }).promise;
 
@@ -99,15 +107,31 @@
         count++;
       }
     }
+    // Keine echten Formularfelder → Felder im Bild der Seiten suchen (Linien, Kästchen, Punktlinien)
+    let detectedCount = 0;
+    if (fields.size === 0 && window.PLFormDetect) {
+      const busy = root.querySelector("[data-busy-text]");
+      for (const pg of pages) {
+        busy.textContent = tr("Felder werden erkannt … Seite {n} von {total}", { n: pages.indexOf(pg) + 1, total: pages.length });
+        let found = [];
+        try { found = await PLFormDetect.detect(pg.page); } catch (e) { console.warn(e); }
+        for (const d of found) { addDetected(pages.indexOf(pg) + 1, d); detectedCount++; }
+      }
+    }
+    root.classList.toggle("is-detected", detectedCount > 0);
     const names = fields.size;
     $("[data-empty]").hidden = names > 0;
     $("[data-save]").hidden = names === 0;
+    $("[data-empty]").querySelector("[data-empty-detect]").hidden = !window.PLFormDetect;
     $("[data-flatten]").closest("label").hidden = names === 0;
     $("[data-highlight]").closest("label").hidden = names === 0;
     $("[data-reset]").hidden = names === 0;
-    $("[data-info]").textContent = names
+    $("[data-info]").textContent = detectedCount
+      ? tr("{n} Felder automatisch erkannt. Prüfe sie: Überflüssige mit × löschen, fehlende mit „+ Textfeld“ ergänzen.", { n: detectedCount })
+      : names
       ? (names === 1 ? tr("1 Feld gefunden – klicke hinein und tippe los.") : tr("{n} Felder gefunden – klicke hinein und tippe los.", { n: names }))
       : "";
+    $("[data-save-empty]").hidden = detectedCount === 0;
     const note = $("[data-note]");
     note.hidden = true;
     if (names && doc.isPureXfa) {
@@ -116,6 +140,68 @@
     }
     pagesEl.classList.toggle("is-highlight", $("[data-highlight]").checked);
     void count;
+  }
+
+  // ------------------------------------------------------------------ erkannte und selbst hinzugefügte Felder
+  // Sie existieren noch nicht in der PDF: Wir bauen ein „Annotation“-Objekt wie von pdf.js,
+  // damit makeInput() sie genauso anzeigt. Beim Speichern legt pdf-lib echte Formularfelder an.
+  function uniqueName(label) {
+    let base = (label || "").replace(/\./g, " ").replace(/\s+/g, " ").trim();
+    if (!base) base = tr("Feld {n}", { n: ++counter });
+    let name = base, i = 2;
+    while (fields.has(name)) name = `${base} ${i++}`;
+    return name;
+  }
+  function addDetected(pageNo, d) {
+    const pg = pages[pageNo - 1];
+    // Seitenkoordinaten (oben links) → PDF-Koordinaten (unten links, berücksichtigt Drehung und Beschnitt)
+    const [ax, ay] = pg.vp1.convertToPdfPoint(d.rect[0], d.rect[1]);
+    const [bx, by] = pg.vp1.convertToPdfPoint(d.rect[2], d.rect[3]);
+    const rect = [Math.min(ax, bx), Math.min(ay, by), Math.max(ax, bx), Math.max(ay, by)];
+    const name = uniqueName(d.label);
+    const a = d.kind === "check"
+      ? { fieldName: name, fieldType: "Btn", checkBox: true, exportValue: "Yes", fieldValue: "Off", rect }
+      : { fieldName: name, fieldType: "Tx", multiLine: d.multiline, fieldValue: "", rect };
+    const el = makeInput(a, pg.vp);
+    const f = fields.get(name);
+    f.detected = { page: pageNo, rect, kind: d.kind, multiline: !!d.multiline };
+    // Hülle mit Löschknopf
+    const box = document.createElement("div");
+    box.className = "fm-det";
+    const [x1, y1, x2, y2] = pg.vp.convertToViewportRectangle(rect);
+    Object.assign(box.style, { left: Math.min(x1, x2) + "px", top: Math.min(y1, y2) + "px", width: Math.abs(x2 - x1) + "px", height: Math.abs(y2 - y1) + "px" });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "fm-del";
+    del.textContent = "×";
+    del.title = tr("Feld löschen");
+    del.setAttribute("aria-label", tr("Feld löschen") + ": " + name);
+    del.addEventListener("click", (e) => { e.stopPropagation(); fields.delete(name); box.remove(); });
+    box.append(el, del);
+    pg.wrap.appendChild(box);
+    return el;
+  }
+  function setAdding(kind) {
+    adding = kind;
+    pagesEl.classList.toggle("is-adding", !!kind);
+    root.querySelectorAll("[data-add]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.add === kind)));
+  }
+  function addAt(pageNo, e) {
+    if (!adding || e.target.closest(".fm-field, .fm-det")) return;
+    const pg = pages[pageNo - 1];
+    const r = pg.wrap.getBoundingClientRect();
+    const k = pg.vp.scale; // Anzeige-Pixel pro PDF-Punkt
+    const x = (e.clientX - r.left) / k, y = (e.clientY - r.top) / k;
+    const d = adding === "check"
+      ? { kind: "check", rect: [x - 6, y - 6, x + 6, y + 6] }
+      : { kind: "text", rect: [x, y - 9, Math.min(x + 160, pg.vp1.width - 4), y + 9] };
+    const el = addDetected(pageNo, { ...d, label: "" });
+    setAdding(null);
+    // erste Felder in einer PDF ohne Felder → Speichern-Knöpfe einblenden
+    for (const sel of ["[data-save]", "[data-save-empty]", "[data-reset]"]) $(sel).hidden = false;
+    for (const sel of ["[data-flatten]", "[data-highlight]"]) $(sel).closest("label").hidden = false;
+    $("[data-empty]").hidden = true;
+    el.focus();
   }
 
   // ------------------------------------------------------------------ Eingabefeld für ein PDF-Feld
@@ -193,7 +279,7 @@
   }
 
   // ------------------------------------------------------------------ Speichern
-  async function save() {
+  async function save(empty) {
     const btn = $("[data-save]");
     btn.disabled = true;
     try {
@@ -203,7 +289,29 @@
       // Hybrides XFA-Formular: XFA-Teil entfernen, sonst zeigt Adobe Reader die alten (leeren) XFA-Daten
       try { form.deleteXFA(); } catch (_) {}
       let filled = 0;
+      const font = await doc.embedFont(StandardFonts.Helvetica);
+      const noFrame = { borderWidth: 0, borderColor: undefined, backgroundColor: undefined };
       for (const [name, f] of fields) {
+        if (f.detected) {
+          // neues Formularfeld genau an der erkannten Stelle anlegen (ohne Rahmen/Hintergrund, die Linien sind ja schon da)
+          const d = f.detected;
+          const page = doc.getPage(d.page - 1);
+          const box = { x: d.rect[0], y: d.rect[1], width: d.rect[2] - d.rect[0], height: d.rect[3] - d.rect[1], ...noFrame };
+          try {
+            if (d.kind === "check") {
+              const cb = form.createCheckBox(name);
+              cb.addToPage(page, { ...box, textColor: undefined });
+              if (f.value && !empty) { cb.check(); filled++; }
+            } else {
+              const tf = form.createTextField(name);
+              if (d.multiline) tf.enableMultiline();
+              tf.addToPage(page, { ...box, font });
+              tf.setFontSize(d.multiline ? 10 : Math.max(7, Math.min(11, box.height * 0.62)));
+              if (f.value && !empty) { tf.setText(String(f.value)); filled++; }
+            }
+          } catch (e) { console.warn("Feld", name, e); }
+          continue;
+        }
         let pf;
         try { pf = form.getField(name); } catch (_) { continue; }
         try {
@@ -234,13 +342,12 @@
       }
       // Aussehen der Felder neu erzeugen. Zeichen außerhalb von Helvetica (z. B. ğ, ł, Kyrillisch)
       // kann pdf-lib nicht zeichnen – dann übernimmt der PDF-Viewer das (NeedAppearances).
-      const font = await doc.embedFont(StandardFonts.Helvetica);
       let appearancesOk = true;
       try { form.updateFieldAppearances(font); } catch (e) {
         appearancesOk = false;
         form.acroForm.dict.set(PDFName.of("NeedAppearances"), PDFBool.True);
       }
-      const flatten = $("[data-flatten]").checked;
+      const flatten = !empty && $("[data-flatten]").checked;
       if (flatten) {
         if (!appearancesOk) throw new Error("chars");
         form.flatten();
@@ -261,8 +368,10 @@
       downloadUrl = URL.createObjectURL(new Blob([out], { type: "application/pdf" }));
       const a = $("[data-download]");
       a.href = downloadUrl;
-      a.download = fileName.replace(/\.pdf$/i, "") + tr(flatten ? "_fixiert.pdf" : "_ausgefuellt.pdf");
-      $("[data-done-info]").textContent = (filled === 1 ? tr("1 Feld ausgefüllt.") : tr("{n} Felder ausgefüllt.", { n: filled })) + (flatten ? " " + tr("Das Formular ist fixiert und kann nicht mehr geändert werden.") : " " + tr("Die Felder bleiben bearbeitbar."));
+      a.download = fileName.replace(/\.pdf$/i, "") + tr(empty ? "_ausfuellbar.pdf" : flatten ? "_fixiert.pdf" : "_ausgefuellt.pdf");
+      $("[data-done-info]").textContent = empty
+        ? tr("Deine PDF ist jetzt ein ausfüllbares Formular mit {n} Feldern – in jedem PDF-Programm und auch hier ausfüllbar.", { n: fields.size })
+        : (filled === 1 ? tr("1 Feld ausgefüllt.") : tr("{n} Felder ausgefüllt.", { n: filled })) + (flatten ? " " + tr("Das Formular ist fixiert und kann nicht mehr geändert werden.") : " " + tr("Die Felder bleiben bearbeitbar."));
       show("done");
     } catch (e) {
       console.error(e);
@@ -274,7 +383,10 @@
     }
   }
 
-  $("[data-save]").addEventListener("click", save);
+  $("[data-save]").addEventListener("click", () => save(false));
+  $("[data-save-empty]").addEventListener("click", () => save(true));
+  root.querySelectorAll("[data-add]").forEach((b) => b.addEventListener("click", () => setAdding(adding === b.dataset.add ? null : b.dataset.add)));
+  document.addEventListener("keydown", (e) => e.key === "Escape" && adding && setAdding(null));
   $("[data-back]").addEventListener("click", () => show("work"));
   $("[data-other]").addEventListener("click", () => { input.value = ""; show("pick"); });
   $("[data-highlight]").addEventListener("change", (e) => pagesEl.classList.toggle("is-highlight", e.target.checked));

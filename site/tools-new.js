@@ -32,12 +32,12 @@ module.exports = [
     glyph: "form",
     title: "PDF-Formular online ausfüllen – kostenlos, ohne Adobe Reader | PDF Libre",
     description:
-      "PDF-Formulare online ausfüllen: Textfelder, Kästchen und Auswahllisten direkt im Browser ausfüllen, speichern oder fixieren – z. B. Anträge, Steuer- und Behördenformulare. Kostenlos, ohne Anmeldung, ohne Upload.",
+      "PDF-Formulare online ausfüllen – auch gescannte Formulare ohne Felder: Linien und Kästchen werden automatisch erkannt. Im Browser ausfüllen, speichern oder fixieren. Kostenlos, ohne Anmeldung, ohne Upload.",
     h1: "PDF-Formular ausfüllen",
     lead: "Öffne ein ausfüllbares PDF-Formular, klicke in die Felder und tippe los – Kästchen ankreuzen, Auswahllisten wählen, fertig. Die Datei bleibt auf deinem Gerät.",
     ui: { mode: "form", input: PDF },
     steps: [
-      ["Formular öffnen", "Wähle das PDF-Formular aus – zum Beispiel einen Antrag, ein Anmeldeformular oder einen Vertrag mit Formularfeldern."],
+      ["Formular öffnen", "Wähle das PDF-Formular aus – einen Antrag, ein Anmeldeformular oder auch ein eingescanntes Formular ohne Felder. Dann werden Linien und Kästchen automatisch erkannt."],
       ["Felder ausfüllen", "Alle Felder werden blau markiert. Klicke hinein und tippe, setze Häkchen oder wähle aus den Listen. Gleichnamige Felder füllen sich automatisch mit."],
       ["Fixieren (optional)", "Mit „Formular fixieren“ wird der Inhalt fest in die Seiten geschrieben – praktisch, wenn niemand mehr etwas ändern soll."],
       ["Herunterladen", "Lade die ausgefüllte PDF herunter. Brauchst du noch eine Unterschrift, geht es direkt weiter mit „PDF unterschreiben“."],
@@ -57,9 +57,10 @@ module.exports = [
         ],
       },
       {
-        h: "Formular ohne Felder? So geht es trotzdem",
+        h: "Gescanntes Formular ohne Felder? Wird automatisch erkannt",
         p: [
-          "Wurde ein Formular gedruckt und wieder eingescannt, enthält es keine echten Felder mehr – es ist nur noch ein Bild. Dann kannst du mit „PDF bearbeiten“ Text an jede beliebige Stelle schreiben. Für die Unterschrift gibt es „PDF unterschreiben“: zeichnen, tippen oder als Foto einfügen.",
+          "Wurde ein Formular gedruckt und wieder eingescannt, enthält es keine echten Felder mehr – es ist nur noch ein Bild. PDF Libre erkennt in diesem Fall Schreiblinien, Kästchen, Tabellenzellen und Ankreuzkästchen automatisch und legt dort Eingabefelder an. Leicht schiefe Scans werden dafür gerade ausgerichtet. Überflüssige Felder löschst du mit ×, fehlende ergänzt du mit „+ Textfeld“ oder „+ Kästchen“ per Klick auf die Seite.",
+          "Du kannst das Ergebnis auch als leeres ausfüllbares PDF speichern und an andere weitergeben – siehe „PDF ausfüllbar machen“. Für die Unterschrift gibt es „PDF unterschreiben“: zeichnen, tippen oder als Foto einfügen.",
         ],
       },
       {
@@ -74,7 +75,8 @@ module.exports = [
       ["Funktioniert das am Handy?", "Ja. Am Smartphone tippst du einfach in die Felder – auch dort, wo der eingebaute PDF-Viewer keine Formulare kann."],
       ["Welche Felder werden unterstützt?", "Textfelder (ein- und mehrzeilig), Kästchen zum Ankreuzen, Optionsfelder und Auswahllisten. Unterschriftsfelder füllst du mit „PDF unterschreiben“."],
       ["Was bedeutet „Formular fixieren“?", "Die Eingaben werden fest in die Seite geschrieben und die Felder entfernt. Danach kann niemand mehr etwas ändern – ideal zum Verschicken."],
-      ["Mein Formular hat keine Felder – was nun?", "Dann wurde es gescannt oder ohne Formularfelder erstellt. Mit „PDF bearbeiten“ kannst du Text an jede Stelle schreiben."],
+      ["Mein Formular hat keine Felder – was nun?", "Kein Problem: Linien, Kästchen und Tabellenzellen werden automatisch erkannt und zu Eingabefeldern. Fehlende Felder fügst du mit „+ Textfeld“ hinzu."],
+      ["Kann ich eine gescannte PDF ausfüllbar machen?", "Ja. Nach der Erkennung klickst du auf „Als leeres ausfüllbares PDF speichern“ – das Formular lässt sich dann in jedem PDF-Programm ausfüllen."],
       ["Funktionieren Behördenformulare (XFA)?", "Die meisten Behördenformulare enthalten neben XFA auch normale Formularfelder – diese werden ausgefüllt. Reine XFA-Formulare lassen sich nur in Adobe Reader vollständig nutzen."],
       ["Wird mein Formular hochgeladen?", "Nein. Ausfüllen und Speichern passieren komplett in deinem Browser."],
     ],

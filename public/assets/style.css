@@ -891,7 +891,7 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 
 /* PDF-Formular ausfüllen */
 .fm-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 14px; margin-bottom: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
-.fm-bar__info { margin: 0; font-weight: 600; flex: 1 1 220px; }
+.fm-bar__info { margin: 0; font-weight: 600; flex: 1 1 100%; }
 .fm-bar [data-save] { margin-left: auto; }
 .fm-check { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; }
 .fm-pages { display: flex; flex-direction: column; align-items: safe center; gap: 18px; width: 100%; overflow-x: auto; }
@@ -909,3 +909,11 @@ textarea.fm-field { padding-top: 2px; }
 .fm-empty h2 { margin-top: 0; font-size: 1.15rem; }
 .fm-note { margin: 0 0 12px; padding: 10px 14px; border-left: 3px solid var(--brand); background: var(--bg); border-radius: 6px; font-size: .92rem; }
 @media (max-width: 700px) { .fm-bar { position: static; } .fm-bar [data-save] { width: 100%; justify-content: center; } }
+.fm-add { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; color: var(--ink-2, inherit); }
+.fm-add [aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
+.fm-pages.is-adding .fm-page { cursor: crosshair; }
+.fm-det { position: absolute; }
+.fm-det > .fm-field { left: 0; top: 0; width: 100%; height: 100%; }
+.fm-del { position: absolute; top: -9px; right: -9px; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; background: #d33; color: #fff; font: 700 13px/18px sans-serif; cursor: pointer; opacity: 0; transition: opacity .15s; z-index: 2; }
+.fm-det:hover .fm-del, .fm-det:focus-within .fm-del { opacity: 1; }
+@media (hover: none) { .fm-del { opacity: .85; } }

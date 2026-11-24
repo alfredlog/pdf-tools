@@ -1,5 +1,30 @@
 // English versions of the job application guides (same slugs as German, so hreflang links match)
 module.exports = {
+  "pdf-ausfuellbar-machen": {
+    guide: "Make a PDF fillable (scanned forms too)",
+    name: "Make PDF fillable",
+    title: "Make a PDF fillable – detect form fields automatically, free | PDF Libre",
+    description: "Make a PDF fillable: lines, boxes and tables in scanned or flat forms are turned into form fields automatically. Online, free, without Adobe Acrobat and without upload.",
+    h1: "Make a PDF fillable",
+    lead: "Turn a printed, scanned or “flat” form into a real fillable PDF: writing lines, boxes and table cells automatically become form fields.",
+    steps: [
+      ["Open the PDF", "Select the form – scanned, converted from a photo or exported from Word."],
+      ["Check the fields", "Detected fields are highlighted in blue. Delete extra ones with ×, add missing ones with “+ Text field” or “+ Checkbox”."],
+      ["Save", "“Save as blank fillable PDF” creates a form anyone can fill in with Adobe Reader, a browser or a phone. Or fill it in right here."],
+    ],
+    article: [
+      ["How does a scan become a fillable form?", "To a computer, a scanned form is just an image: there are no fields to click into. PDF Libre analyses the image of every page and looks for the typical parts of a form – horizontal writing lines (“Name: ______”), framed boxes, table cells, small checkboxes and dotted lines. Real PDF form fields are created exactly at those spots.", "Slightly skewed scans are straightened automatically first. For PDFs with real text (for example exported from Word), the fields also get meaningful names such as “Name”, “Date of birth” or “IBAN” – handy if the data is processed later."],
+      ["Who is it useful for?", "Clubs, schools, medical practices, property managers and small businesses often have forms that only exist as a printout or scan: registrations, membership applications, consent forms, timesheets. With PDF Libre you turn them into a form you can email or put on your website in a minute – and recipients fill it in on their computer instead of printing it.", "Until now you needed Adobe Acrobat Pro or similar software for this. Here everything runs for free in your browser."],
+      ["Tips for a good result", "Detection works best with straight scans with clear, continuous lines. Photographed forms with shadows or curved paper are harder – if possible, scan them with a scanner app. Dotted lines are detected in PDFs with real text; in pure scans you quickly add such fields with “+ Text field”."],
+    ],
+    faq: [
+      ["How do I make a PDF fillable?", "Select the PDF – fields are detected automatically. Check them, add any missing ones and click “Save as blank fillable PDF”."],
+      ["Does it work with scanned forms?", "Yes. Lines and boxes are detected in scans too, and slightly skewed pages are straightened automatically."],
+      ["Do I need Adobe Acrobat?", "No. The fillable PDF is created right in your browser and works in Adobe Reader, Chrome, Firefox, Edge, Safari and on phones."],
+      ["Is my PDF uploaded?", "No. Detection and saving run entirely in your browser."],
+      ["Can I add fields myself?", "Yes. Click “+ Text field” or “+ Checkbox” and then the spot you want. Delete wrong fields with the × on the field."],
+    ],
+  },
   "bewerbung-pdf-zusammenfuegen": {
     guide: "Combine your application documents into one PDF",
     name: "Combine job application into one PDF",

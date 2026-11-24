@@ -1,5 +1,30 @@
 // Versions françaises des guides de candidature (mêmes slugs qu'en allemand, pour que les liens hreflang correspondent)
 module.exports = {
+  "pdf-ausfuellbar-machen": {
+    guide: "Rendre un PDF remplissable (même scanné)",
+    name: "Rendre un PDF remplissable",
+    title: "Rendre un PDF remplissable – détection automatique des champs, gratuit | PDF Libre",
+    description: "Rendre un PDF remplissable : les lignes, cases et tableaux d’un formulaire scanné ou « plat » deviennent automatiquement des champs. En ligne, gratuit, sans Adobe Acrobat et sans envoi du fichier.",
+    h1: "Rendre un PDF remplissable",
+    lead: "Transformez un formulaire imprimé, scanné ou « plat » en vrai PDF remplissable : lignes d’écriture, cadres et cellules de tableau deviennent automatiquement des champs.",
+    steps: [
+      ["Ouvrir le PDF", "Choisissez le formulaire – scanné, issu d’une photo ou exporté depuis Word."],
+      ["Vérifier les champs", "Les champs détectés sont surlignés en bleu. Supprimez ceux en trop avec ×, ajoutez ceux qui manquent avec « + Champ texte » ou « + Case à cocher »."],
+      ["Enregistrer", "« Enregistrer comme PDF remplissable vierge » crée un formulaire que chacun peut remplir dans Adobe Reader, un navigateur ou sur téléphone. Ou remplissez-le directement ici."],
+    ],
+    article: [
+      ["Comment un scan devient-il un formulaire remplissable ?", "Pour un ordinateur, un formulaire scanné n’est qu’une image : il n’y a aucun champ où cliquer. PDF Libre analyse l’image de chaque page et cherche les éléments typiques d’un formulaire – lignes d’écriture (« Nom : ______ »), cadres, cellules de tableau, petites cases à cocher et lignes pointillées. De vrais champs de formulaire PDF sont créés exactement à ces endroits.", "Les pages scannées légèrement de travers sont d’abord redressées automatiquement. Pour les PDF contenant du vrai texte (exportés depuis Word par exemple), les champs reçoivent aussi des noms parlants comme « Nom », « Date de naissance » ou « IBAN » – pratique si les données sont traitées ensuite."],
+      ["Pour qui est-ce utile ?", "Associations, écoles, cabinets médicaux, syndics et petites entreprises ont souvent des formulaires qui n’existent qu’en papier ou en scan : inscriptions, demandes d’adhésion, autorisations, feuilles d’heures. Avec PDF Libre, vous en faites en une minute un formulaire à envoyer par e-mail ou à mettre sur votre site – et les destinataires le remplissent sur ordinateur au lieu de l’imprimer.", "Jusqu’ici, il fallait Adobe Acrobat Pro ou un logiciel similaire. Ici, tout fonctionne gratuitement dans le navigateur."],
+      ["Conseils pour un bon résultat", "La détection fonctionne le mieux avec des scans droits aux lignes nettes et continues. Les formulaires photographiés avec des ombres ou du papier courbé sont plus difficiles – scannez-les si possible avec une application de scan. Les lignes pointillées sont détectées dans les PDF contenant du vrai texte ; dans les scans purs, ajoutez rapidement ces champs avec « + Champ texte »."],
+    ],
+    faq: [
+      ["Comment rendre un PDF remplissable ?", "Choisissez le PDF – les champs sont détectés automatiquement. Vérifiez, complétez si besoin, puis cliquez sur « Enregistrer comme PDF remplissable vierge »."],
+      ["Est-ce que ça marche avec des formulaires scannés ?", "Oui. Les lignes et les cases sont aussi détectées dans les scans, et les pages légèrement de travers sont redressées automatiquement."],
+      ["Ai-je besoin d’Adobe Acrobat ?", "Non. Le PDF remplissable est créé directement dans le navigateur et fonctionne dans Adobe Reader, Chrome, Firefox, Edge, Safari et sur téléphone."],
+      ["Mon PDF est-il envoyé sur un serveur ?", "Non. La détection et l’enregistrement se font entièrement dans votre navigateur."],
+      ["Puis-je ajouter des champs moi-même ?", "Oui. Cliquez sur « + Champ texte » ou « + Case à cocher », puis à l’endroit voulu. Supprimez un champ erroné avec le × sur le champ."],
+    ],
+  },
   "bewerbung-pdf-zusammenfuegen": {
     guide: "Réunir ses documents de candidature en un seul PDF",
     name: "Candidature en un seul PDF",

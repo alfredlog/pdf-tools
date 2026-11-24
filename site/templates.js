@@ -873,13 +873,16 @@ function formWorkspace(t) {
         <p class="fm-bar__info" data-info></p>
         <label class="fm-check"><input type="checkbox" data-highlight checked> ${T("Felder hervorheben")}</label>
         <label class="fm-check"><input type="checkbox" data-flatten> ${T("Formular fixieren (danach nicht mehr änderbar)")}</label>
+        <span class="fm-add">${T("Feld hinzufügen:")} <button type="button" class="btn btn--ghost btn--sm" data-add="text" aria-pressed="false">${T("+ Textfeld")}</button> <button type="button" class="btn btn--ghost btn--sm" data-add="check" aria-pressed="false">${T("+ Kästchen")}</button></span>
         <button type="button" class="btn btn--link" data-reset>${T("Alles leeren")}</button>
         <button type="button" class="btn btn--link" data-other>${T("Andere Datei wählen")}</button>
+        <button type="button" class="btn btn--ghost" data-save-empty hidden>${T("Als leeres ausfüllbares PDF speichern")}</button>
         <button type="button" class="btn btn--primary" data-save>${ICON.download || ""}<span>${T("Ausgefüllte PDF herunterladen")}</span></button>
       </div>
       <div class="fm-empty" data-empty hidden>
-        <h2>${T("Diese PDF hat keine ausfüllbaren Felder")}</h2>
-        <p>${T("Das Formular wurde gedruckt und eingescannt oder ohne Formularfelder erstellt. Du kannst trotzdem Text an jede beliebige Stelle schreiben:")}</p>
+        <h2>${T("Keine Felder gefunden")}</h2>
+        <p data-empty-detect>${T("Diese PDF hat keine Formularfelder, und es wurden keine Linien oder Kästchen zum Ausfüllen erkannt. Klicke oben auf „+ Textfeld“ und dann auf die Stelle in der Seite, an die du schreiben möchtest.")}</p>
+        <p>${T("Oder schreibe frei auf die Seite:")}</p>
         <p><a class="btn btn--primary" href="${url("edit")}">${T("Text einfügen mit „PDF bearbeiten“")}</a> <a class="btn btn--ghost" href="${url("sign")}">${T("Nur unterschreiben")}</a></p>
       </div>
       <p class="fm-note" data-note hidden></p>
@@ -1164,7 +1167,7 @@ ${
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/cv.js?v=${BUILD_ID}" defer></script>` });
   }
   if (t.ui.mode === "form") {
-    const scripts = ["/vendor/pdf.min.js", "/vendor/pdf-lib.min.js", `/assets/form.js?v=${BUILD_ID}`].map((s) => `\n<script src="${s}" defer></script>`).join("");
+    const scripts = ["/vendor/pdf.min.js", "/vendor/pdf-lib.min.js", `/assets/form-detect.js?v=${BUILD_ID}`, `/assets/form.js?v=${BUILD_ID}`].map((s) => `\n<script src="${s}" defer></script>`).join("");
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts });
   }
   if (t.ui.mode === "slides") {

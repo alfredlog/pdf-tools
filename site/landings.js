@@ -8,6 +8,53 @@
  *   guide     Linktext im Abschnitt „Ratgeber“ auf der Werkzeugseite
  */
 const landings = [
+  // ------------------------------------------------------------------ FORMULARE
+  {
+    slug: "pdf-ausfuellbar-machen",
+    base: "pdf-formular-ausfuellen",
+    guide: "PDF ausfüllbar machen (auch gescannte Formulare)",
+    name: "PDF ausfüllbar machen",
+    title: "PDF ausfüllbar machen – Formularfelder automatisch erkennen, kostenlos | PDF Libre",
+    description:
+      "PDF ausfüllbar machen: Linien, Kästchen und Tabellen in gescannten oder flachen Formularen werden automatisch zu Formularfeldern. Online, kostenlos, ohne Adobe Acrobat und ohne Upload.",
+    h1: "PDF ausfüllbar machen",
+    lead: "Aus einem gedruckten, eingescannten oder „flachen“ Formular wird ein echtes ausfüllbares PDF: Schreiblinien, Kästchen und Tabellenzellen werden automatisch zu Formularfeldern.",
+    steps: [
+      ["PDF öffnen", "Wähle das Formular aus – egal ob eingescannt, als Foto in PDF umgewandelt oder aus Word exportiert."],
+      ["Felder prüfen", "Erkannte Felder sind blau markiert. Lösche überflüssige mit ×, ergänze fehlende mit „+ Textfeld“ oder „+ Kästchen“."],
+      ["Speichern", "„Als leeres ausfüllbares PDF speichern“ erstellt ein Formular, das jeder in Adobe Reader, im Browser oder am Handy ausfüllen kann. Oder fülle es direkt hier aus."],
+    ],
+    article: [
+      {
+        h: "Wie wird aus einem Scan ein ausfüllbares Formular?",
+        p: [
+          "Ein eingescanntes Formular ist für den Computer nur ein Bild: Es gibt keine Felder, in die man klicken könnte. PDF Libre analysiert das Bild jeder Seite und sucht nach den typischen Bestandteilen eines Formulars – waagerechte Schreiblinien („Name: ______“), eingerahmte Kästchen, Tabellenzellen, kleine Ankreuzkästchen und Punktlinien. An genau diesen Stellen werden echte PDF-Formularfelder angelegt.",
+          "Leicht schief eingescannte Seiten werden vorher automatisch gerade ausgerichtet. Bei PDFs mit echtem Text (zum Beispiel aus Word exportiert) bekommen die Felder außerdem gleich sinnvolle Namen wie „Name“, „Geburtsdatum“ oder „IBAN“ – praktisch, wenn die Daten später ausgewertet werden.",
+        ],
+      },
+      {
+        h: "Für wen ist das praktisch?",
+        p: [
+          "Vereine, Schulen, Arztpraxen, Hausverwaltungen und kleine Firmen haben oft Formulare, die nur als Ausdruck oder Scan existieren: Anmeldungen, Mitgliedsanträge, Einverständniserklärungen, Stundenzettel. Mit PDF Libre machst du daraus in einer Minute ein Formular, das du per E-Mail verschicken oder auf deine Website stellen kannst – und die Empfänger füllen es am Computer aus, statt es auszudrucken.",
+          "Bisher brauchte man dafür Adobe Acrobat Pro oder ähnliche Programme. Hier läuft alles kostenlos im Browser.",
+        ],
+      },
+      {
+        h: "Tipps für ein gutes Ergebnis",
+        p: [
+          "Am besten funktioniert die Erkennung mit gerade eingescannten Formularen mit klaren, durchgehenden Linien. Fotografierte Formulare mit Schatten oder gebogenem Papier sind schwieriger – scanne sie, wenn möglich, mit einer Scanner-App. Punktlinien werden bei PDFs mit echtem Text erkannt; in reinen Scans ergänzt du solche Felder schnell mit „+ Textfeld“.",
+        ],
+      },
+    ],
+    faq: [
+      ["Wie mache ich eine PDF ausfüllbar?", "PDF auswählen – die Felder werden automatisch erkannt. Prüfen, ggf. ergänzen und auf „Als leeres ausfüllbares PDF speichern“ klicken."],
+      ["Geht das auch mit eingescannten Formularen?", "Ja. Linien und Kästchen werden auch in Scans erkannt, leicht schiefe Seiten werden automatisch ausgerichtet."],
+      ["Brauche ich Adobe Acrobat?", "Nein. Das ausfüllbare PDF wird direkt im Browser erstellt und funktioniert in Adobe Reader, in Chrome, Firefox, Edge, Safari und am Handy."],
+      ["Wird meine PDF hochgeladen?", "Nein. Erkennung und Speichern laufen vollständig in deinem Browser."],
+      ["Kann ich Felder selbst hinzufügen?", "Ja. Mit „+ Textfeld“ oder „+ Kästchen“ und einem Klick auf die gewünschte Stelle. Falsche Felder löschst du mit dem × am Feld."],
+    ],
+    related: ["pdf-formular-ausfuellen", "sign", "edit", "ocr"],
+  },
   // ------------------------------------------------------------------ BEWERBUNG
   {
     slug: "bewerbung-pdf-zusammenfuegen",
