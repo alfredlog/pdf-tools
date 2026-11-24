@@ -46,7 +46,7 @@ function copy(from, toRel) {
 
 // Cache-Busting: Hash über CSS und JS, damit Browser nach Änderungen neu laden
 const assetHash = crypto.createHash("sha1");
-for (const f of ["assets/style.css", "assets/site.js", "assets/tool.js", "assets/editor.js", "assets/account.js", "assets/slides.js", "assets/cv.js"]) {
+for (const f of ["assets/style.css", "assets/site.js", "assets/tool.js", "assets/editor.js", "assets/account.js", "assets/slides.js", "assets/cv.js", "assets/form.js"]) {
   const p = path.join(PUBLIC, f);
   if (fs.existsSync(p)) assetHash.update(fs.readFileSync(p));
 }
@@ -72,6 +72,7 @@ function buildLang(lang, free) {
   out("bewerbung.html", T.bewerbungHub());
   if (lang !== "de") return;
   out("impressum.html", T.impressum());
+  out("ueber-uns.html", T.ueberUns());
   out("Datenschutz.html", T.datenschutz());
   out("passwort-vergessen.html", T.forgotPage());
   if (!free) {
@@ -125,12 +126,13 @@ function sitemap(free) {
     ["bewerbung", "0.9"],
     ...T.landingPages.map((t) => [t.slug, "0.8"]),
     ...(free ? [] : [["preise", "0.6"], ["agb", "0.2"]]),
+    ["ueber-uns", "0.4"],
     ["impressum", "0.2"],
     ["Datenschutz", "0.2"],
   ];
   const entries = [];
   for (const [slug, priority] of slugs) {
-    const langs = T.LANGS.filter((l) => T.availableIn(slug, l) && (l === "de" || !["preise", "agb", "impressum", "Datenschutz"].includes(slug)));
+    const langs = T.LANGS.filter((l) => T.availableIn(slug, l) && (l === "de" || !["preise", "agb", "impressum", "Datenschutz", "ueber-uns"].includes(slug)));
     const alt = langs.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${T.absUrl(slug, l)}"/>`).join("\n");
     for (const l of langs) entries.push(`  <url>\n    <loc>${T.absUrl(slug, l)}</loc>\n${langs.length > 1 ? alt + "\n" : ""}    <lastmod>${pageDate(fileOf(slug, l, free))}</lastmod>\n    <priority>${priority}</priority>\n  </url>`);
   }

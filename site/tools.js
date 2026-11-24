@@ -23,7 +23,7 @@ const categories = [
 const ORDER = [
   "lebenslauf-erstellen", "lebenslauf-anpassen", "anschreiben-erstellen", "bewerbungsmappe", "merge", "split", "organize", "rotate", "remove-pages", "extract-pages",
   "compress", "merge-compress",
-  "edit", "sign", "ocr", "create", "page-numbers", "watermark",
+  "edit", "pdf-formular-ausfuellen", "sign", "ocr", "create", "page-numbers", "watermark",
   "docx-to-pdf", "jpg-to-pdf", "heic-to-pdf", "excel-to-pdf", "ppt-to-pdf", "pdfa",
   "pdf-to-docx", "pdf-to-excel", "pdf-to-powerpoint", "pdf-to-jpg",
   "summarize", "translate",

@@ -888,3 +888,24 @@ span.file__thumb { display: grid; place-items: center; font: 700 .6875rem/1 var(
 .sig--full .modal__close { top: 16px; right: 18px; z-index: 2; }
 .sig--full .sig__row { padding-right: 48px; }
 @media (max-width: 700px) { .sig__fullbtn { background: var(--brand); border-color: var(--brand); color: #fff; } }
+
+/* PDF-Formular ausfüllen */
+.fm-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 14px; margin-bottom: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+.fm-bar__info { margin: 0; font-weight: 600; flex: 1 1 220px; }
+.fm-bar [data-save] { margin-left: auto; }
+.fm-check { display: inline-flex; align-items: center; gap: 6px; font-size: .9rem; }
+.fm-pages { display: flex; flex-direction: column; align-items: safe center; gap: 18px; width: 100%; overflow-x: auto; }
+.fm-page { position: relative; flex: none; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+.fm-page canvas { display: block; }
+.fm-page__no { position: absolute; top: -9px; left: 8px; padding: 0 6px; font-size: .75rem; color: var(--ink-3); background: var(--bg); border-radius: 4px; }
+.fm-field { position: absolute; box-sizing: border-box; margin: 0; padding: 0 3px; border: 1px solid transparent; border-radius: 2px; background: transparent; color: #000; font-family: Helvetica, Arial, sans-serif; line-height: 1.15; resize: none; }
+textarea.fm-field { padding-top: 2px; }
+.fm-field[type="checkbox"], .fm-field[type="radio"] { padding: 0; accent-color: var(--brand); cursor: pointer; }
+.is-highlight .fm-field { background: rgba(59, 130, 246, .12); border-color: rgba(59, 130, 246, .45); }
+.fm-field:focus { outline: 2px solid var(--brand); outline-offset: 0; background: rgba(255,255,255,.92); }
+.fm-field:disabled { background: rgba(0,0,0,.04); cursor: not-allowed; }
+.fm-comb { font-family: "Courier New", monospace; }
+.fm-empty { max-width: 640px; margin: 10px auto 20px; padding: 20px; text-align: center; border: 1px dashed var(--line-2); border-radius: var(--r); }
+.fm-empty h2 { margin-top: 0; font-size: 1.15rem; }
+.fm-note { margin: 0 0 12px; padding: 10px 14px; border-left: 3px solid var(--brand); background: var(--bg); border-radius: 6px; font-size: .92rem; }
+@media (max-width: 700px) { .fm-bar { position: static; } .fm-bar [data-save] { width: 100%; justify-content: center; } }

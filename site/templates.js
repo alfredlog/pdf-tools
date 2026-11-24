@@ -147,6 +147,7 @@ const shown = () => tools.filter((t) => LANG === "de" || availableIn(t.slug, LAN
 // Icons
 // ---------------------------------------------------------------------------
 const GLYPHS = {
+  form: '<rect x="4" y="5" width="16" height="4" rx="1"/><rect x="4" y="11" width="4" height="4" rx="1"/><path d="m5 13 1 1 1.5-2M10 13h10M4 18.5h16"/>',
   letter: '<rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="m4.5 7 7.5 6 7.5-6"/>',
   target: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="#fff"/>',
   cv: '<circle cx="9" cy="8.5" r="2.5"/><path d="M5 14.5c.6-1.8 2.1-2.8 4-2.8s3.4 1 4 2.8M15 7h4M15 10.5h4M5 18h14"/>',
@@ -344,7 +345,7 @@ function footer() {
     </div>
     <div class="site-footer__legal">
       <p>© <span data-year>2026</span> ${config.name} · ${T("Entwickelt von")} <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
-      <p>${FREE ? "" : `<a href="/preise.html">${T("Preise")}</a>`}<a href="/impressum.html">${T("Impressum")}</a><a href="/Datenschutz.html">${T("Datenschutz")}</a>${FREE ? "" : `<a href="/agb.html">${T("AGB")}</a>`}<a href="#" data-consent-settings>${T("Datenschutzeinstellungen")}</a></p>
+      <p>${FREE ? "" : `<a href="/preise.html">${T("Preise")}</a>`}<a href="/ueber-uns.html">${T("Über uns")}</a><a href="/ueber-uns.html#kontakt">${T("Kontakt")}</a><a href="/impressum.html">${T("Impressum")}</a><a href="/Datenschutz.html">${T("Datenschutz")}</a>${FREE ? "" : `<a href="/agb.html">${T("AGB")}</a>`}<a href="#" data-consent-settings>${T("Datenschutzeinstellungen")}</a></p>
     </div>
   </div>
 </footer>`;
@@ -563,6 +564,7 @@ function workspace(t) {
   if (t.ui.mode === "editor") return editorWorkspace(t);
   if (t.ui.mode === "slides") return slidesWorkspace(t);
   if (t.ui.mode === "cv") return cvWorkspace(t);
+  if (t.ui.mode === "form") return formWorkspace(t);
   const ui = t.ui;
   const c = catById[t.cat].color;
   const data = {
@@ -844,6 +846,58 @@ function cvWorkspace(t) {
   </section>`;
 }
 
+// PDF-Formular ausfüllen: Seiten als Bild, darüber echte Eingabefelder an der Stelle der PDF-Felder
+// (Logik: public/assets/form.js – alles läuft im Browser, die PDF wird nicht hochgeladen)
+function formWorkspace(t) {
+  const c = catById[t.cat].color;
+  return `<section class="tool tool--${c}" data-form aria-label="${esc(t.name)}">
+    <div class="stage stage--pick">
+      <div class="drop" data-drop>
+        ${toolIcon(t, 56)}
+        <label class="btn btn--primary btn--lg drop__btn">
+          ${ICON.upload}<span>${T("Datei auswählen")}</span>
+          <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
+        </label>
+        <p class="drop__or">${T("oder Datei hierher ziehen")}</p>
+        <p class="drop__hint">${T("PDF-Formular, bis zu 50 MB")}</p>
+      </div>
+      <p class="privacy">${ICON.shield}<span>${T("<strong>Im Browser:</strong> Deine Datei wird nicht hochgeladen.")}</span></p>
+    </div>
+
+    <div class="stage stage--busy" hidden aria-live="polite">
+      <div class="busy"><div class="busy__bar"><span></span></div><p data-busy-text>${T("Formular wird geöffnet …")}</p></div>
+    </div>
+
+    <div class="stage stage--work" hidden>
+      <div class="fm-bar">
+        <p class="fm-bar__info" data-info></p>
+        <label class="fm-check"><input type="checkbox" data-highlight checked> ${T("Felder hervorheben")}</label>
+        <label class="fm-check"><input type="checkbox" data-flatten> ${T("Formular fixieren (danach nicht mehr änderbar)")}</label>
+        <button type="button" class="btn btn--link" data-reset>${T("Alles leeren")}</button>
+        <button type="button" class="btn btn--link" data-other>${T("Andere Datei wählen")}</button>
+        <button type="button" class="btn btn--primary" data-save>${ICON.download || ""}<span>${T("Ausgefüllte PDF herunterladen")}</span></button>
+      </div>
+      <div class="fm-empty" data-empty hidden>
+        <h2>${T("Diese PDF hat keine ausfüllbaren Felder")}</h2>
+        <p>${T("Das Formular wurde gedruckt und eingescannt oder ohne Formularfelder erstellt. Du kannst trotzdem Text an jede beliebige Stelle schreiben:")}</p>
+        <p><a class="btn btn--primary" href="${url("edit")}">${T("Text einfügen mit „PDF bearbeiten“")}</a> <a class="btn btn--ghost" href="${url("sign")}">${T("Nur unterschreiben")}</a></p>
+      </div>
+      <p class="fm-note" data-note hidden></p>
+      <div class="fm-pages" data-pages></div>
+    </div>
+
+    <div class="stage stage--done" hidden>
+      <div class="done">
+        <p class="done__title">${T("Fertig!")}</p>
+        <p data-done-info></p>
+        <p><a class="btn btn--primary btn--lg" data-download download>${T("Herunterladen")}</a></p>
+        <p><button type="button" class="btn btn--link" data-back>${T("Zurück zum Formular")}</button></p>
+        <p class="done__next">${T("Weiter mit:")} <a href="${url("sign")}">${esc(bySlug.sign ? bySlug.sign.name : "PDF unterschreiben")}</a> · <a href="${url("compress")}">${esc(bySlug.compress.name)}</a> · <a href="${url("merge")}">${esc(bySlug.merge.name)}</a></p>
+      </div>
+    </div>
+  </section>`;
+}
+
 // PDF → PowerPoint mit Design-Auswahl und Live-Vorschau (Logik: public/assets/slides.js)
 function slidesWorkspace(t) {
   const c = catById[t.cat].color;
@@ -1108,6 +1162,10 @@ ${
   }
   if (t.ui.mode === "cv") {
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/cv.js?v=${BUILD_ID}" defer></script>` });
+  }
+  if (t.ui.mode === "form") {
+    const scripts = ["/vendor/pdf.min.js", "/vendor/pdf-lib.min.js", `/assets/form.js?v=${BUILD_ID}`].map((s) => `\n<script src="${s}" defer></script>`).join("");
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts });
   }
   if (t.ui.mode === "slides") {
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/slides.js?v=${BUILD_ID}" defer></script>` });
@@ -1541,6 +1599,58 @@ function impressum() {
   });
 }
 
+// Über PDF Libre: wer steckt dahinter, wie werden Dateien verarbeitet, wie finanziert sich die Seite.
+// Wichtig für Vertrauen (Nutzer, Google „E-E-A-T“) und für die AdSense-Prüfung.
+function ueberUns() {
+  const n = tools.length;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "Über PDF Libre",
+    url: absUrl("ueber-uns"),
+    mainEntity: {
+      "@type": "Organization",
+      name: "PDF Libre",
+      url: config.domain,
+      email: config.email,
+      founder: { "@type": "Person", name: config.owner, url: "https://alfredlog.github.io/", sameAs: ["https://github.com/alfredlog"] },
+    },
+  };
+  return page({
+    title: "Über PDF Libre – wer hinter den kostenlosen PDF-Werkzeugen steckt",
+    description: `PDF Libre bietet ${n} kostenlose PDF-Werkzeuge aus Darmstadt – ohne Anmeldung, mit Fokus auf Datenschutz. Wer die Seite betreibt, wie Dateien verarbeitet werden und wie du uns erreichst.`,
+    slug: "ueber-uns",
+    jsonLd: [jsonLd],
+    body: `<article class="wrap legal">
+  <h1>Über PDF Libre</h1>
+  <p>PDF Libre ist eine Sammlung von ${n} kostenlosen Online-Werkzeugen für PDF-Dateien: zusammenfügen, komprimieren, umwandeln, ausfüllen, unterschreiben, Lebenslauf und Bewerbungsmappe erstellen und vieles mehr. Alles funktioniert direkt im Browser – ohne Anmeldung, ohne Wasserzeichen und ohne Software-Installation.</p>
+
+  <h2>Wer steckt dahinter?</h2>
+  <p>PDF Libre wird von <a href="https://alfredlog.github.io/">${esc(config.owner)}</a> entwickelt und betrieben, einem Informatikstudenten an der TU Darmstadt. Die Idee entstand aus eigener Erfahrung: Für Bewerbungen, Behördenformulare und Uni-Unterlagen musste ich ständig PDFs zusammenfügen, verkleinern oder ausfüllen – und die bekannten Seiten verlangten dafür ein Konto, zeigten Wasserzeichen oder begrenzten die Nutzung auf wenige Dateien pro Tag.</p>
+  <p>Deshalb habe ich ein Werkzeug gebaut, das ich selbst gerne benutzen würde: schnell, verständlich, auf Deutsch (und auf Englisch und Französisch) und mit Respekt vor deinen Daten.</p>
+
+  <h2>Was passiert mit deinen Dateien?</h2>
+  <ul>
+    <li><strong>Viele Werkzeuge laufen komplett in deinem Browser</strong> – zum Beispiel PDF-Formular ausfüllen, Seiten entfernen, PDF in JPG oder Lebenslauf erstellen. Die Datei verlässt dein Gerät dann gar nicht.</li>
+    <li><strong>Werkzeuge, die einen Server brauchen</strong> (z. B. Komprimieren, PDF in Word, Texterkennung), übertragen die Datei verschlüsselt an unseren Server. Dort wird sie verarbeitet und direkt nach dem Download automatisch gelöscht, spätestens nach 30 Minuten.</li>
+    <li>Nur bei den KI-Funktionen (z. B. PDF zusammenfassen oder übersetzen) wird der Text an einen KI-Dienst übermittelt, der ihn nicht zum Training verwendet. Alle anderen Werkzeuge funktionieren ohne KI.</li>
+    <li>Für die kostenlosen Werkzeuge brauchst du kein Konto, und wir sehen uns deine Dokumente nicht an.</li>
+  </ul>
+  <p>Alle Details stehen in der <a href="/Datenschutz.html">Datenschutzerklärung</a>.</p>
+
+  <h2>Wie finanziert sich PDF Libre?</h2>
+  <p>Server, Domain und Entwicklung kosten Geld. Damit die Werkzeuge kostenlos bleiben, kann auf der Seite Werbung angezeigt werden – aber nur, wenn du im Cookie-Banner zustimmst. Werbung wird nie in die Werkzeuge selbst eingebaut und hat keinen Zugriff auf deine Dateien.</p>
+
+  <h2>Wie geht es weiter?</h2>
+  <p>PDF Libre wird laufend erweitert. Neue Werkzeuge entstehen meist aus Vorschlägen von Nutzerinnen und Nutzern: Was fehlt dir? Welches PDF-Problem kostet dich regelmäßig Zeit? Schreib mir – jede Nachricht wird gelesen.</p>
+
+  <h2 id="kontakt">Kontakt</h2>
+  <p>E-Mail: <a href="mailto:${config.email}">${config.email}</a><br>Anschrift und Angaben zum Anbieter: <a href="/impressum.html">Impressum</a></p>
+  <p>Fehler gefunden oder eine Idee für ein neues Werkzeug? Am schnellsten geht es per E-Mail – mit einer kurzen Beschreibung und, wenn möglich, einem Beispiel (bitte keine vertraulichen Dokumente).</p>
+</article>`,
+  });
+}
+
 function datenschutz() {
   const ga = config.analyticsId
     ? `<h2 id="einwilligung">Einwilligung (Cookie-Banner)</h2>
@@ -1614,4 +1724,4 @@ function setBuildId(id) {
   BUILD_ID = id;
 }
 
-module.exports = { setFreeMode, homePage, toolPage, impressum, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, landingPages, bewerbungHub, url, absUrl, prepare, LANGS, availableIn, MISSING };
+module.exports = { setFreeMode, homePage, toolPage, impressum, ueberUns, datenschutz, notFound, pricingPage, loginPage, accountPage, forgotPage, agbPage, setBuildId, tools, landingPages, bewerbungHub, url, absUrl, prepare, LANGS, availableIn, MISSING };
