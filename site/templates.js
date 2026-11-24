@@ -253,8 +253,7 @@ function head({ title, description, slug, jsonLd = [], noindex = false, extraHea
   <meta name="description" content="${esc(description)}">
   ${noindex ? '<meta name="robots" content="noindex, follow">' : `<link rel="canonical" href="${canonical}">`}
   ${alternates}
-  <meta name="theme-color" content="#2b4bdb" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0f1422" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#2b4bdb">
   <script>try{var t=localStorage.getItem("pl_theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="${config.name}">
@@ -350,7 +349,7 @@ function footer() {
     </div>
     <div class="site-footer__legal">
       <p>© <span data-year>2026</span> ${config.name} · ${T("Entwickelt von")} <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
-      <p>${FREE ? "" : `<a href="/preise.html">${T("Preise")}</a>`}<a href="/ueber-uns.html">${T("Über uns")}</a><a href="/ueber-uns.html#kontakt">${T("Kontakt")}</a><a href="/impressum.html">${T("Impressum")}</a><a href="/Datenschutz.html">${T("Datenschutz")}</a>${FREE ? "" : `<a href="/agb.html">${T("AGB")}</a>`}<a href="#" data-consent-settings>${T("Datenschutzeinstellungen")}</a><button type="button" class="linkbtn" data-install hidden>${T("Als App installieren")}</button><button type="button" class="linkbtn" data-theme-toggle>${T("Design: Automatisch")}</button></p>
+      <p>${FREE ? "" : `<a href="/preise.html">${T("Preise")}</a>`}<a href="/ueber-uns.html">${T("Über uns")}</a><a href="/ueber-uns.html#kontakt">${T("Kontakt")}</a><a href="/impressum.html">${T("Impressum")}</a><a href="/Datenschutz.html">${T("Datenschutz")}</a>${FREE ? "" : `<a href="/agb.html">${T("AGB")}</a>`}<a href="#" data-consent-settings>${T("Datenschutzeinstellungen")}</a><button type="button" class="linkbtn" data-install hidden>${T("Als App installieren")}</button><button type="button" class="linkbtn" data-theme-toggle>${T("Design: Hell")}</button></p>
     </div>
   </div>
 </footer>`;

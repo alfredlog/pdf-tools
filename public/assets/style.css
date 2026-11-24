@@ -1093,24 +1093,11 @@ textarea.fm-field { padding-top: 2px; }
 
 
 /* ================================================================== Dunkelmodus
-   Automatisch nach Systemeinstellung, oder fest über den Umschalter unten (data-theme="dark"/"light").
+   Nur auf Wunsch über den Umschalter unten (data-theme="dark"/"light").
    „Papier“ (PDF-Seiten, Rechnungs- und Briefvorschau) bleibt bewusst weiß. */
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) { color-scheme: dark;
-    --bg: #0f1422; --surface: #182036; --ink: #e8ebf4; --ink-2: #bcc3d6; --ink-3: #939cb6; --line: #2a3350; --line-2: #3b4566;
-    --brand: #7b93ff; --brand-ink: #a9b8ff; --brand-tint: #1f2b55; --danger-tint: #3b2020; }
-}
 html[data-theme="dark"] { color-scheme: dark;
   --bg: #0f1422; --surface: #182036; --ink: #e8ebf4; --ink-2: #bcc3d6; --ink-3: #939cb6; --line: #2a3350; --line-2: #3b4566;
   --brand: #7b93ff; --brand-ink: #a9b8ff; --brand-tint: #1f2b55; --danger-tint: #3b2020; }
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) .iv-warn li, html:not([data-theme="light"]) .ev-f--warn, html:not([data-theme="light"]) .ev-f--error, html:not([data-theme="light"]) .fm-xfa, html:not([data-theme="light"]) .iv-missing, html:not([data-theme="light"]) .cv-notice--busy, html:not([data-theme="light"]) .cv-steps__badge, html:not([data-theme="light"]) .cv-ats li.todo, html:not([data-theme="light"]) .is-uncertain, html:not([data-theme="light"]) .iv-markrow td, html:not([data-theme="light"]) .iv-mark, html:not([data-theme="light"]) .cv-field input.is-bad { color: #1d1d1d; }
-  html:not([data-theme="light"]) .btn--primary { color: #0b1230; }
-  html:not([data-theme="light"]) .smart__drop { background: rgba(255,255,255,.04); }
-  html:not([data-theme="light"]) .smart__drop:hover, html:not([data-theme="light"]) .smart__drop.is-over, html:not([data-theme="light"]) .smart__opt:hover { background: #22305e; color: var(--ink); }
-  html:not([data-theme="light"]) .tbadge--local { background: #173826; color: #8fe0b0; }
-  html:not([data-theme="light"]) .tbadge--ai { background: #2c2350; color: #c7b4ff; }
-}
 html[data-theme="dark"] .iv-warn li, html[data-theme="dark"] .ev-f--warn, html[data-theme="dark"] .ev-f--error, html[data-theme="dark"] .fm-xfa, html[data-theme="dark"] .iv-missing, html[data-theme="dark"] .cv-notice--busy, html[data-theme="dark"] .cv-steps__badge, html[data-theme="dark"] .cv-ats li.todo, html[data-theme="dark"] .is-uncertain, html[data-theme="dark"] .iv-markrow td, html[data-theme="dark"] .iv-mark, html[data-theme="dark"] .cv-field input.is-bad { color: #1d1d1d; }
 html[data-theme="dark"] .btn--primary { color: #0b1230; }
 html[data-theme="dark"] .smart__drop { background: rgba(255,255,255,.04); }
@@ -1127,5 +1114,4 @@ body.has-mbar .toast { bottom: 90px; }
 /* Links ohne Leerzeichen dazwischen → als umbrechende Zeile anordnen (sonst zu breit auf dem Handy) */
 .site-footer__legal p { display: flex; flex-wrap: wrap; gap: 8px 18px; min-width: 0; }
 .site-footer__legal a + a, .site-footer__legal .linkbtn { margin-left: 0; }
-@media (prefers-color-scheme: dark) { html:not([data-theme="light"]) .langhint { background: #2b4bdb; } }
 html[data-theme="dark"] .langhint { background: #2b4bdb; }

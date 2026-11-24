@@ -359,11 +359,12 @@
   // ------------------------------------------------------------------ Design: Automatisch → Hell → Dunkel
   const themeBtn = document.querySelector("[data-theme-toggle]");
   if (themeBtn) {
-    const label = { "": tr("Design: Automatisch"), light: tr("Design: Hell"), dark: tr("Design: Dunkel") };
+    // Standard ist hell; dunkel nur, wenn man es hier wählt
+    const label = { "": tr("Design: Hell"), light: tr("Design: Hell"), dark: tr("Design: Dunkel") };
     const cur = () => document.documentElement.dataset.theme || "";
     themeBtn.textContent = label[cur()];
     themeBtn.addEventListener("click", () => {
-      const next = { "": "light", light: "dark", dark: "" }[cur()];
+      const next = cur() === "dark" ? "" : "dark";
       if (next) document.documentElement.dataset.theme = next; else delete document.documentElement.dataset.theme;
       try { next ? localStorage.setItem("pl_theme", next) : localStorage.removeItem("pl_theme"); } catch (_) {}
       themeBtn.textContent = label[next];
