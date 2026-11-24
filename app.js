@@ -856,6 +856,44 @@ api.post(
   })
 );
 
+// E-Rechnung erstellen --------------------------------------------------------------
+// Formulardaten (JSON) → E-Rechnung-Dienst → ZUGFeRD-PDF (format=pdf) oder XRechnung-XML (format=xml).
+// Der Dienst rechnet alle Summen selbst aus und prüft die Pflichtangaben (EN 16931 / XRechnung).
+// Es wird nichts gespeichert: Die Daten gehen nur durch.
+api.post(
+  "/e-rechnung-erstellen",
+  express.json({ limit: "200kb" }),
+  wrap(async (req, res) => {
+    if (!ERECHNUNG_API_URL) throw new UserError("Dieses Werkzeug ist gerade nicht verfügbar.", 503);
+    const format = req.query.format === "xml" ? "xml" : "pdf";
+    const draft = req.body && typeof req.body === "object" ? req.body : null;
+    if (!draft || !Array.isArray(draft.lines) || draft.lines.length > 200) throw new UserError("Die Rechnungsdaten sind unvollständig.");
+    let upstream;
+    try {
+      upstream = await fetch(`${ERECHNUNG_API_URL}/api/v1/generate?format=${format}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(draft),
+        signal: AbortSignal.timeout(60_000),
+      });
+    } catch {
+      throw new UserError("Der E-Rechnung-Dienst antwortet gerade nicht. Bitte versuche es gleich noch einmal.", 503);
+    }
+    if (!upstream.ok) {
+      let body = {};
+      try { body = await upstream.json(); } catch { /* keine JSON-Antwort */ }
+      // 422 mit Liste fehlender Angaben (deutsche Feldnamen) → an den Browser durchreichen
+      if (upstream.status === 422 && Array.isArray(body.missing)) return res.status(422).json({ error: "Es fehlen noch Angaben.", missing: body.missing });
+      if (upstream.status === 422) throw new UserError("Bitte prüfe deine Eingaben: Zahlen, Datum und mindestens eine Position mit Bezeichnung und Preis.", 422);
+      throw new UserError("Die E-Rechnung konnte nicht erstellt werden. Bitte versuche es noch einmal.", 502);
+    }
+    const cd = upstream.headers.get("Content-Disposition");
+    if (cd) res.setHeader("Content-Disposition", cd);
+    res.setHeader("Content-Type", format === "xml" ? "application/xml" : "application/pdf");
+    res.send(Buffer.from(await upstream.arrayBuffer()));
+  })
+);
+
 // Health-Check: zeigt, welche Programme installiert sind --------------------------------
 app.get("/api/health", async (req, res) => {
   const check = async (cmd, args) => {

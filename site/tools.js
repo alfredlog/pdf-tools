@@ -28,7 +28,7 @@ const ORDER = [
   "pdf-to-docx", "pdf-to-excel", "pdf-to-powerpoint", "pdf-to-jpg",
   "summarize", "translate",
   "protect", "redact", "unlock",
-  "xrechnung-anzeigen", "e-rechnung-pruefen",
+  "e-rechnung-erstellen", "xrechnung-anzeigen", "e-rechnung-pruefen",
 ];
 
 const PDF = { accept: ".pdf,application/pdf", label: "PDF" };
@@ -1175,6 +1175,72 @@ const tools = [
     related: ["protect", "merge", "pdf-to-docx", "compress"],
   },
   // ------------------------------------------------------------------ E-RECHNUNG
+  {
+    slug: "e-rechnung-erstellen",
+    name: "E-Rechnung erstellen",
+    short: "ZUGFeRD-PDF oder XRechnung kostenlos erstellen – Summen und Steuer werden berechnet.",
+    cat: "erechnung",
+    isNew: true,
+    badge: "XML",
+    glyph: "einvoiceNew",
+    title: "E-Rechnung kostenlos erstellen – ZUGFeRD & XRechnung online | PDF Libre",
+    description:
+      "E-Rechnung online erstellen: ZUGFeRD-PDF für Firmen oder XRechnung-XML für Behörden. Positionen eintragen, Summen und Umsatzsteuer werden automatisch berechnet, Pflichtangaben geprüft. Kostenlos, ohne Anmeldung.",
+    h1: "E-Rechnung erstellen",
+    lead: "Schreibe deine Rechnung wie gewohnt – heraus kommt eine gültige E-Rechnung nach EN 16931: als ZUGFeRD-PDF für Geschäftskunden oder als XRechnung für Behörden. Ohne Software, ohne Konto.",
+    ui: { mode: "invoice" },
+    steps: [
+      ["Format wählen", "ZUGFeRD-PDF für Firmen und Privatkunden (eine normale PDF mit eingebetteten Daten) oder XRechnung (XML) für Behörden und öffentliche Auftraggeber."],
+      ["Daten eintragen", "Deine Angaben, den Empfänger und die Positionen. Netto, Umsatzsteuer und Gesamtbetrag werden live berechnet. Deine eigenen Daten kann sich der Browser merken."],
+      ["E-Rechnung herunterladen", "Klicke auf „E-Rechnung erstellen“. Fehlt eine Pflichtangabe, siehst du genau welche. Die fertige Datei kannst du direkt verschicken."],
+    ],
+    article: [
+      {
+        h: "Was ist eine E-Rechnung – und reicht eine PDF nicht?",
+        p: [
+          "Eine E-Rechnung ist eine Rechnung in einem strukturierten, maschinenlesbaren Format nach der europäischen Norm EN 16931. Eine normale PDF aus Word oder ein Scan ist dagegen eine „sonstige Rechnung“ – sie sieht zwar ordentlich aus, aber die Buchhaltungssoftware des Empfängers kann die Beträge nicht automatisch lesen.",
+          "In Deutschland gibt es zwei verbreitete Formate: Die XRechnung ist eine reine XML-Datei und vor allem bei Behörden Pflicht. ZUGFeRD (in Frankreich Factur-X) ist eine PDF, in die dieselben Daten als XML eingebettet sind – der Mensch liest die PDF, die Software liest die Daten. Beide Formate erfüllen die gesetzlichen Anforderungen.",
+        ],
+      },
+      {
+        h: "Ab wann ist die E-Rechnung Pflicht?",
+        p: [
+          "Seit dem 1. Januar 2025 müssen alle Unternehmen in Deutschland E-Rechnungen empfangen können. Ausstellen müssen sie Unternehmen mit mehr als 800.000 € Vorjahresumsatz ab dem 1. Januar 2027 für Rechnungen an andere Unternehmen im Inland, ab dem 1. Januar 2028 gilt die Pflicht für alle übrigen Unternehmen.",
+          "Ausgenommen bleiben Kleinunternehmer nach § 19 UStG sowie Kleinbetragsrechnungen bis 250 €. Rechnungen an Privatkunden dürfen weiterhin als normale PDF verschickt werden. Für öffentliche Auftraggeber (Bund, viele Länder und Kommunen) ist die XRechnung schon heute Pflicht – meist mit einer Leitweg-ID, die dir die Behörde mitteilt.",
+        ],
+      },
+      {
+        h: "ZUGFeRD oder XRechnung – was soll ich wählen?",
+        p: [
+          "Für Geschäftskunden ist das ZUGFeRD-PDF meist die beste Wahl: Der Empfänger kann es wie jede PDF öffnen und ausdrucken, seine Buchhaltung liest die Daten trotzdem automatisch. Wir erzeugen ZUGFeRD im Profil EN 16931 als PDF/A-3 – das ist die Variante, die als vollwertige E-Rechnung gilt.",
+          "Für Behörden, Schulen, Hochschulen oder kommunale Unternehmen nimmst du die XRechnung. Trage dann die Leitweg-ID ins Feld „Leitweg-ID oder Bestellnummer“ ein. Die XRechnung verlangt zusätzlich einen Ansprechpartner mit Telefon und E-Mail sowie deine IBAN – diese Felder sind dann mit einem orangen Stern markiert.",
+        ],
+      },
+      {
+        h: "Summen und Umsatzsteuer werden automatisch berechnet",
+        p: [
+          "Du gibst nur Menge, Einzelpreis und Steuersatz ein. Die Beträge pro Position, die Umsatzsteuer je Steuersatz (19 %, 7 % oder 0 %) und der Gesamtbetrag werden nach den Regeln der Norm berechnet – so passen die Zahlen in der Rechnung immer zusammen, und die Prüfung beim Empfänger schlägt nicht wegen eines Rundungsfehlers fehl.",
+          "Als Kleinunternehmer setzt du einfach das Häkchen bei „§ 19 UStG“: Dann wird keine Umsatzsteuer berechnet und der vorgeschriebene Hinweis automatisch in die Rechnung geschrieben. Die fertige Datei kannst du mit „E-Rechnung prüfen“ gegenprüfen oder mit „XRechnung anzeigen“ als lesbare PDF ansehen.",
+        ],
+      },
+      {
+        h: "Deine Daten",
+        p: [
+          "Deine Rechnungsdaten werden nur zum Erstellen der Datei an unseren Server geschickt und danach nicht gespeichert. Damit du deine eigenen Angaben nicht jedes Mal neu tippen musst, kann sie dein Browser lokal speichern („Meine Angaben merken“) – sie verlassen dabei dein Gerät nicht. Die nächste Rechnungsnummer wird automatisch vorgeschlagen.",
+        ],
+      },
+    ],
+    faq: [
+      ["Ist das Erstellen der E-Rechnung kostenlos?", "Ja, kostenlos und ohne Anmeldung, auch für mehrere Rechnungen."],
+      ["Ist die Rechnung eine gültige E-Rechnung?", "Ja. ZUGFeRD wird im Profil EN 16931 als PDF/A-3 erstellt, die XRechnung in Version 3.0 – beide entsprechen der europäischen Norm EN 16931."],
+      ["Muss ich als Kleinunternehmer E-Rechnungen schreiben?", "Nein, Kleinunternehmer nach § 19 UStG sind von der Pflicht ausgenommen. Du darfst aber trotzdem E-Rechnungen ausstellen – manche Kunden wünschen das."],
+      ["Wo bekomme ich die Leitweg-ID?", "Die Leitweg-ID teilt dir die Behörde mit, meist in der Bestellung oder im Auftrag. Ohne Leitweg-ID kannst du eine Bestellnummer eintragen."],
+      ["Kann ich eine Gutschrift erstellen?", "Ja. Setze das Häkchen bei „Gutschrift statt Rechnung“."],
+      ["Wie verschicke ich die E-Rechnung?", "Einfach per E-Mail als Anhang. Behörden haben oft ein eigenes Rechnungsportal (z. B. ZRE oder OZG-RE), in das du die XRechnung hochlädst."],
+      ["Werden meine Rechnungen gespeichert?", "Nein. Die Daten werden nur zum Erstellen verwendet. Deine eigenen Angaben merkt sich auf Wunsch nur dein Browser."],
+    ],
+    related: ["e-rechnung-pruefen", "xrechnung-anzeigen", "pdf-formular-ausfuellen", "merge"],
+  },
   {
     slug: "xrechnung-anzeigen",
     name: "XRechnung anzeigen",

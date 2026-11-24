@@ -155,6 +155,7 @@ const GLYPHS = {
   redact: '<path d="M5 6h9M5 18h11"/><rect x="5" y="9.5" width="14" height="5" rx="1" fill="#fff"/>',
   archive: '<rect x="4" y="5" width="16" height="4" rx="1"/><path d="M5.5 9v9.5A1.5 1.5 0 0 0 7 20h10a1.5 1.5 0 0 0 1.5-1.5V9M10 13h4"/>',
   phone: '<rect x="7" y="3.5" width="10" height="17" rx="2"/><circle cx="12" cy="10.5" r="2.5"/><path d="M11 17.5h2"/>',
+  einvoiceNew: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h4M16.5 14.5v4M14.5 16.5h4"/>',
   einvoiceView: '<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/>',
   einvoiceCheck: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',
   merge: '<path d="M7 5v4a3 3 0 0 0 3 3h4a3 3 0 0 1 3 3v4M17 5v4a3 3 0 0 1-3 3"/><path d="m14 16 3 3 3-3"/>',
@@ -565,6 +566,7 @@ function workspace(t) {
   if (t.ui.mode === "slides") return slidesWorkspace(t);
   if (t.ui.mode === "cv") return cvWorkspace(t);
   if (t.ui.mode === "form") return formWorkspace(t);
+  if (t.ui.mode === "invoice") return invoiceWorkspace(t);
   const ui = t.ui;
   const c = catById[t.cat].color;
   const data = {
@@ -901,6 +903,102 @@ function formWorkspace(t) {
   </section>`;
 }
 
+// E-Rechnung erstellen: Formular → ZUGFeRD-PDF oder XRechnung-XML (Logik: public/assets/invoice.js)
+// data-k = Pfad im JSON für den E-Rechnung-Dienst (z. B. seller.name); data-x = nur für XRechnung Pflicht
+function invoiceWorkspace(t) {
+  const c = catById[t.cat].color;
+  const f = (k, label, o = {}) => `<label class="iv-f${o.wide ? " iv-f--wide" : ""}${o.small ? " iv-f--s" : ""}"><span>${T(label)}${o.req ? ' <b class="iv-req" title="' + T("Pflichtangabe") + '">*</b>' : ""}${o.x ? ' <b class="iv-req iv-req--x" title="' + T("Pflicht bei XRechnung") + '">*</b>' : ""}</span><input data-k="${k}" type="${o.type || "text"}"${o.ph ? ` placeholder="${esc(T(o.ph))}"` : ""}${o.ac ? ` autocomplete="${o.ac}"` : ""}${o.im ? ` inputmode="${o.im}"` : ""}${o.val ? ` value="${o.val}"` : ""}></label>`;
+  const party = (who) => `
+        ${f(`${who}.name`, "Name / Firma", { req: true, wide: true, ac: who === "seller" ? "organization" : "off" })}
+        ${f(`${who}.street`, "Straße und Hausnummer", { req: true, wide: true })}
+        ${f(`${who}.postal_code`, "PLZ", { req: true, small: true, im: "numeric" })}
+        ${f(`${who}.city`, "Ort", { req: true })}
+        ${f(`${who}.country_code`, "Land (Code)", { small: true, val: "DE", ph: "DE" })}`;
+  return `<section class="tool tool--${c}" data-invoice aria-label="${esc(t.name)}">
+    <form class="iv" novalidate>
+      <fieldset class="iv-box iv-format">
+        <legend>${T("Format")}</legend>
+        <label class="iv-opt"><input type="radio" name="iv-format" value="pdf" checked> <span><b>${T("ZUGFeRD-PDF")}</b> ${T("– für Firmen und Privatkunden: normale PDF mit eingebetteten Rechnungsdaten")}</span></label>
+        <label class="iv-opt"><input type="radio" name="iv-format" value="xml"> <span><b>${T("XRechnung (XML)")}</b> ${T("– für Behörden und öffentliche Auftraggeber (Leitweg-ID)")}</span></label>
+      </fieldset>
+
+      <div class="iv-cols">
+        <fieldset class="iv-box">
+          <legend>${T("Rechnungssteller (du)")}</legend>
+          <div class="iv-grid">${party("seller")}
+            ${f("seller.vat_id", "USt-IdNr.", { ph: "DE123456789" })}
+            ${f("seller.tax_number", "oder Steuernummer", { ph: "z. B. 007/123/45678" })}
+            ${f("seller.contact_name", "Ansprechpartner", { x: true, ac: "name" })}
+            ${f("seller.phone", "Telefon", { x: true, type: "tel", ac: "tel" })}
+            ${f("seller.email", "E-Mail", { x: true, type: "email", ac: "email" })}
+            ${f("iban", "IBAN", { x: true, wide: true, ph: "DE00 0000 0000 0000 0000 00" })}
+            ${f("bic", "BIC (optional)", { small: true })}
+          </div>
+          <label class="iv-check"><input type="checkbox" data-k="small_business"> ${T("Kleinunternehmer nach § 19 UStG (keine Umsatzsteuer)")}</label>
+          <label class="iv-check"><input type="checkbox" data-remember checked> ${T("Meine Angaben in diesem Browser merken")}</label>
+        </fieldset>
+
+        <fieldset class="iv-box">
+          <legend>${T("Rechnungsempfänger")}</legend>
+          <div class="iv-grid">${party("buyer")}
+            ${f("buyer.email", "E-Mail", { x: true, type: "email" })}
+            ${f("buyer_reference", "Leitweg-ID oder Bestellnummer", { wide: true, ph: "z. B. 991-12345-67" })}
+          </div>
+        </fieldset>
+      </div>
+
+      <fieldset class="iv-box">
+        <legend>${T("Rechnung")}</legend>
+        <div class="iv-grid iv-grid--4">
+          ${f("number", "Rechnungsnummer", { req: true, ph: "z. B. 2026-001" })}
+          ${f("issue_date", "Rechnungsdatum", { req: true, type: "date" })}
+          ${f("delivery_date", "Leistungsdatum", { type: "date" })}
+          ${f("due_days", "Zahlungsziel (Tage)", { type: "number", val: "14", small: true })}
+        </div>
+        <label class="iv-check"><input type="checkbox" data-credit> ${T("Gutschrift statt Rechnung")}</label>
+      </fieldset>
+
+      <fieldset class="iv-box">
+        <legend>${T("Positionen")}</legend>
+        <div class="iv-lines" data-lines>
+          <div class="iv-line iv-line--head" aria-hidden="true"><span>${T("Bezeichnung")}</span><span>${T("Menge")}</span><span>${T("Einheit")}</span><span>${T("Einzelpreis netto (€)")}</span><span>${T("USt.")}</span><span>${T("Betrag netto")}</span><span></span></div>
+        </div>
+        <template data-line-tpl>
+          <div class="iv-line">
+            <input data-l="name" aria-label="${T("Bezeichnung")}" placeholder="${T("z. B. Webdesign Startseite")}">
+            <input data-l="quantity" aria-label="${T("Menge")}" inputmode="decimal" value="1">
+            <select data-l="unit_code" aria-label="${T("Einheit")}"><option value="C62">${T("Stück")}</option><option value="HUR">${T("Stunde")}</option><option value="DAY">${T("Tag")}</option><option value="MON">${T("Monat")}</option><option value="KGM">kg</option><option value="LS">${T("Pauschale")}</option></select>
+            <input data-l="unit_price" aria-label="${T("Einzelpreis netto (€)")}" inputmode="decimal" placeholder="0,00">
+            <select data-l="vat_rate" aria-label="${T("USt.")}"><option value="19">19 %</option><option value="7">7 %</option><option value="0">0 %</option></select>
+            <output data-l-total>0,00</output>
+            <button type="button" class="iv-del" data-del aria-label="${T("Position entfernen")}">×</button>
+          </div>
+        </template>
+        <button type="button" class="btn btn--ghost btn--sm" data-add-line>${T("+ Position hinzufügen")}</button>
+        <dl class="iv-sum" data-sum></dl>
+        <label class="iv-f iv-f--wide"><span>${T("Bemerkung (optional)")}</span><textarea data-k="note" rows="2" placeholder="${T("z. B. Vielen Dank für Ihren Auftrag!")}"></textarea></label>
+      </fieldset>
+
+      <div class="iv-missing" data-missing hidden role="alert"></div>
+      <div class="iv-actions">
+        <button type="button" class="btn btn--link" data-example>${T("Mit Beispieldaten ausfüllen")}</button>
+        <button type="submit" class="btn btn--primary btn--lg" data-submit>${T("E-Rechnung erstellen")}</button>
+      </div>
+      <p class="privacy">${ICON.shield}<span>${T("Deine Angaben werden nur zum Erstellen an unseren Server geschickt und nicht gespeichert. „Merken“ speichert sie nur in deinem Browser.")}</span></p>
+    </form>
+
+    <div class="stage stage--done" hidden>
+      <div class="done">
+        <p class="done__title">${T("Deine E-Rechnung ist fertig!")}</p>
+        <p data-done-info></p>
+        <p><a class="btn btn--primary btn--lg" data-download download>${T("Herunterladen")}</a></p>
+        <p><button type="button" class="btn btn--link" data-back>${T("Zurück zur Rechnung")}</button> · <button type="button" class="btn btn--link" data-next>${T("Nächste Rechnung")}</button></p>
+        <p class="done__next">${T("Weiter mit:")} <a href="${url("e-rechnung-pruefen")}">${esc(bySlug["e-rechnung-pruefen"].name)}</a> · <a href="${url("xrechnung-anzeigen")}">${esc(bySlug["xrechnung-anzeigen"].name)}</a></p>
+      </div>
+    </div>
+  </section>`;
+}
+
 // PDF → PowerPoint mit Design-Auswahl und Live-Vorschau (Logik: public/assets/slides.js)
 function slidesWorkspace(t) {
   const c = catById[t.cat].color;
@@ -1165,6 +1263,9 @@ ${
   }
   if (t.ui.mode === "cv") {
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/cv.js?v=${BUILD_ID}" defer></script>` });
+  }
+  if (t.ui.mode === "invoice") {
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/invoice.js?v=${BUILD_ID}" defer></script>` });
   }
   if (t.ui.mode === "form") {
     const scripts = ["/vendor/pdf.min.js", "/vendor/pdf-lib.min.js", `/assets/form-detect.js?v=${BUILD_ID}`, `/assets/form.js?v=${BUILD_ID}`].map((s) => `\n<script src="${s}" defer></script>`).join("");
