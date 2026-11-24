@@ -370,12 +370,56 @@ ${LANG === "de" ? "" : `<script>window.PL_LANG=${JSON.stringify(LANG)};window.PL
 // ---------------------------------------------------------------------------
 // Startseite
 // ---------------------------------------------------------------------------
+// Suchbegriffe pro Werkzeug (Synonyme, auch EN/FR), damit die Suche „Was möchtest du tun?“ auch Alltagswörter versteht
+const KEYWORDS = {
+  merge: "zusammenfügen verbinden kombinieren mehrere eine datei merge combine join fusionner assembler",
+  split: "teilen trennen aufteilen split separate diviser séparer",
+  compress: "verkleinern kleiner komprimieren mb email zu groß shrink reduce size compress réduire compresser alléger",
+  organize: "sortieren reihenfolge seiten verschieben reorder pages organiser",
+  rotate: "drehen quer hochkant rotate tourner pivoter",
+  "remove-pages": "seiten löschen entfernen delete pages supprimer pages",
+  "extract-pages": "seiten herausnehmen extrahieren extract pages extraire",
+  edit: "bearbeiten text ändern editor schreiben edit modify modifier éditer",
+  sign: "unterschreiben unterschrift signatur sign signature signer",
+  "pdf-formular-ausfuellen": "formular ausfüllen antrag behörde fill form remplir formulaire cerfa",
+  ocr: "texterkennung scan durchsuchbar ocr searchable reconnaissance texte",
+  "pdf-to-docx": "word docx umwandeln bearbeiten convert word convertir word",
+  "docx-to-pdf": "word in pdf docx convert word to pdf convertir word en pdf",
+  "jpg-to-pdf": "bild foto jpg png in pdf image photo to pdf image en pdf",
+  "heic-to-pdf": "iphone foto heic",
+  "excel-to-pdf": "excel tabelle xlsx",
+  "ppt-to-pdf": "powerpoint präsentation pptx",
+  "pdf-to-jpg": "bild jpg png exportieren image picture",
+  protect: "passwort schützen verschlüsseln password protect mot de passe protéger",
+  unlock: "passwort entfernen entsperren unlock remove password déverrouiller",
+  redact: "schwärzen anonymisieren redact blackout caviarder",
+  summarize: "zusammenfassen ki verstehen erklären brief amt summary summarize ai résumer",
+  translate: "übersetzen sprache translate traduire",
+  "e-rechnung-erstellen": "rechnung schreiben e-rechnung zugferd xrechnung invoice create facture électronique factur-x",
+  "xrechnung-anzeigen": "e-rechnung öffnen lesen xml anzeigen factur-x peppol ubl open read invoice ouvrir lire facture",
+  "e-rechnung-pruefen": "e-rechnung prüfen validieren check validate vérifier",
+  musterbrief: "brief kündigung kündigen widerspruch mahnung widerruf vertrag letter cancel résilier lettre",
+  "lebenslauf-erstellen": "lebenslauf cv bewerbung resume curriculum",
+  "anschreiben-erstellen": "anschreiben bewerbung cover letter lettre de motivation",
+  bewerbungsmappe: "bewerbung mappe zeugnisse application",
+  watermark: "wasserzeichen stempel watermark filigrane",
+  "page-numbers": "seitenzahlen nummerieren page numbers numéros",
+  create: "neue pdf erstellen create new",
+  pdfa: "archiv pdf/a langzeit archive",
+};
+// Läuft das Werkzeug komplett im Browser? (für das Abzeichen „Im Browser“)
+const isLocal = (t) => ["client", "form", "letter"].includes(t.ui.mode);
+const isAi = (t) => t.cat === "ai" || ["lebenslauf-anpassen", "anschreiben-erstellen"].includes(t.slug);
+
 function toolCard(t) {
-  return `<li class="tcard" data-cat="${t.cat}">
+  const kw = [t.name, t.short, KEYWORDS[t.landingOf || t.slug] || ""].join(" ");
+  const badges = [isLocal(t) && `<span class="tbadge tbadge--local" title="${T("Die Datei wird nicht hochgeladen")}">${T("Im Browser")}</span>`, isAi(t) && `<span class="tbadge tbadge--ai">${T("KI")}</span>`].filter(Boolean).join("");
+  return `<li class="tcard" data-cat="${t.cat}" data-slug="${t.slug}" data-kw="${esc(kw)}">
         <a href="${url(t.slug)}">
           ${toolIcon(t)}
           <span class="tcard__name">${esc(t.name)}${t.pro ? ' <span class="pro-badge">Pro</span>' : t.isNew ? ` <span class="new-badge">${T("Neu")}</span>` : ""}</span>
           <span class="tcard__text">${esc(t.short)}</span>
+          ${badges ? `<span class="tcard__badges">${badges}</span>` : ""}
         </a>
       </li>`;
 }
@@ -403,15 +447,32 @@ function homePage() {
   <div class="wrap">
     <h1>${T("Jedes PDF-Werkzeug, das du im Alltag brauchst.")}</h1>
     <p class="home-hero__lead">${T("Zusammenfügen, verkleinern, umwandeln, unterschreiben und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen.")} ${FREE ? T('Text in PDFs ändern kannst du mit dem <a href="{href}">PDF-Editor</a> – ebenfalls kostenlos.', { href: url("edit") }) : T('Text in PDFs ändern kannst du mit <a href="/preise.html">PDF Libre Pro</a>.')}</p>
+    <div class="smart" data-smart>
+      <label class="smart__search"><span class="visually-hidden">${T("Werkzeug suchen")}</span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" data-search placeholder="${esc(T("Was möchtest du tun? z. B. „PDF verkleinern“, „Vertrag kündigen“"))}" autocomplete="off"></label>
+      <label class="smart__drop" data-smart-drop>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg><span>${T("<strong>Oder Datei hier ablegen</strong> – wir zeigen dir, was du damit machen kannst")}</span>
+        <input type="file" class="visually-hidden" data-smart-file>
+      </label>
+      <div class="smart__result" data-smart-result hidden aria-live="polite"></div>
+    </div>
     <ul class="facts">
-      <li>${ICON.device}<span>${T("<strong>{n} Werkzeuge</strong> laufen komplett in deinem Browser", { n: list.filter((t) => t.ui.mode === "client").length })}</span></li>
+      <li>${ICON.device}<span>${T("<strong>{n} Werkzeuge</strong> laufen komplett in deinem Browser", { n: list.filter(isLocal).length })}</span></li>
       <li>${ICON.shield}<span>${T("<strong>Automatisch gelöscht</strong> nach der Verarbeitung")}</span></li>
     </ul>
   </div>
 </section>
 
+<section class="wrap recent" data-recent hidden aria-labelledby="zuletzt">
+  <h2 id="zuletzt" class="recent__title">${T("Zuletzt benutzt")}</h2>
+  <ul class="tgrid" data-recent-list></ul>
+</section>
+<script>window.PL_TOOLS=${JSON.stringify([...list, ...landingPages.filter((l) => availableIn(l.slug, LANG))].map((t) => ({ s: t.slug, n: t.name, u: url(t.slug) }))).replace(/</g, "\\u003c")};</script>
+
 <section class="wrap tools-index" aria-labelledby="alle-werkzeuge">
   <h2 id="alle-werkzeuge" class="visually-hidden">${T("Alle Werkzeuge")}</h2>
+  <p class="search-empty" data-search-empty hidden>${T("Kein passendes Werkzeug gefunden. Versuche ein anderes Wort oder schreib uns, was dir fehlt:")} <a href="/ueber-uns.html#kontakt">${T("Kontakt")}</a></p>
   <div class="filters" role="toolbar" aria-label="${T("Werkzeuge filtern")}">
     <button type="button" class="chip" aria-pressed="true" data-filter="all">${T("Alle")}</button>
     ${categories.filter((c) => list.some((t) => t.cat === c.id)).map((c) => `<button type="button" class="chip chip--${c.color}" aria-pressed="false" data-filter="${c.id}">${esc(c.short || c.name)}</button>`).join("\n    ")}

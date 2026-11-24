@@ -111,4 +111,220 @@
       });
     })
   );
+
+  // ================================================================== Bedienkomfort
+  const tr = (text, vars) => {
+    const d = window.PL_T || {};
+    const out = d[text] != null ? d[text] : text;
+    return vars ? out.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m)) : out;
+  };
+  const lang = window.PL_LANG || "de";
+  const norm = (x) => String(x || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+  // ------------------------------------------------------------------ Datei an ein anderes Werkzeug weitergeben
+  // Die Datei wird kurz im Browser (IndexedDB) abgelegt, die nächste Seite holt sie ab. Nichts geht an den Server.
+  const db = () => new Promise((ok, fail) => {
+    const r = indexedDB.open("pdflibre", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("handoff");
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => fail(r.error);
+  });
+  async function handoffPut(blob, name) {
+    const d = await db();
+    await new Promise((ok, fail) => { const tx = d.transaction("handoff", "readwrite"); tx.objectStore("handoff").put({ blob, name, type: blob.type, ts: Date.now() }, "file"); tx.oncomplete = ok; tx.onerror = () => fail(tx.error); });
+  }
+  async function handoffTake() {
+    const d = await db();
+    return new Promise((ok) => {
+      const tx = d.transaction("handoff", "readwrite");
+      const st = tx.objectStore("handoff");
+      const g = st.get("file");
+      g.onsuccess = () => { st.delete("file"); const v = g.result; ok(v && Date.now() - v.ts < 10 * 60 * 1000 ? v : null); };
+      g.onerror = () => ok(null);
+    });
+  }
+  async function goWithFile(href, blob, name) {
+    try { await handoffPut(blob, name); } catch (_) {}
+    location.href = href;
+  }
+  // Auf Werkzeugseiten: übergebene Datei in das Dateifeld legen, als hätte man sie ausgewählt
+  const toolSection = document.querySelector("section.tool");
+  if (toolSection && window.indexedDB) {
+    document.addEventListener("DOMContentLoaded", async () => {
+      let v = null;
+      try { v = await handoffTake(); } catch (_) {}
+      if (!v) return;
+      const input = toolSection.querySelector('input[type="file"]');
+      if (!input) return;
+      const file = new File([v.blob], v.name, { type: v.type || v.blob.type });
+      const ext = "." + (file.name.split(".").pop() || "").toLowerCase();
+      const accept = (input.accept || "").toLowerCase();
+      if (accept && !accept.split(",").some((a) => a.trim() === ext || (a.includes("/") && file.type && (a.trim() === file.type || (a.endsWith("/*") && file.type.startsWith(a.slice(0, -1))))))) {
+        toast(tr("Die Datei „{name}“ passt nicht zu diesem Werkzeug.", { name: file.name }));
+        return;
+      }
+      try {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        toast(tr("Datei übernommen: {name}", { name: file.name }));
+      } catch (_) {}
+    });
+  }
+  // „Weiter mit …“: liegt schon ein Ergebnis zum Herunterladen vor, nimmt der Link es mit
+  document.addEventListener("click", async (e) => {
+    const link = e.target.closest(".done__next a[href], .related a[href]");
+    if (!link || !toolSection || e.metaKey || e.ctrlKey) return;
+    const result = [...toolSection.querySelectorAll('a[download][href^="blob:"]')].find((a) => a.offsetParent !== null);
+    if (!result) return;
+    e.preventDefault();
+    try {
+      const blob = await (await fetch(result.href)).blob();
+      await goWithFile(link.href, blob, result.download || "dokument.pdf");
+    } catch (_) { location.href = link.href; }
+  });
+  function toast(text) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.setAttribute("role", "status");
+    t.textContent = text;
+    document.body.appendChild(t);
+    setTimeout(() => t.classList.add("is-out"), 3500);
+    setTimeout(() => t.remove(), 4200);
+  }
+
+  // ------------------------------------------------------------------ zuletzt benutzte Werkzeuge
+  const RECENT = "pl_recent";
+  const slugOf = (path) => (path.split("/").pop() || "").replace(/\.html$/, "");
+  if (toolSection) {
+    try {
+      const slug = slugOf(location.pathname);
+      const list = JSON.parse(localStorage.getItem(RECENT) || "[]").filter((x) => x !== slug);
+      localStorage.setItem(RECENT, JSON.stringify([slug, ...list].slice(0, 6)));
+    } catch (_) {}
+  }
+  const recentBox = document.querySelector("[data-recent]");
+  if (recentBox) {
+    try {
+      const slugs = JSON.parse(localStorage.getItem(RECENT) || "[]");
+      const ul = recentBox.querySelector("[data-recent-list]");
+      for (const sl of slugs) {
+        const card = document.querySelector(`.tools-index .tcard[data-slug="${CSS.escape(sl)}"]`);
+        if (card) ul.appendChild(card.cloneNode(true));
+      }
+      recentBox.hidden = !ul.children.length;
+    } catch (_) {}
+  }
+
+  // ------------------------------------------------------------------ Suche „Was möchtest du tun?“
+  const search = document.querySelector("[data-search]");
+  if (search) {
+    const cards = [...document.querySelectorAll(".tools-index .tcard")];
+    const groups = [...document.querySelectorAll(".tools-index .tgroup")];
+    const empty = document.querySelector("[data-search-empty]");
+    const run = () => {
+      const words = norm(search.value).split(/\s+/).filter((w) => w.length > 1);
+      if (words.length) chips.forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.filter === "all")));
+      let hits = 0;
+      for (const c of cards) {
+        const hay = norm(c.dataset.kw);
+        const ok = !words.length || words.every((w) => hay.includes(w) || hay.includes(w.replace(/(en|e|n|s)$/, "")));
+        c.hidden = !ok;
+        if (ok) hits++;
+      }
+      groups.forEach((g) => (g.hidden = ![...g.querySelectorAll(".tcard")].some((c) => !c.hidden)));
+      empty.hidden = hits > 0;
+    };
+    search.addEventListener("input", run);
+    search.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const first = cards.find((c) => !c.hidden);
+      if (first && search.value.trim()) location.href = first.querySelector("a").href;
+    });
+  }
+
+  // ------------------------------------------------------------------ Datei ablegen → passende Werkzeuge
+  const smartDrop = document.querySelector("[data-smart-drop]");
+  if (smartDrop && window.PL_TOOLS) {
+    const byslug = Object.fromEntries(window.PL_TOOLS.map((t) => [t.s, t]));
+    const out = document.querySelector("[data-smart-result]");
+    const fileInput = smartDrop.querySelector("input");
+    ["dragover", "dragenter"].forEach((ev) => document.addEventListener(ev, (e) => { if (e.dataTransfer && [...e.dataTransfer.types].includes("Files")) { e.preventDefault(); smartDrop.classList.add("is-over"); } }));
+    ["dragleave", "drop"].forEach((ev) => smartDrop.addEventListener(ev, () => smartDrop.classList.remove("is-over")));
+    document.addEventListener("drop", (e) => { if (e.dataTransfer && e.dataTransfer.files[0]) { e.preventDefault(); smartDrop.classList.remove("is-over"); analyse(e.dataTransfer.files[0]); } });
+    fileInput.addEventListener("change", () => fileInput.files[0] && analyse(fileInput.files[0]));
+
+    async function analyse(file) {
+      const ext = (file.name.split(".").pop() || "").toLowerCase();
+      const head = async (n) => new TextDecoder("latin1").decode(await file.slice(0, n).arrayBuffer());
+      const tail = async (n) => new TextDecoder("latin1").decode(await file.slice(Math.max(0, file.size - n)).arrayBuffer());
+      const sug = []; // [slug, Grund]
+      const add = (slug, why) => { if (byslug[slug] && !sug.some((x) => x[0] === slug)) sug.push([slug, why]); };
+      let what = "";
+      if (ext === "pdf") {
+        // Rohdaten (schnell) + pdf.js (genau – wird erst jetzt nachgeladen, damit die Startseite leicht bleibt)
+        const txt = (await head(3_000_000)) + (file.size > 3_000_000 ? await tail(1_000_000) : "");
+        let facturx = /factur-x\.xml|zugferd-invoice\.xml|xrechnung\.xml|ZUGFeRD/i.test(txt);
+        let encrypted = /\/Encrypt\s/.test(txt);
+        let xfa = /\/XFA[\s[(<]/.test(txt);
+        let fields = /\/AcroForm/.test(txt) && /\/Widget/.test(txt);
+        let hasText = /\/Font\b/.test(txt);
+        let hasImage = /\/Subtype\s*\/Image/.test(txt);
+        let pages = Math.max(1, (txt.match(/\/Type\s*\/Page[^s]/g) || []).length);
+        try {
+          await loadScript("/vendor/pdf.min.js");
+          pdfjsLib.GlobalWorkerOptions.workerSrc = "/vendor/pdf.worker.min.js";
+          const doc = await pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false }).promise;
+          pages = doc.numPages;
+          const att = (await doc.getAttachments()) || {};
+          facturx = facturx || Object.keys(att).some((n) => /factur-x|zugferd|xrechnung/i.test(n));
+          fields = !!(await doc.getFieldObjects());
+          let chars = 0;
+          for (let n = 1; n <= Math.min(pages, 3); n++) {
+            const tc = await (await doc.getPage(n)).getTextContent();
+            const t = tc.items.map((i) => i.str).join("");
+            chars += t.replace(/\s/g, "").length;
+            if (/please wait|later version of (the )?(adobe|pdf)/i.test(t)) xfa = true;
+          }
+          hasText = chars > 30;
+          if (!hasText) hasImage = true;
+        } catch (err) {
+          if (err && err.name === "PasswordException") encrypted = true;
+        }
+        what = tr("PDF, {n} Seite(n), {mb} MB", { n: pages, mb: (file.size / 1048576).toFixed(1).replace(".", lang === "de" || lang === "fr" ? "," : ".") });
+        if (facturx) { add("xrechnung-anzeigen", tr("Das ist eine E-Rechnung (ZUGFeRD/Factur-X).")); add("e-rechnung-pruefen", tr("Beträge und Pflichtangaben prüfen.")); }
+        if (encrypted) add("unlock", tr("Die PDF ist geschützt."));
+        if (xfa && !fields) add("cerfa-ausfuellen", tr("Dynamisches Formular (XFA) – so füllst du es trotzdem aus."));
+        if (fields) { add("pdf-formular-ausfuellen", tr("Die PDF hat Formularfelder.")); add("sign", tr("Danach unterschreiben.")); }
+        if (!hasText && hasImage) { add("ocr", tr("Sieht gescannt aus – Text durchsuchbar machen.")); add("pdf-ausfuellbar-machen", tr("Gescanntes Formular? Felder automatisch erkennen.")); }
+        if (file.size > 4 * 1048576) add("compress", tr("Die Datei ist ziemlich groß – für E-Mail verkleinern."));
+        if (pages > 1) { add("split", tr("Mehrere Seiten aufteilen.")); add("organize", tr("Seiten sortieren oder löschen.")); }
+        if (hasText && !facturx && !xfa) { add("pdf-to-docx", tr("In Word bearbeiten.")); add("pdf-in-e-rechnung-umwandeln", tr("Ist es eine Rechnung? In eine E-Rechnung umwandeln.")); }
+        ["sign", "compress", "merge", "edit", "summarize"].forEach((s) => add(s, ""));
+      } else if (ext === "xml") {
+        const txt = await head(200_000);
+        what = tr("XML-Datei");
+        if (/CrossIndustryInvoice|urn:oasis:names:specification:ubl|<Invoice[\s>]|<CreditNote[\s>]/.test(txt)) { what = tr("E-Rechnung (XML)"); add("xrechnung-anzeigen", tr("Rechnung lesbar anzeigen.")); add("e-rechnung-pruefen", tr("Beträge und Pflichtangaben prüfen.")); }
+      } else if (["doc", "docx", "odt", "rtf"].includes(ext)) { what = "Word"; add("docx-to-pdf", tr("In PDF umwandeln.")); }
+      else if (["xls", "xlsx", "ods"].includes(ext)) { what = "Excel"; add("excel-to-pdf", tr("In PDF umwandeln.")); }
+      else if (["ppt", "pptx", "odp"].includes(ext)) { what = "PowerPoint"; add("ppt-to-pdf", tr("In PDF umwandeln.")); }
+      else if (["heic", "heif"].includes(ext)) { what = tr("iPhone-Foto"); add("heic-to-pdf", tr("In PDF umwandeln.")); }
+      else if (["jpg", "jpeg", "png", "webp"].includes(ext)) { what = tr("Bild"); add("jpg-to-pdf", tr("In PDF umwandeln.")); add("pdf-in-e-rechnung-umwandeln", tr("Foto einer Rechnung? In eine E-Rechnung umwandeln.")); }
+      if (!sug.length) { out.hidden = false; out.innerHTML = `<p>${esc(tr("Für diesen Dateityp haben wir leider noch kein Werkzeug."))}</p>`; return; }
+      out.hidden = false;
+      out.innerHTML = `<p class="smart__what"><b>${esc(file.name)}</b> · ${esc(what)}</p><ul class="smart__list">${sug.slice(0, 6).map(([sl, why], i) => `<li><button type="button" class="smart__opt${i === 0 ? " is-first" : ""}" data-go="${sl}"><b>${esc(byslug[sl].n)}</b>${why ? `<span>${esc(why)}</span>` : ""}</button></li>`).join("")}</ul>`;
+      out.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => goWithFile(byslug[b.dataset.go].u, file, file.name)));
+      out.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }
+  function loadScript(src) {
+    return new Promise((ok, fail) => {
+      if (document.querySelector(`script[src="${src}"]`) && window.pdfjsLib) return ok();
+      const sc = document.createElement("script");
+      sc.src = src; sc.onload = ok; sc.onerror = fail;
+      document.head.appendChild(sc);
+    });
+  }
+  function esc(x) { return String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
 })();

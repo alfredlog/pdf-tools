@@ -26,7 +26,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=31c5eebf">
+  <link rel="stylesheet" href="/assets/style.css?v=50ea2699">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"PDF Libre","url":"https://pdf-libre.de/","inLanguage":"de-DE"}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"PDF Libre","url":"https://pdf-libre.de/","logo":"https://pdf-libre.de/apple-touch-icon.png"}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist PDF Libre kostenlos?","acceptedAnswer":{"@type":"Answer","text":"Ja. Alle 38 Werkzeuge – auch der PDF-Editor und die KI-Werkzeuge – sind kostenlos und ohne Anmeldung nutzbar. In deine Dateien wird nie Werbung oder ein Wasserzeichen eingefügt."}},{"@type":"Question","name":"Was passiert mit meinen Dateien?","acceptedAnswer":{"@type":"Answer","text":"Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht."}},{"@type":"Question","name":"Brauche ich ein Programm oder eine App?","acceptedAnswer":{"@type":"Answer","text":"Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone."}},{"@type":"Question","name":"Wie groß dürfen meine Dateien sein?","acceptedAnswer":{"@type":"Answer","text":"Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt."}}]}</script>
@@ -107,15 +107,32 @@
   <div class="wrap">
     <h1>Jedes PDF-Werkzeug, das du im Alltag brauchst.</h1>
     <p class="home-hero__lead">Zusammenfügen, verkleinern, umwandeln, unterschreiben und schützen – kostenlos, ohne Anmeldung und ohne Wasserzeichen. Text in PDFs ändern kannst du mit dem <a href="/edit.html">PDF-Editor</a> – ebenfalls kostenlos.</p>
+    <div class="smart" data-smart>
+      <label class="smart__search"><span class="visually-hidden">Werkzeug suchen</span>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" data-search placeholder="Was möchtest du tun? z. B. „PDF verkleinern“, „Vertrag kündigen“" autocomplete="off"></label>
+      <label class="smart__drop" data-smart-drop>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg><span><strong>Oder Datei hier ablegen</strong> – wir zeigen dir, was du damit machen kannst</span>
+        <input type="file" class="visually-hidden" data-smart-file>
+      </label>
+      <div class="smart__result" data-smart-result hidden aria-live="polite"></div>
+    </div>
     <ul class="facts">
-      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg><span><strong>9 Werkzeuge</strong> laufen komplett in deinem Browser</span></li>
+      <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg><span><strong>11 Werkzeuge</strong> laufen komplett in deinem Browser</span></li>
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span><strong>Automatisch gelöscht</strong> nach der Verarbeitung</span></li>
     </ul>
   </div>
 </section>
 
+<section class="wrap recent" data-recent hidden aria-labelledby="zuletzt">
+  <h2 id="zuletzt" class="recent__title">Zuletzt benutzt</h2>
+  <ul class="tgrid" data-recent-list></ul>
+</section>
+<script>window.PL_TOOLS=[{"s":"lebenslauf-erstellen","n":"Lebenslauf erstellen","u":"/lebenslauf-erstellen.html"},{"s":"lebenslauf-anpassen","n":"Lebenslauf an Stellenanzeige anpassen","u":"/lebenslauf-anpassen.html"},{"s":"anschreiben-erstellen","n":"Anschreiben erstellen","u":"/anschreiben-erstellen.html"},{"s":"bewerbungsmappe","n":"Bewerbungsmappe erstellen","u":"/bewerbungsmappe.html"},{"s":"merge","n":"PDF zusammenfügen","u":"/merge.html"},{"s":"split","n":"PDF teilen","u":"/split.html"},{"s":"organize","n":"PDF organisieren","u":"/organize.html"},{"s":"rotate","n":"PDF drehen","u":"/rotate.html"},{"s":"remove-pages","n":"Seiten entfernen","u":"/remove-pages.html"},{"s":"extract-pages","n":"Seiten extrahieren","u":"/extract-pages.html"},{"s":"compress","n":"PDF komprimieren","u":"/compress.html"},{"s":"merge-compress","n":"Zusammenfügen & komprimieren","u":"/merge-compress.html"},{"s":"edit","n":"PDF bearbeiten","u":"/edit.html"},{"s":"pdf-formular-ausfuellen","n":"PDF-Formular ausfüllen","u":"/pdf-formular-ausfuellen.html"},{"s":"sign","n":"PDF unterschreiben","u":"/sign.html"},{"s":"ocr","n":"PDF durchsuchbar machen (OCR)","u":"/ocr.html"},{"s":"create","n":"PDF erstellen","u":"/create.html"},{"s":"page-numbers","n":"Seitenzahlen einfügen","u":"/page-numbers.html"},{"s":"watermark","n":"Wasserzeichen","u":"/watermark.html"},{"s":"docx-to-pdf","n":"Word in PDF","u":"/docx-to-pdf.html"},{"s":"jpg-to-pdf","n":"Bilder in PDF","u":"/jpg-to-pdf.html"},{"s":"heic-to-pdf","n":"HEIC in PDF","u":"/heic-to-pdf.html"},{"s":"excel-to-pdf","n":"Excel in PDF","u":"/excel-to-pdf.html"},{"s":"ppt-to-pdf","n":"PowerPoint in PDF","u":"/ppt-to-pdf.html"},{"s":"pdfa","n":"PDF in PDF/A umwandeln","u":"/pdfa.html"},{"s":"pdf-to-docx","n":"PDF in Word","u":"/pdf-to-docx.html"},{"s":"pdf-to-excel","n":"PDF in Excel","u":"/pdf-to-excel.html"},{"s":"pdf-to-powerpoint","n":"PDF in PowerPoint","u":"/pdf-to-powerpoint.html"},{"s":"pdf-to-jpg","n":"PDF in JPG","u":"/pdf-to-jpg.html"},{"s":"summarize","n":"PDF zusammenfassen","u":"/summarize.html"},{"s":"translate","n":"PDF übersetzen","u":"/translate.html"},{"s":"protect","n":"PDF schützen","u":"/protect.html"},{"s":"redact","n":"PDF schwärzen","u":"/redact.html"},{"s":"unlock","n":"PDF entsperren","u":"/unlock.html"},{"s":"e-rechnung-erstellen","n":"E-Rechnung erstellen","u":"/e-rechnung-erstellen.html"},{"s":"xrechnung-anzeigen","n":"XRechnung anzeigen","u":"/xrechnung-anzeigen.html"},{"s":"e-rechnung-pruefen","n":"E-Rechnung prüfen","u":"/e-rechnung-pruefen.html"},{"s":"musterbrief","n":"Musterbrief erstellen","u":"/musterbrief.html"},{"s":"pdf-in-e-rechnung-umwandeln","n":"PDF in E-Rechnung umwandeln","u":"/pdf-in-e-rechnung-umwandeln.html"},{"s":"factur-x-oeffnen","n":"Factur-X öffnen","u":"/factur-x-oeffnen.html"},{"s":"peppol-rechnung-oeffnen","n":"Peppol-Rechnung öffnen","u":"/peppol-rechnung-oeffnen.html"},{"s":"cerfa-ausfuellen","n":"CERFA ausfüllen","u":"/cerfa-ausfuellen.html"},{"s":"kuendigung-schreiben","n":"Kündigung schreiben","u":"/kuendigung-schreiben.html"},{"s":"wohnung-kuendigen","n":"Wohnung kündigen","u":"/wohnung-kuendigen.html"},{"s":"arbeitsvertrag-kuendigen","n":"Arbeitsvertrag kündigen","u":"/arbeitsvertrag-kuendigen.html"},{"s":"widerspruch-schreiben","n":"Widerspruch schreiben","u":"/widerspruch-schreiben.html"},{"s":"mahnung-schreiben","n":"Mahnung schreiben","u":"/mahnung-schreiben.html"},{"s":"widerruf-schreiben","n":"Widerruf schreiben","u":"/widerruf-schreiben.html"},{"s":"pdf-ausfuellbar-machen","n":"PDF ausfüllbar machen","u":"/pdf-ausfuellbar-machen.html"},{"s":"bewerbung-pdf-zusammenfuegen","n":"Bewerbung als PDF zusammenfügen","u":"/bewerbung-pdf-zusammenfuegen.html"},{"s":"bewerbung-pdf-verkleinern","n":"Bewerbung PDF verkleinern","u":"/bewerbung-pdf-verkleinern.html"},{"s":"bewerbung-deckblatt","n":"Deckblatt für die Bewerbung","u":"/bewerbung-deckblatt.html"},{"s":"bewerbung-per-email","n":"Bewerbung per E-Mail","u":"/bewerbung-per-email.html"},{"s":"lebenslauf-pdf","n":"Lebenslauf in PDF umwandeln","u":"/lebenslauf-pdf.html"},{"s":"zeugnisse-als-pdf","n":"Zeugnisse als PDF","u":"/zeugnisse-als-pdf.html"},{"s":"lebenslauf-vorlage","n":"Lebenslauf-Vorlage","u":"/lebenslauf-vorlage.html"},{"s":"lebenslauf-ats","n":"ATS-Lebenslauf","u":"/lebenslauf-ats.html"},{"s":"lebenslauf-latex","n":"Lebenslauf im LaTeX-Stil","u":"/lebenslauf-latex.html"},{"s":"lebenslauf-werkstudent","n":"Lebenslauf für Werkstudenten","u":"/lebenslauf-werkstudent.html"},{"s":"lebenslauf-franzoesisch","n":"Lebenslauf auf Französisch","u":"/lebenslauf-franzoesisch.html"}];</script>
+
 <section class="wrap tools-index" aria-labelledby="alle-werkzeuge">
   <h2 id="alle-werkzeuge" class="visually-hidden">Alle Werkzeuge</h2>
+  <p class="search-empty" data-search-empty hidden>Kein passendes Werkzeug gefunden. Versuche ein anderes Wort oder schreib uns, was dir fehlt: <a href="/ueber-uns.html#kontakt">Kontakt</a></p>
   <div class="filters" role="toolbar" aria-label="Werkzeuge filtern">
     <button type="button" class="chip" aria-pressed="true" data-filter="all">Alle</button>
     <button type="button" class="chip chip--career" aria-pressed="false" data-filter="bewerbung">Bewerbung</button>
@@ -132,7 +149,7 @@
   <div class="tgroup" data-group="bewerbung">
     <h3 class="tgroup__title tgroup__title--career">Bewerbung &amp; Lebenslauf</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="bewerbung">
+      <li class="tcard" data-cat="bewerbung" data-slug="lebenslauf-erstellen" data-kw="Lebenslauf erstellen ATS-freundlicher Lebenslauf als PDF – mit Vorlagen und Live-Vorschau. lebenslauf cv bewerbung resume curriculum">
         <a href="/lebenslauf-erstellen.html">
           <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -141,9 +158,10 @@
 </svg>
           <span class="tcard__name">Lebenslauf erstellen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">ATS-freundlicher Lebenslauf als PDF – mit Vorlagen und Live-Vorschau.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="bewerbung">
+      <li class="tcard" data-cat="bewerbung" data-slug="lebenslauf-anpassen" data-kw="Lebenslauf an Stellenanzeige anpassen Trefferquote, fehlende Keywords und passende Formulierungen per KI. ">
         <a href="/lebenslauf-anpassen.html">
           <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -152,9 +170,10 @@
 </svg>
           <span class="tcard__name">Lebenslauf an Stellenanzeige anpassen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Trefferquote, fehlende Keywords und passende Formulierungen per KI.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--ai">KI</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="bewerbung">
+      <li class="tcard" data-cat="bewerbung" data-slug="anschreiben-erstellen" data-kw="Anschreiben erstellen Bewerbungsanschreiben im Design deines Lebenslaufs – selbst oder mit KI. anschreiben bewerbung cover letter lettre de motivation">
         <a href="/anschreiben-erstellen.html">
           <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -163,9 +182,10 @@
 </svg>
           <span class="tcard__name">Anschreiben erstellen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Bewerbungsanschreiben im Design deines Lebenslaufs – selbst oder mit KI.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--ai">KI</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="bewerbung">
+      <li class="tcard" data-cat="bewerbung" data-slug="bewerbungsmappe" data-kw="Bewerbungsmappe erstellen Anschreiben, Lebenslauf und Zeugnisse zu einer PDF – mit Deckblatt und unter 5 MB. bewerbung mappe zeugnisse application">
         <a href="/bewerbungsmappe.html">
           <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -174,6 +194,7 @@
 </svg>
           <span class="tcard__name">Bewerbungsmappe erstellen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Anschreiben, Lebenslauf und Zeugnisse zu einer PDF – mit Deckblatt und unter 5 MB.</span>
+          
         </a>
       </li>
     </ul>
@@ -182,7 +203,7 @@
   <div class="tgroup" data-group="organize">
     <h3 class="tgroup__title tgroup__title--organize">Zusammenfügen &amp; Organisieren</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="merge" data-kw="PDF zusammenfügen Mehrere PDFs in der gewünschten Reihenfolge zu einer Datei kombinieren. zusammenfügen verbinden kombinieren mehrere eine datei merge combine join fusionner assembler">
         <a href="/merge.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -191,9 +212,10 @@
 </svg>
           <span class="tcard__name">PDF zusammenfügen</span>
           <span class="tcard__text">Mehrere PDFs in der gewünschten Reihenfolge zu einer Datei kombinieren.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="split" data-kw="PDF teilen Eine PDF in einzelne Seiten oder eigene Seitenbereiche aufteilen. teilen trennen aufteilen split separate diviser séparer">
         <a href="/split.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -202,9 +224,10 @@
 </svg>
           <span class="tcard__name">PDF teilen</span>
           <span class="tcard__text">Eine PDF in einzelne Seiten oder eigene Seitenbereiche aufteilen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="organize" data-kw="PDF organisieren Seiten per Drag &amp; Drop sortieren, drehen und löschen. sortieren reihenfolge seiten verschieben reorder pages organiser">
         <a href="/organize.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -213,9 +236,10 @@
 </svg>
           <span class="tcard__name">PDF organisieren</span>
           <span class="tcard__text">Seiten per Drag &amp; Drop sortieren, drehen und löschen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="rotate" data-kw="PDF drehen Alle oder einzelne Seiten um 90° oder 180° drehen. drehen quer hochkant rotate tourner pivoter">
         <a href="/rotate.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -224,9 +248,10 @@
 </svg>
           <span class="tcard__name">PDF drehen</span>
           <span class="tcard__text">Alle oder einzelne Seiten um 90° oder 180° drehen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="remove-pages" data-kw="Seiten entfernen Unnötige Seiten aus einer PDF löschen – per Klick in der Vorschau. seiten löschen entfernen delete pages supprimer pages">
         <a href="/remove-pages.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -235,9 +260,10 @@
 </svg>
           <span class="tcard__name">Seiten entfernen</span>
           <span class="tcard__text">Unnötige Seiten aus einer PDF löschen – per Klick in der Vorschau.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="extract-pages" data-kw="Seiten extrahieren Einzelne Seiten aus einer PDF herauslösen und als neue PDF speichern. seiten herausnehmen extrahieren extract pages extraire">
         <a href="/extract-pages.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -246,6 +272,7 @@
 </svg>
           <span class="tcard__name">Seiten extrahieren</span>
           <span class="tcard__text">Einzelne Seiten aus einer PDF herauslösen und als neue PDF speichern.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
     </ul>
@@ -253,7 +280,7 @@
   <div class="tgroup" data-group="optimize">
     <h3 class="tgroup__title tgroup__title--optimize">Komprimieren</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="optimize">
+      <li class="tcard" data-cat="optimize" data-slug="compress" data-kw="PDF komprimieren Dateigröße reduzieren – ideal für E-Mail und Upload-Portale. verkleinern kleiner komprimieren mb email zu groß shrink reduce size compress réduire compresser alléger">
         <a href="/compress.html">
           <svg class="ficon ficon--optimize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -262,9 +289,10 @@
 </svg>
           <span class="tcard__name">PDF komprimieren</span>
           <span class="tcard__text">Dateigröße reduzieren – ideal für E-Mail und Upload-Portale.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="optimize">
+      <li class="tcard" data-cat="optimize" data-slug="merge-compress" data-kw="Zusammenfügen &amp; komprimieren Mehrere PDFs kombinieren und in einem Schritt verkleinern. ">
         <a href="/merge-compress.html">
           <svg class="ficon ficon--optimize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -273,6 +301,7 @@
 </svg>
           <span class="tcard__name">Zusammenfügen &amp; komprimieren</span>
           <span class="tcard__text">Mehrere PDFs kombinieren und in einem Schritt verkleinern.</span>
+          
         </a>
       </li>
     </ul>
@@ -280,7 +309,7 @@
   <div class="tgroup" data-group="edit">
     <h3 class="tgroup__title tgroup__title--edit">Bearbeiten &amp; Unterschreiben</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="edit">
+      <li class="tcard" data-cat="edit" data-slug="edit" data-kw="PDF bearbeiten Text ändern, hinzufügen oder löschen, Bilder und Formen einfügen. Kostenlos. bearbeiten text ändern editor schreiben edit modify modifier éditer">
         <a href="/edit.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -289,9 +318,10 @@
 </svg>
           <span class="tcard__name">PDF bearbeiten</span>
           <span class="tcard__text">Text ändern, hinzufügen oder löschen, Bilder und Formen einfügen. Kostenlos.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="edit">
+      <li class="tcard" data-cat="edit" data-slug="pdf-formular-ausfuellen" data-kw="PDF-Formular ausfüllen Ausfüllbare PDF-Formulare direkt im Browser ausfüllen und speichern – ohne Adobe. formular ausfüllen antrag behörde fill form remplir formulaire cerfa">
         <a href="/pdf-formular-ausfuellen.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -300,9 +330,10 @@
 </svg>
           <span class="tcard__name">PDF-Formular ausfüllen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Ausfüllbare PDF-Formulare direkt im Browser ausfüllen und speichern – ohne Adobe.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="edit">
+      <li class="tcard" data-cat="edit" data-slug="sign" data-kw="PDF unterschreiben Unterschrift zeichnen oder als Bild einfügen und an die richtige Stelle setzen. unterschreiben unterschrift signatur sign signature signer">
         <a href="/sign.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -311,9 +342,10 @@
 </svg>
           <span class="tcard__name">PDF unterschreiben <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Unterschrift zeichnen oder als Bild einfügen und an die richtige Stelle setzen.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="edit">
+      <li class="tcard" data-cat="edit" data-slug="ocr" data-kw="PDF durchsuchbar machen (OCR) Gescannte PDFs mit Texterkennung durchsuchbar und kopierbar machen. texterkennung scan durchsuchbar ocr searchable reconnaissance texte">
         <a href="/ocr.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -322,9 +354,10 @@
 </svg>
           <span class="tcard__name">PDF durchsuchbar machen (OCR) <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Gescannte PDFs mit Texterkennung durchsuchbar und kopierbar machen.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="edit">
+      <li class="tcard" data-cat="edit" data-slug="create" data-kw="PDF erstellen Eigene PDF von Grund auf gestalten – mit Text, Bildern und Formen. Kostenlos. neue pdf erstellen create new">
         <a href="/create.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -333,9 +366,10 @@
 </svg>
           <span class="tcard__name">PDF erstellen</span>
           <span class="tcard__text">Eigene PDF von Grund auf gestalten – mit Text, Bildern und Formen. Kostenlos.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="edit">
+      <li class="tcard" data-cat="edit" data-slug="page-numbers" data-kw="Seitenzahlen einfügen Seitenzahlen an der gewünschten Position hinzufügen. seitenzahlen nummerieren page numbers numéros">
         <a href="/page-numbers.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -344,9 +378,10 @@
 </svg>
           <span class="tcard__name">Seitenzahlen einfügen</span>
           <span class="tcard__text">Seitenzahlen an der gewünschten Position hinzufügen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="edit">
+      <li class="tcard" data-cat="edit" data-slug="watermark" data-kw="Wasserzeichen Text wie „Entwurf“ oder „Vertraulich“ auf jede Seite setzen. wasserzeichen stempel watermark filigrane">
         <a href="/watermark.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -355,6 +390,7 @@
 </svg>
           <span class="tcard__name">Wasserzeichen</span>
           <span class="tcard__text">Text wie „Entwurf“ oder „Vertraulich“ auf jede Seite setzen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
     </ul>
@@ -362,7 +398,7 @@
   <div class="tgroup" data-group="to-pdf">
     <h3 class="tgroup__title tgroup__title--topdf">In PDF umwandeln</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="to-pdf">
+      <li class="tcard" data-cat="to-pdf" data-slug="docx-to-pdf" data-kw="Word in PDF DOC- und DOCX-Dateien in saubere PDFs umwandeln. word in pdf docx convert word to pdf convertir word en pdf">
         <a href="/docx-to-pdf.html">
           <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -371,9 +407,10 @@
 </svg>
           <span class="tcard__name">Word in PDF</span>
           <span class="tcard__text">DOC- und DOCX-Dateien in saubere PDFs umwandeln.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="to-pdf">
+      <li class="tcard" data-cat="to-pdf" data-slug="jpg-to-pdf" data-kw="Bilder in PDF JPG- und PNG-Bilder zu einer PDF zusammenfassen. bild foto jpg png in pdf image photo to pdf image en pdf">
         <a href="/jpg-to-pdf.html">
           <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -382,9 +419,10 @@
 </svg>
           <span class="tcard__name">Bilder in PDF</span>
           <span class="tcard__text">JPG- und PNG-Bilder zu einer PDF zusammenfassen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="to-pdf">
+      <li class="tcard" data-cat="to-pdf" data-slug="heic-to-pdf" data-kw="HEIC in PDF iPhone-Fotos (HEIC) und andere Bilder in eine PDF umwandeln. iphone foto heic">
         <a href="/heic-to-pdf.html">
           <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -393,9 +431,10 @@
 </svg>
           <span class="tcard__name">HEIC in PDF <span class="new-badge">Neu</span></span>
           <span class="tcard__text">iPhone-Fotos (HEIC) und andere Bilder in eine PDF umwandeln.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="to-pdf">
+      <li class="tcard" data-cat="to-pdf" data-slug="excel-to-pdf" data-kw="Excel in PDF Tabellen aus XLSX und CSV als PDF speichern. excel tabelle xlsx">
         <a href="/excel-to-pdf.html">
           <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -404,9 +443,10 @@
 </svg>
           <span class="tcard__name">Excel in PDF</span>
           <span class="tcard__text">Tabellen aus XLSX und CSV als PDF speichern.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="to-pdf">
+      <li class="tcard" data-cat="to-pdf" data-slug="ppt-to-pdf" data-kw="PowerPoint in PDF Präsentationen als PDF speichern und teilen. powerpoint präsentation pptx">
         <a href="/ppt-to-pdf.html">
           <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -415,9 +455,10 @@
 </svg>
           <span class="tcard__name">PowerPoint in PDF</span>
           <span class="tcard__text">Präsentationen als PDF speichern und teilen.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="to-pdf">
+      <li class="tcard" data-cat="to-pdf" data-slug="pdfa" data-kw="PDF in PDF/A umwandeln Archivtaugliche PDF/A für Behörden, Gerichte und die digitale Ablage. archiv pdf/a langzeit archive">
         <a href="/pdfa.html">
           <svg class="ficon ficon--topdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -426,6 +467,7 @@
 </svg>
           <span class="tcard__name">PDF in PDF/A umwandeln <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Archivtaugliche PDF/A für Behörden, Gerichte und die digitale Ablage.</span>
+          
         </a>
       </li>
     </ul>
@@ -433,7 +475,7 @@
   <div class="tgroup" data-group="from-pdf">
     <h3 class="tgroup__title tgroup__title--frompdf">Aus PDF umwandeln</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="from-pdf">
+      <li class="tcard" data-cat="from-pdf" data-slug="pdf-to-docx" data-kw="PDF in Word PDFs in bearbeitbare DOCX-Dateien umwandeln – auch gescannte (OCR). word docx umwandeln bearbeiten convert word convertir word">
         <a href="/pdf-to-docx.html">
           <svg class="ficon ficon--frompdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -442,9 +484,10 @@
 </svg>
           <span class="tcard__name">PDF in Word</span>
           <span class="tcard__text">PDFs in bearbeitbare DOCX-Dateien umwandeln – auch gescannte (OCR).</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="from-pdf">
+      <li class="tcard" data-cat="from-pdf" data-slug="pdf-to-excel" data-kw="PDF in Excel Tabellen aus PDFs in bearbeitbare Excel-Tabellen umwandeln. ">
         <a href="/pdf-to-excel.html">
           <svg class="ficon ficon--frompdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -453,9 +496,10 @@
 </svg>
           <span class="tcard__name">PDF in Excel <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Tabellen aus PDFs in bearbeitbare Excel-Tabellen umwandeln.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="from-pdf">
+      <li class="tcard" data-cat="from-pdf" data-slug="pdf-to-powerpoint" data-kw="PDF in PowerPoint PDF in eine PowerPoint-Präsentation mit bearbeitbarem Text umwandeln. ">
         <a href="/pdf-to-powerpoint.html">
           <svg class="ficon ficon--frompdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -464,9 +508,10 @@
 </svg>
           <span class="tcard__name">PDF in PowerPoint <span class="new-badge">Neu</span></span>
           <span class="tcard__text">PDF in eine PowerPoint-Präsentation mit bearbeitbarem Text umwandeln.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="from-pdf">
+      <li class="tcard" data-cat="from-pdf" data-slug="pdf-to-jpg" data-kw="PDF in JPG Jede PDF-Seite als JPG- oder PNG-Bild speichern. bild jpg png exportieren image picture">
         <a href="/pdf-to-jpg.html">
           <svg class="ficon ficon--frompdf" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -475,6 +520,7 @@
 </svg>
           <span class="tcard__name">PDF in JPG</span>
           <span class="tcard__text">Jede PDF-Seite als JPG- oder PNG-Bild speichern.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
     </ul>
@@ -482,7 +528,7 @@
   <div class="tgroup" data-group="ai">
     <h3 class="tgroup__title tgroup__title--ai">KI-Werkzeuge</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="ai">
+      <li class="tcard" data-cat="ai" data-slug="summarize" data-kw="PDF zusammenfassen Lange Dokumente und Behördenbriefe in Sekunden verstehen – mit KI. Kostenlos. zusammenfassen ki verstehen erklären brief amt summary summarize ai résumer">
         <a href="/summarize.html">
           <svg class="ficon ficon--ai" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -491,9 +537,10 @@
 </svg>
           <span class="tcard__name">PDF zusammenfassen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Lange Dokumente und Behördenbriefe in Sekunden verstehen – mit KI. Kostenlos.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--ai">KI</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="ai">
+      <li class="tcard" data-cat="ai" data-slug="translate" data-kw="PDF übersetzen PDF in eine andere Sprache übersetzen – Layout, Bilder und Tabellen bleiben. Kostenlos. übersetzen sprache translate traduire">
         <a href="/translate.html">
           <svg class="ficon ficon--ai" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -502,6 +549,7 @@
 </svg>
           <span class="tcard__name">PDF übersetzen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">PDF in eine andere Sprache übersetzen – Layout, Bilder und Tabellen bleiben. Kostenlos.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--ai">KI</span></span>
         </a>
       </li>
     </ul>
@@ -509,7 +557,7 @@
   <div class="tgroup" data-group="security">
     <h3 class="tgroup__title tgroup__title--security">Sicherheit</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="security">
+      <li class="tcard" data-cat="security" data-slug="protect" data-kw="PDF schützen PDF mit einem Passwort verschlüsseln. passwort schützen verschlüsseln password protect mot de passe protéger">
         <a href="/protect.html">
           <svg class="ficon ficon--security" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -518,9 +566,10 @@
 </svg>
           <span class="tcard__name">PDF schützen</span>
           <span class="tcard__text">PDF mit einem Passwort verschlüsseln.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="security">
+      <li class="tcard" data-cat="security" data-slug="redact" data-kw="PDF schwärzen Namen, IBAN, E-Mail und Telefonnummern endgültig unkenntlich machen. schwärzen anonymisieren redact blackout caviarder">
         <a href="/redact.html">
           <svg class="ficon ficon--security" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -529,9 +578,10 @@
 </svg>
           <span class="tcard__name">PDF schwärzen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Namen, IBAN, E-Mail und Telefonnummern endgültig unkenntlich machen.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="security">
+      <li class="tcard" data-cat="security" data-slug="unlock" data-kw="PDF entsperren Passwortschutz aus einer PDF entfernen. passwort entfernen entsperren unlock remove password déverrouiller">
         <a href="/unlock.html">
           <svg class="ficon ficon--security" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -540,6 +590,7 @@
 </svg>
           <span class="tcard__name">PDF entsperren</span>
           <span class="tcard__text">Passwortschutz aus einer PDF entfernen.</span>
+          
         </a>
       </li>
     </ul>
@@ -547,7 +598,7 @@
   <div class="tgroup" data-group="erechnung">
     <h3 class="tgroup__title tgroup__title--erechnung">E-Rechnung</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="erechnung">
+      <li class="tcard" data-cat="erechnung" data-slug="e-rechnung-erstellen" data-kw="E-Rechnung erstellen ZUGFeRD-PDF oder XRechnung kostenlos erstellen – Summen und Steuer werden berechnet. rechnung schreiben e-rechnung zugferd xrechnung invoice create facture électronique factur-x">
         <a href="/e-rechnung-erstellen.html">
           <svg class="ficon ficon--erechnung" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -556,9 +607,10 @@
 </svg>
           <span class="tcard__name">E-Rechnung erstellen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">ZUGFeRD-PDF oder XRechnung kostenlos erstellen – Summen und Steuer werden berechnet.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="erechnung">
+      <li class="tcard" data-cat="erechnung" data-slug="xrechnung-anzeigen" data-kw="XRechnung anzeigen XRechnung (XML) oder ZUGFeRD-PDF als lesbare PDF anzeigen und speichern. e-rechnung öffnen lesen xml anzeigen factur-x peppol ubl open read invoice ouvrir lire facture">
         <a href="/xrechnung-anzeigen.html">
           <svg class="ficon ficon--erechnung" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -567,9 +619,10 @@
 </svg>
           <span class="tcard__name">XRechnung anzeigen</span>
           <span class="tcard__text">XRechnung (XML) oder ZUGFeRD-PDF als lesbare PDF anzeigen und speichern.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="erechnung">
+      <li class="tcard" data-cat="erechnung" data-slug="e-rechnung-pruefen" data-kw="E-Rechnung prüfen XRechnung oder ZUGFeRD auf Fehler prüfen: Beträge, Steuer, Pflichtangaben. e-rechnung prüfen validieren check validate vérifier">
         <a href="/e-rechnung-pruefen.html">
           <svg class="ficon ficon--erechnung" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -578,6 +631,7 @@
 </svg>
           <span class="tcard__name">E-Rechnung prüfen</span>
           <span class="tcard__text">XRechnung oder ZUGFeRD auf Fehler prüfen: Beträge, Steuer, Pflichtangaben.</span>
+          
         </a>
       </li>
     </ul>
@@ -585,7 +639,7 @@
   <div class="tgroup" data-group="briefe">
     <h3 class="tgroup__title tgroup__title--edit">Briefe &amp; Vorlagen</h3>
     <ul class="tgrid">
-      <li class="tcard" data-cat="briefe">
+      <li class="tcard" data-cat="briefe" data-slug="musterbrief" data-kw="Musterbrief erstellen Kündigung, Widerspruch, Mahnung oder Widerruf als fertiger Brief im PDF – mit Live-Vorschau. brief kündigung kündigen widerspruch mahnung widerruf vertrag letter cancel résilier lettre">
         <a href="/musterbrief.html">
           <svg class="ficon ficon--edit" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -594,6 +648,7 @@
 </svg>
           <span class="tcard__name">Musterbrief erstellen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Kündigung, Widerspruch, Mahnung oder Widerruf als fertiger Brief im PDF – mit Live-Vorschau.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
     </ul>
@@ -704,6 +759,6 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=31c5eebf" defer></script>
+<script src="/assets/site.js?v=50ea2699" defer></script>
 </body>
 </html>

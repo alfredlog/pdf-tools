@@ -26,7 +26,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=31c5eebf">
+  <link rel="stylesheet" href="/assets/style.css?v=50ea2699">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Seiten extrahieren – PDF Libre","url":"https://pdf-libre.de/extract-pages.html","description":"Seiten aus PDF extrahieren: einzelne Seiten per Klick auswählen und als neue PDF oder als einzelne Dateien speichern – z. B. die Unterschriftenseite oder ein Kapitel. Kostenlos, im Browser, ohne Upload.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"Seiten extrahieren","item":"https://pdf-libre.de/extract-pages.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie extrahiere ich eine einzelne Seite aus einer PDF?","acceptedAnswer":{"@type":"Answer","text":"PDF auswählen, die Seite in der Vorschau anklicken und auf „Seiten extrahieren“ klicken. Du erhältst eine neue PDF, die nur diese Seite enthält."}},{"@type":"Question","name":"Kann ich mehrere nicht zusammenhängende Seiten extrahieren?","acceptedAnswer":{"@type":"Answer","text":"Ja. Klicke einfach alle gewünschten Seiten an oder tippe z. B. „2, 5, 9-11“ ein."}},{"@type":"Question","name":"Kann ich jede Seite als eigene PDF speichern?","acceptedAnswer":{"@type":"Answer","text":"Ja. Wähle unter „Ergebnis“ die Option „Einzelne PDFs“ – du bekommst ein ZIP-Archiv mit einer Datei pro Seite."}},{"@type":"Question","name":"In welcher Reihenfolge landen die Seiten in der neuen PDF?","acceptedAnswer":{"@type":"Answer","text":"In der Reihenfolge des Originals. Wenn du sie umsortieren möchtest, nutze danach „PDF organisieren“."}},{"@type":"Question","name":"Verändert sich die Qualität?","acceptedAnswer":{"@type":"Answer","text":"Nein, die Seiten werden 1:1 übernommen."}},{"@type":"Question","name":"Wird meine Datei auf einen Server geladen?","acceptedAnswer":{"@type":"Answer","text":"Nein, das Extrahieren läuft komplett in deinem Browser."}},{"@type":"Question","name":"Funktioniert das auch auf dem Handy?","acceptedAnswer":{"@type":"Answer","text":"Ja, auf allen aktuellen Smartphones und Tablets – Seiten antippen, extrahieren, fertig."}}]}</script>
@@ -242,7 +242,7 @@
 <section class="wrap related" aria-labelledby="related-title">
   <h2 id="related-title">Passende Werkzeuge</h2>
   <ul class="tgrid tgrid--compact">
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="split" data-kw="PDF teilen Eine PDF in einzelne Seiten oder eigene Seitenbereiche aufteilen. teilen trennen aufteilen split separate diviser séparer">
         <a href="/split.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -251,9 +251,10 @@
 </svg>
           <span class="tcard__name">PDF teilen</span>
           <span class="tcard__text">Eine PDF in einzelne Seiten oder eigene Seitenbereiche aufteilen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="remove-pages" data-kw="Seiten entfernen Unnötige Seiten aus einer PDF löschen – per Klick in der Vorschau. seiten löschen entfernen delete pages supprimer pages">
         <a href="/remove-pages.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -262,9 +263,10 @@
 </svg>
           <span class="tcard__name">Seiten entfernen</span>
           <span class="tcard__text">Unnötige Seiten aus einer PDF löschen – per Klick in der Vorschau.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="organize" data-kw="PDF organisieren Seiten per Drag &amp; Drop sortieren, drehen und löschen. sortieren reihenfolge seiten verschieben reorder pages organiser">
         <a href="/organize.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -273,9 +275,10 @@
 </svg>
           <span class="tcard__name">PDF organisieren</span>
           <span class="tcard__text">Seiten per Drag &amp; Drop sortieren, drehen und löschen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="merge" data-kw="PDF zusammenfügen Mehrere PDFs in der gewünschten Reihenfolge zu einer Datei kombinieren. zusammenfügen verbinden kombinieren mehrere eine datei merge combine join fusionner assembler">
         <a href="/merge.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -284,6 +287,7 @@
 </svg>
           <span class="tcard__name">PDF zusammenfügen</span>
           <span class="tcard__text">Mehrere PDFs in der gewünschten Reihenfolge zu einer Datei kombinieren.</span>
+          
         </a>
       </li>
   </ul>
@@ -343,10 +347,10 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=31c5eebf" defer></script>
+<script src="/assets/site.js?v=50ea2699" defer></script>
 <script src="/vendor/pdf-lib.min.js" defer></script>
 <script src="/vendor/pdf.min.js" defer></script>
 <script src="/vendor/jszip.min.js" defer></script>
-<script src="/assets/tool.js?v=31c5eebf" defer></script>
+<script src="/assets/tool.js?v=50ea2699" defer></script>
 </body>
 </html>

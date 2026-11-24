@@ -26,7 +26,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=31c5eebf">
+  <link rel="stylesheet" href="/assets/style.css?v=50ea2699">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"E-Rechnung prüfen – PDF Libre","url":"https://pdf-libre.de/e-rechnung-pruefen.html","description":"E-Rechnung online prüfen: XRechnung oder ZUGFeRD hochladen, Beträge, Umsatzsteuer, Pflichtangaben und IBAN werden kontrolliert. Prüfbericht als PDF. Kostenlos.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"E-Rechnung prüfen","item":"https://pdf-libre.de/e-rechnung-pruefen.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ersetzt das die Prüfung durch meinen Steuerberater?","acceptedAnswer":{"@type":"Answer","text":"Nein. Das Werkzeug findet formale und rechnerische Fehler. Ob eine Rechnung steuerlich korrekt ist, beurteilt dein Steuerberater."}},{"@type":"Question","name":"Kann ich auch eine normale PDF-Rechnung prüfen?","acceptedAnswer":{"@type":"Answer","text":"Nein. Eine normale PDF enthält keine strukturierten Daten. Unterstützt werden XRechnung (XML) und ZUGFeRD-/Factur-X-PDFs."}},{"@type":"Question","name":"Was bedeutet „Hinweis“ im Bericht?","acceptedAnswer":{"@type":"Answer","text":"Ein Hinweis ist kein Fehler, sollte aber angeschaut werden – zum Beispiel eine fehlende Steuernummer oder eine Rundungsdifferenz."}},{"@type":"Question","name":"Werden meine Rechnungen gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Datei wird nur für die Prüfung auf unserem Server in Deutschland verwendet und danach sofort gelöscht."}}]}</script>
@@ -224,7 +224,7 @@
 <section class="wrap related" aria-labelledby="related-title">
   <h2 id="related-title">Passende Werkzeuge</h2>
   <ul class="tgrid tgrid--compact">
-      <li class="tcard" data-cat="erechnung">
+      <li class="tcard" data-cat="erechnung" data-slug="xrechnung-anzeigen" data-kw="XRechnung anzeigen XRechnung (XML) oder ZUGFeRD-PDF als lesbare PDF anzeigen und speichern. e-rechnung öffnen lesen xml anzeigen factur-x peppol ubl open read invoice ouvrir lire facture">
         <a href="/xrechnung-anzeigen.html">
           <svg class="ficon ficon--erechnung" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -233,9 +233,10 @@
 </svg>
           <span class="tcard__name">XRechnung anzeigen</span>
           <span class="tcard__text">XRechnung (XML) oder ZUGFeRD-PDF als lesbare PDF anzeigen und speichern.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="merge" data-kw="PDF zusammenfügen Mehrere PDFs in der gewünschten Reihenfolge zu einer Datei kombinieren. zusammenfügen verbinden kombinieren mehrere eine datei merge combine join fusionner assembler">
         <a href="/merge.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -244,9 +245,10 @@
 </svg>
           <span class="tcard__name">PDF zusammenfügen</span>
           <span class="tcard__text">Mehrere PDFs in der gewünschten Reihenfolge zu einer Datei kombinieren.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="optimize">
+      <li class="tcard" data-cat="optimize" data-slug="compress" data-kw="PDF komprimieren Dateigröße reduzieren – ideal für E-Mail und Upload-Portale. verkleinern kleiner komprimieren mb email zu groß shrink reduce size compress réduire compresser alléger">
         <a href="/compress.html">
           <svg class="ficon ficon--optimize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -255,9 +257,10 @@
 </svg>
           <span class="tcard__name">PDF komprimieren</span>
           <span class="tcard__text">Dateigröße reduzieren – ideal für E-Mail und Upload-Portale.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="security">
+      <li class="tcard" data-cat="security" data-slug="protect" data-kw="PDF schützen PDF mit einem Passwort verschlüsseln. passwort schützen verschlüsseln password protect mot de passe protéger">
         <a href="/protect.html">
           <svg class="ficon ficon--security" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -266,6 +269,7 @@
 </svg>
           <span class="tcard__name">PDF schützen</span>
           <span class="tcard__text">PDF mit einem Passwort verschlüsseln.</span>
+          
         </a>
       </li>
   </ul>
@@ -325,7 +329,7 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=31c5eebf" defer></script>
-<script src="/assets/tool.js?v=31c5eebf" defer></script>
+<script src="/assets/site.js?v=50ea2699" defer></script>
+<script src="/assets/tool.js?v=50ea2699" defer></script>
 </body>
 </html>

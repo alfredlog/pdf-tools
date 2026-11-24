@@ -26,7 +26,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=31c5eebf">
+  <link rel="stylesheet" href="/assets/style.css?v=50ea2699">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF zusammenfügen – PDF Libre","url":"https://pdf-libre.de/merge.html","description":"PDFs online zusammenfügen: mehrere PDF-Dateien per Drag & Drop sortieren und zu einer PDF kombinieren. Kostenlos, ohne Anmeldung, sofort gelöscht.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"PDF zusammenfügen","item":"https://pdf-libre.de/merge.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie viele PDFs kann ich auf einmal zusammenfügen?","acceptedAnswer":{"@type":"Answer","text":"Bis zu 20 Dateien mit jeweils maximal 50 MB. Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."}},{"@type":"Question","name":"Kann ich einzelne Seiten statt ganzer Dateien kombinieren?","acceptedAnswer":{"@type":"Answer","text":"Ja: Füge zuerst die Dateien zusammen und entferne danach mit „Seiten entfernen“ oder „PDF organisieren“ die Seiten, die du nicht brauchst."}},{"@type":"Question","name":"Funktioniert das auch mit passwortgeschützten PDFs?","acceptedAnswer":{"@type":"Answer","text":"Nein. Entsperre die Datei zuerst mit „PDF entsperren“ – dafür brauchst du das Passwort."}},{"@type":"Question","name":"Werden meine Dateien gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Dateien werden nur für die Verarbeitung auf dem Server abgelegt und direkt nach dem Download automatisch gelöscht."}}]}</script>
@@ -223,7 +223,7 @@
 <section class="wrap related" aria-labelledby="related-title">
   <h2 id="related-title">Passende Werkzeuge</h2>
   <ul class="tgrid tgrid--compact">
-      <li class="tcard" data-cat="bewerbung">
+      <li class="tcard" data-cat="bewerbung" data-slug="bewerbungsmappe" data-kw="Bewerbungsmappe erstellen Anschreiben, Lebenslauf und Zeugnisse zu einer PDF – mit Deckblatt und unter 5 MB. bewerbung mappe zeugnisse application">
         <a href="/bewerbungsmappe.html">
           <svg class="ficon ficon--career" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -232,9 +232,10 @@
 </svg>
           <span class="tcard__name">Bewerbungsmappe erstellen <span class="new-badge">Neu</span></span>
           <span class="tcard__text">Anschreiben, Lebenslauf und Zeugnisse zu einer PDF – mit Deckblatt und unter 5 MB.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="optimize">
+      <li class="tcard" data-cat="optimize" data-slug="merge-compress" data-kw="Zusammenfügen &amp; komprimieren Mehrere PDFs kombinieren und in einem Schritt verkleinern. ">
         <a href="/merge-compress.html">
           <svg class="ficon ficon--optimize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -243,9 +244,10 @@
 </svg>
           <span class="tcard__name">Zusammenfügen &amp; komprimieren</span>
           <span class="tcard__text">Mehrere PDFs kombinieren und in einem Schritt verkleinern.</span>
+          
         </a>
       </li>
-      <li class="tcard" data-cat="organize">
+      <li class="tcard" data-cat="organize" data-slug="organize" data-kw="PDF organisieren Seiten per Drag &amp; Drop sortieren, drehen und löschen. sortieren reihenfolge seiten verschieben reorder pages organiser">
         <a href="/organize.html">
           <svg class="ficon ficon--organize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -254,9 +256,10 @@
 </svg>
           <span class="tcard__name">PDF organisieren</span>
           <span class="tcard__text">Seiten per Drag &amp; Drop sortieren, drehen und löschen.</span>
+          <span class="tcard__badges"><span class="tbadge tbadge--local" title="Die Datei wird nicht hochgeladen">Im Browser</span></span>
         </a>
       </li>
-      <li class="tcard" data-cat="optimize">
+      <li class="tcard" data-cat="optimize" data-slug="compress" data-kw="PDF komprimieren Dateigröße reduzieren – ideal für E-Mail und Upload-Portale. verkleinern kleiner komprimieren mb email zu groß shrink reduce size compress réduire compresser alléger">
         <a href="/compress.html">
           <svg class="ficon ficon--optimize" width="44" height="52" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
@@ -265,6 +268,7 @@
 </svg>
           <span class="tcard__name">PDF komprimieren</span>
           <span class="tcard__text">Dateigröße reduzieren – ideal für E-Mail und Upload-Portale.</span>
+          
         </a>
       </li>
   </ul>
@@ -324,8 +328,8 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=31c5eebf" defer></script>
+<script src="/assets/site.js?v=50ea2699" defer></script>
 <script src="/vendor/Sortable.min.js" defer></script>
-<script src="/assets/tool.js?v=31c5eebf" defer></script>
+<script src="/assets/tool.js?v=50ea2699" defer></script>
 </body>
 </html>
