@@ -148,8 +148,9 @@ console.log("SEO:");
 sitemap(false);
 sitemap(true);
 fs.writeFileSync(LASTMOD_FILE, JSON.stringify(lastmod, null, 1) + "\n");
-// sw.js: Der alte Push-Werbe-Service-Worker meldet sich bei Besuchern, die ihn noch haben, selbst ab
-write("sw.js", `self.addEventListener("install", () => self.skipWaiting());\nself.addEventListener("activate", () => self.registration.unregister());\n`);
+// sw.js: eigener Service Worker (Teilen-Ziel, Offline-Hinweis) – ersetzt unter derselben Adresse auch den
+// alten Push-Werbe-Service-Worker der früheren Domain. Quelle: site/static/sw.js
+write("sw.js", fs.readFileSync(path.join(__dirname, "..", "site", "static", "sw.js"), "utf8"));
 // ads.txt: Pflicht für AdSense
 write("ads.txt", config.adsenseClient ? `google.com, ${config.adsenseClient.replace(/^ca-/, "")}, DIRECT, f08c47fec0942fa0\n` : "");
 write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${config.domain}/sitemap.xml\n`);

@@ -10,7 +10,9 @@
   <link rel="alternate" hreflang="en" href="https://pdf-libre.de/en/e-rechnung-pruefen.html">
   <link rel="alternate" hreflang="fr" href="https://pdf-libre.de/fr/e-rechnung-pruefen.html">
   <link rel="alternate" hreflang="x-default" href="https://pdf-libre.de/e-rechnung-pruefen.html">
-  <meta name="theme-color" content="#2b4bdb">
+  <meta name="theme-color" content="#2b4bdb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1422" media="(prefers-color-scheme: dark)">
+  <script>try{var t=localStorage.getItem("pl_theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PDF Libre">
   <meta property="og:locale" content="de_DE">
@@ -24,9 +26,10 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=50ea2699">
+  <link rel="stylesheet" href="/assets/style.css?v=3263d99d">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"E-Rechnung prüfen – PDF Libre","url":"https://pdf-libre.de/e-rechnung-pruefen.html","description":"E-Rechnung online prüfen: XRechnung oder ZUGFeRD hochladen, Beträge, Umsatzsteuer, Pflichtangaben und IBAN werden kontrolliert. Prüfbericht als PDF. Kostenlos.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"E-Rechnung prüfen","item":"https://pdf-libre.de/e-rechnung-pruefen.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ersetzt das die Prüfung durch meinen Steuerberater?","acceptedAnswer":{"@type":"Answer","text":"Nein. Das Werkzeug findet formale und rechnerische Fehler. Ob eine Rechnung steuerlich korrekt ist, beurteilt dein Steuerberater."}},{"@type":"Question","name":"Kann ich auch eine normale PDF-Rechnung prüfen?","acceptedAnswer":{"@type":"Answer","text":"Nein. Eine normale PDF enthält keine strukturierten Daten. Unterstützt werden XRechnung (XML) und ZUGFeRD-/Factur-X-PDFs."}},{"@type":"Question","name":"Was bedeutet „Hinweis“ im Bericht?","acceptedAnswer":{"@type":"Answer","text":"Ein Hinweis ist kein Fehler, sollte aber angeschaut werden – zum Beispiel eine fehlende Steuernummer oder eine Rundungsdifferenz."}},{"@type":"Question","name":"Werden meine Rechnungen gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Datei wird nur für die Prüfung auf unserem Server in Deutschland verwendet und danach sofort gelöscht."}}]}</script>
@@ -325,11 +328,11 @@
     </div>
     <div class="site-footer__legal">
       <p>© <span data-year>2026</span> PDF Libre · Entwickelt von <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
-      <p><a href="/ueber-uns.html">Über uns</a><a href="/ueber-uns.html#kontakt">Kontakt</a><a href="/impressum.html">Impressum</a><a href="/Datenschutz.html">Datenschutz</a><a href="#" data-consent-settings>Datenschutzeinstellungen</a></p>
+      <p><a href="/ueber-uns.html">Über uns</a><a href="/ueber-uns.html#kontakt">Kontakt</a><a href="/impressum.html">Impressum</a><a href="/Datenschutz.html">Datenschutz</a><a href="#" data-consent-settings>Datenschutzeinstellungen</a><button type="button" class="linkbtn" data-install hidden>Als App installieren</button><button type="button" class="linkbtn" data-theme-toggle>Design: Automatisch</button></p>
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=50ea2699" defer></script>
-<script src="/assets/tool.js?v=50ea2699" defer></script>
+<script src="/assets/site.js?v=3263d99d" defer></script>
+<script src="/assets/tool.js?v=3263d99d" defer></script>
 </body>
 </html>

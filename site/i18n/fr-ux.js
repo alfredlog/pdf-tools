@@ -8,7 +8,9 @@ module.exports = {
   "Kein passendes Werkzeug gefunden. Versuche ein anderes Wort oder schreib uns, was dir fehlt:": "Aucun outil trouvé. Essayez un autre mot ou dites-nous ce qui manque :",
   "KI": "IA",
   "Die Datei wird nicht hochgeladen": "Le fichier n’est pas envoyé",
-  "Im Browser": "Dans le navigateur"
+  "Im Browser": "Dans le navigateur",
+  "Als App installieren": "Installer l’application",
+  "Design: Automatisch": "Thème : automatique"
  },
  "js": {
   "Die Datei „{name}“ passt nicht zu diesem Werkzeug.": "Le fichier « {name} » ne convient pas à cet outil.",
@@ -36,6 +38,9 @@ module.exports = {
   "Foto einer Rechnung? In eine E-Rechnung umwandeln.": "Photo d’une facture ? La transformer en facture électronique.",
   "Für diesen Dateityp haben wir leider noch kein Werkzeug.": "Désolé, nous n’avons pas encore d’outil pour ce type de fichier.",
   "KI": "IA",
-  "Im Browser": "Dans le navigateur"
+  "Im Browser": "Dans le navigateur",
+  "Design: Automatisch": "Thème : automatique",
+  "Design: Hell": "Thème : clair",
+  "Design: Dunkel": "Thème : sombre"
  }
 };

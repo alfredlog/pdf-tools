@@ -254,6 +254,13 @@
     ["dragleave", "drop"].forEach((ev) => smartDrop.addEventListener(ev, () => smartDrop.classList.remove("is-over")));
     document.addEventListener("drop", (e) => { if (e.dataTransfer && e.dataTransfer.files[0]) { e.preventDefault(); smartDrop.classList.remove("is-over"); analyse(e.dataTransfer.files[0]); } });
     fileInput.addEventListener("change", () => fileInput.files[0] && analyse(fileInput.files[0]));
+    // Über „Teilen → PDF Libre“ angekommen (Service Worker hat die Datei abgelegt)
+    if (/[?&]shared=1/.test(location.search)) {
+      handoffTake().then((v) => {
+        history.replaceState(null, "", location.pathname);
+        if (v) analyse(new File([v.blob], v.name, { type: v.type || v.blob.type }));
+      }).catch(() => {});
+    }
 
     async function analyse(file) {
       const ext = (file.name.split(".").pop() || "").toLowerCase();
@@ -327,4 +334,80 @@
     });
   }
   function esc(x) { return String(x).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
+
+  // ------------------------------------------------------------------ App (PWA): Service Worker, Installieren
+  if ("serviceWorker" in navigator) {
+    // sofort registrieren (nicht erst bei „load“ – das kann sich durch langsame Werbe-/Statistik-Skripte stark verzögern)
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  }
+  let installEvent = null;
+  const installBtns = document.querySelectorAll("[data-install]");
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault(); // eigenen Knopf zeigen statt der Browser-Leiste
+    installEvent = e;
+    installBtns.forEach((b) => (b.hidden = false));
+  });
+  installBtns.forEach((b) => b.addEventListener("click", async () => {
+    if (!installEvent) return;
+    installEvent.prompt();
+    await installEvent.userChoice.catch(() => {});
+    installEvent = null;
+    installBtns.forEach((x) => (x.hidden = true));
+  }));
+  window.addEventListener("appinstalled", () => installBtns.forEach((b) => (b.hidden = true)));
+
+  // ------------------------------------------------------------------ Design: Automatisch → Hell → Dunkel
+  const themeBtn = document.querySelector("[data-theme-toggle]");
+  if (themeBtn) {
+    const label = { "": tr("Design: Automatisch"), light: tr("Design: Hell"), dark: tr("Design: Dunkel") };
+    const cur = () => document.documentElement.dataset.theme || "";
+    themeBtn.textContent = label[cur()];
+    themeBtn.addEventListener("click", () => {
+      const next = { "": "light", light: "dark", dark: "" }[cur()];
+      if (next) document.documentElement.dataset.theme = next; else delete document.documentElement.dataset.theme;
+      try { next ? localStorage.setItem("pl_theme", next) : localStorage.removeItem("pl_theme"); } catch (_) {}
+      themeBtn.textContent = label[next];
+    });
+  }
+
+  // ------------------------------------------------------------------ Handy: Hauptknopf unten fixieren
+  // Der wichtigste Knopf des aktuellen Schritts (z. B. „Komprimieren“, „Herunterladen“) erscheint als Leiste
+  // am unteren Rand, sobald er aus dem Bild gescrollt ist. Ein Tipp darauf löst den echten Knopf aus.
+  if (toolSection && window.matchMedia("(max-width: 760px)").matches && "IntersectionObserver" in window) {
+    const bar = document.createElement("div");
+    bar.className = "mbar";
+    bar.hidden = true;
+    const proxy = document.createElement("button");
+    proxy.type = "button";
+    proxy.className = "btn btn--primary btn--lg btn--block";
+    bar.appendChild(proxy);
+    document.body.appendChild(bar);
+    let target = null, inView = true;
+    const io = new IntersectionObserver(([en]) => { inView = en.isIntersecting; update(); }, { threshold: 0.6 });
+    const update = () => { bar.hidden = !target || inView || target.disabled; document.body.classList.toggle("has-mbar", !bar.hidden); };
+    const pick = () => {
+      const c = [...toolSection.querySelectorAll(".btn--primary")].find((b) => b.tagName !== "LABEL" && b.offsetParent !== null && !b.closest("[hidden]"));
+      if (c !== target) {
+        if (target) io.unobserve(target);
+        target = c || null;
+        inView = true;
+        if (target) io.observe(target);
+      }
+      if (target) proxy.innerHTML = target.innerHTML;
+      update();
+    };
+    proxy.addEventListener("click", () => {
+      if (!target) return;
+      target.click();
+      // Fehlermeldung oder fehlende Angaben stehen meist beim echten Knopf → dorthin scrollen, damit man sie sieht
+      setTimeout(() => {
+        const msg = [...toolSection.querySelectorAll('[role="alert"], [data-missing], .is-missing')].find((el) => el.offsetParent !== null && el.textContent.trim() !== "" || el.classList.contains("is-missing"));
+        if (msg) msg.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 250);
+    });
+    let queued = false;
+    new MutationObserver(() => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; pick(); }); } })
+      .observe(toolSection, { subtree: true, childList: true, attributes: true, attributeFilter: ["hidden", "disabled"] });
+    pick();
+  }
 })();

@@ -8,7 +8,9 @@ module.exports = {
   "Kein passendes Werkzeug gefunden. Versuche ein anderes Wort oder schreib uns, was dir fehlt:": "No matching tool found. Try another word or tell us what’s missing:",
   "KI": "AI",
   "Die Datei wird nicht hochgeladen": "The file is not uploaded",
-  "Im Browser": "In browser"
+  "Im Browser": "In browser",
+  "Als App installieren": "Install as app",
+  "Design: Automatisch": "Design: auto"
  },
  "js": {
   "Die Datei „{name}“ passt nicht zu diesem Werkzeug.": "The file “{name}” doesn’t fit this tool.",
@@ -36,6 +38,9 @@ module.exports = {
   "Foto einer Rechnung? In eine E-Rechnung umwandeln.": "Photo of an invoice? Turn it into an e-invoice.",
   "Für diesen Dateityp haben wir leider noch kein Werkzeug.": "Sorry, we don’t have a tool for this file type yet.",
   "KI": "AI",
-  "Im Browser": "In browser"
+  "Im Browser": "In browser",
+  "Design: Automatisch": "Design: auto",
+  "Design: Hell": "Design: light",
+  "Design: Dunkel": "Design: dark"
  }
 };

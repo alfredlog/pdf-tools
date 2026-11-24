@@ -920,6 +920,9 @@ api.post(
   })
 );
 
+// „Teilen → PDF Libre“ ohne aktiven Service Worker (z. B. direkt nach der Installation): zur Startseite
+app.post("/share-target", (req, res) => res.redirect(303, "/"));
+
 // Health-Check: zeigt, welche Programme installiert sind --------------------------------
 app.get("/api/health", async (req, res) => {
   const check = async (cmd, args) => {
