@@ -1,5 +1,140 @@
 // Versions françaises des guides de candidature (mêmes slugs qu'en allemand, pour que les liens hreflang correspondent)
 module.exports = {
+  "factur-x-oeffnen": {
+    "guide": "Ouvrir une facture Factur-X",
+    "name": "Ouvrir un Factur-X",
+    "title": "Ouvrir une facture Factur-X – lire et vérifier en ligne, gratuit | PDF Libre",
+    "description": "Ouvrir une facture Factur-X : lire les données intégrées, vérifier totaux et TVA, enregistrer en PDF. Gratuit, sans logiciel, sans inscription.",
+    "h1": "Ouvrir et vérifier une facture Factur-X",
+    "lead": "Vous recevez des factures Factur-X depuis la réforme ? Déposez-les ici : vous voyez exactement les données que lit le logiciel comptable – et si les montants sont justes.",
+    "steps": [
+      [
+        "Choisir le PDF Factur-X",
+        "La facture reçue de votre fournisseur."
+      ],
+      [
+        "Lire les données",
+        "Émetteur, destinataire, lignes, TVA et net à payer s’affichent clairement, recalculés."
+      ],
+      [
+        "Enregistrer",
+        "« Enregistrer en PDF » garde la version lisible. Conservez aussi l’original."
+      ]
+    ],
+    "article": [
+      [
+        "Réforme : la réception est obligatoire depuis septembre 2026",
+        "Depuis le 1er septembre 2026, toutes les entreprises – y compris les micro-entrepreneurs et auto-entrepreneurs – doivent pouvoir recevoir des factures électroniques. Les grandes entreprises et ETI les émettent déjà ; les PME, TPE et micro-entreprises devront les émettre à partir du 1er septembre 2027. Factur-X est l’un des trois formats acceptés, avec UBL et CII.",
+        "Factur-X est un PDF qui contient en plus un fichier XML. Il est identique au format allemand ZUGFeRD 2.x."
+      ],
+      [
+        "Pourquoi vérifier les données intégrées",
+        "Le PDF visible et le XML intégré devraient être identiques – ce n’est pas toujours le cas. Cet outil affiche les données intégrées et recalcule les totaux et la TVA pour repérer une erreur avant de payer."
+      ]
+    ],
+    "faq": [
+      [
+        "Ma facture est-elle enregistrée ?",
+        "Non. Elle est seulement lue puis supprimée."
+      ],
+      [
+        "Le PDF enregistré est-il une facture valable ?",
+        "Non, c’est un affichage lisible. Conservez le fichier Factur-X original."
+      ],
+      [
+        "Et si je reçois un fichier XML (UBL ou CII) ?",
+        "Déposez-le aussi : les formats UBL et CII sont pris en charge."
+      ]
+    ]
+  },
+  "peppol-rechnung-oeffnen": {
+    "guide": "Ouvrir une facture Peppol (UBL) – Belgique",
+    "name": "Ouvrir une facture Peppol",
+    "title": "Ouvrir une facture Peppol – lire un fichier UBL XML en ligne, gratuit | PDF Libre",
+    "description": "Ouvrir une facture Peppol (UBL XML, Peppol BIS Billing 3.0) en ligne : affichage clair en français, contrôle des totaux et de la TVA, enregistrement en PDF. Pour la Belgique. Gratuit.",
+    "h1": "Ouvrir une facture Peppol (UBL)",
+    "lead": "Vous avez reçu une facture en XML via Peppol et ne savez pas l’ouvrir ? Déposez-la : elle s’affiche comme une facture normale, avec un contrôle automatique.",
+    "steps": [
+      [
+        "Choisir le fichier XML",
+        "La facture Peppol au format UBL (.xml)."
+      ],
+      [
+        "Lire la facture",
+        "Toutes les informations s’affichent clairement, totaux et TVA recalculés."
+      ],
+      [
+        "Enregistrer en PDF",
+        "Pour votre classement ou pour l’envoyer à votre comptable."
+      ]
+    ],
+    "article": [
+      [
+        "Peppol obligatoire en Belgique depuis 2026",
+        "Depuis le 1er janvier 2026, la facturation électronique via Peppol est obligatoire entre entreprises en Belgique – pour toutes les entreprises assujetties à la TVA, y compris les indépendants à titre complémentaire. Les factures Peppol sont des fichiers XML au format UBL selon la norme EN 16931 (Peppol BIS Billing 3.0)."
+      ],
+      [
+        "Lire un XML sans logiciel",
+        "Ouvert dans le navigateur, un fichier UBL n’affiche que du code. Cet outil le transforme en facture lisible et indique si les lignes, la TVA et le net à payer concordent."
+      ]
+    ],
+    "faq": [
+      [
+        "Ai-je besoin d’un accès Peppol ?",
+        "Pas pour lire une facture. Pour envoyer et recevoir via le réseau Peppol, il faut un prestataire (point d’accès)."
+      ],
+      [
+        "Le PDF est-il une facture valable ?",
+        "Non, c’est un affichage lisible. Le fichier XML fait foi."
+      ]
+    ]
+  },
+  "cerfa-ausfuellen": {
+    "guide": "Remplir un CERFA en ligne",
+    "name": "Remplir un CERFA",
+    "title": "Remplir un CERFA en ligne – formulaire PDF dans le navigateur, gratuit | PDF Libre",
+    "description": "Remplir un formulaire CERFA en ligne sans Adobe : champs remplissables dans le navigateur, et la version statique « non remplissable » devient remplissable automatiquement. Gratuit, sans envoi du fichier.",
+    "h1": "Remplir un formulaire CERFA en ligne",
+    "lead": "Le CERFA affiche « To view the full contents of this document, you need a later version of the PDF viewer » ? La version statique n’est pas remplissable ? Ici, vous pouvez quand même le remplir à l’écran.",
+    "steps": [
+      [
+        "Ouvrir le CERFA",
+        "Déposez le formulaire PDF. S’il n’affiche qu’un message Adobe, téléchargez la « version statique » sur service-public.fr et déposez-la."
+      ],
+      [
+        "Remplir les champs",
+        "Les champs existants s’affichent ; dans la version statique, lignes et cases deviennent automatiquement des champs."
+      ],
+      [
+        "Enregistrer",
+        "Téléchargez le PDF rempli, imprimez-le ou envoyez-le par e-mail."
+      ]
+    ],
+    "article": [
+      [
+        "Pourquoi le CERFA ne s’ouvre pas dans le navigateur",
+        "Beaucoup de CERFA sont des formulaires « dynamiques » au format XFA. Les lecteurs PDF de Chrome, Edge et Safari, et l’app Adobe Reader sur iPhone et iPad, ne savent pas les afficher : on voit seulement un message demandant une version plus récente d’Adobe Reader. La version statique s’ouvre, mais n’a aucun champ."
+      ],
+      [
+        "La solution",
+        "Ouvrez ici la version statique : PDF Libre détecte les lignes et les cases et les transforme en champs de saisie. Tout se passe dans votre navigateur, vos informations ne sont pas envoyées."
+      ]
+    ],
+    "faq": [
+      [
+        "L’administration accepte-t-elle le formulaire rempli ?",
+        "Oui, tant que vous remplissez seulement les champs sans modifier le formulaire. Signez-le ensuite comme d’habitude."
+      ],
+      [
+        "Mon formulaire est-il envoyé sur un serveur ?",
+        "Non. Le remplissage et l’enregistrement se font dans votre navigateur."
+      ],
+      [
+        "Le CERFA reste vide ou n’affiche qu’un message ?",
+        "C’est la version dynamique (XFA). Téléchargez la version statique proposée sur la même page de service-public.fr."
+      ]
+    ]
+  },
   "pdf-in-e-rechnung-umwandeln": {
     "guide": "Transformer une facture PDF en facture électronique",
     "name": "PDF en facture électronique",

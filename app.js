@@ -857,6 +857,31 @@ api.post(
   })
 );
 
+// E-Rechnung als Daten (für die Anzeige im Browser, in DE/EN/FR) ------------------------
+// Gleiche Prüfung wie /e-rechnung, aber als JSON: Rechnung, Prüfergebnisse (mit Code), KoSIT-Ergebnis.
+api.post(
+  "/e-rechnung-daten",
+  uploader("einvoice"),
+  wrap(async (req, res) => {
+    const [file] = requireFiles(req);
+    if (!ERECHNUNG_API_URL) throw new UserError("Dieses Werkzeug ist gerade nicht verfügbar.", 503);
+    const form = new FormData();
+    form.append("file", new Blob([await fsp.readFile(file.path)]), file.originalname);
+    let upstream;
+    try {
+      upstream = await fetch(`${ERECHNUNG_API_URL}/api/v1/check`, { method: "POST", body: form, signal: AbortSignal.timeout(60_000) });
+    } catch {
+      throw new UserError("Der Prüfdienst antwortet gerade nicht. Bitte versuche es gleich noch einmal.", 503);
+    }
+    let body = {};
+    try { body = await upstream.json(); } catch { /* keine JSON-Antwort */ }
+    if (!upstream.ok || body.error || !body.invoice) {
+      throw new UserError("Die Datei konnte nicht gelesen werden. Erwartet wird eine E-Rechnung: XRechnung, Peppol-UBL (XML) oder eine ZUGFeRD-/Factur-X-PDF.", 422);
+    }
+    res.json({ format: body.format, invoice: body.invoice, findings: body.findings || [], kosit: body.kosit || null });
+  })
+);
+
 // E-Rechnung erstellen --------------------------------------------------------------
 // Formulardaten (JSON) → E-Rechnung-Dienst → ZUGFeRD-PDF (format=pdf) oder XRechnung-XML (format=xml).
 // Der Dienst rechnet alle Summen selbst aus und prüft die Pflichtangaben (EN 16931 / XRechnung).

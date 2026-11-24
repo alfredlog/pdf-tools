@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>XRechnung anzeigen – XML lesbar als PDF, kostenlos | PDF Libre</title>
-  <meta name="description" content="XRechnung online anzeigen: XML-Datei hochladen und als übersichtliche PDF mit Positionen, Summen und Steuer erhalten. Auch für ZUGFeRD. Kostenlos, ohne Anmeldung.">
+  <meta name="description" content="XRechnung online anzeigen: XML-Datei hochladen und sofort lesbar mit Positionen, Summen und Steuer sehen – auch ZUGFeRD, Factur-X und Peppol-UBL. Als PDF speichern. Kostenlos, ohne Anmeldung.">
   <link rel="canonical" href="https://pdf-libre.de/xrechnung-anzeigen.html">
   <link rel="alternate" hreflang="de" href="https://pdf-libre.de/xrechnung-anzeigen.html">
   <link rel="alternate" hreflang="en" href="https://pdf-libre.de/en/xrechnung-anzeigen.html">
@@ -15,7 +15,7 @@
   <meta property="og:site_name" content="PDF Libre">
   <meta property="og:locale" content="de_DE">
   <meta property="og:title" content="XRechnung anzeigen – XML lesbar als PDF, kostenlos | PDF Libre">
-  <meta property="og:description" content="XRechnung online anzeigen: XML-Datei hochladen und als übersichtliche PDF mit Positionen, Summen und Steuer erhalten. Auch für ZUGFeRD. Kostenlos, ohne Anmeldung.">
+  <meta property="og:description" content="XRechnung online anzeigen: XML-Datei hochladen und sofort lesbar mit Positionen, Summen und Steuer sehen – auch ZUGFeRD, Factur-X und Peppol-UBL. Als PDF speichern. Kostenlos, ohne Anmeldung.">
   <meta property="og:url" content="https://pdf-libre.de/xrechnung-anzeigen.html">
   <meta property="og:image" content="https://pdf-libre.de/og-image.png">
   <meta property="og:image:width" content="1200">
@@ -26,8 +26,8 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=8d8de0c0">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"XRechnung anzeigen – PDF Libre","url":"https://pdf-libre.de/xrechnung-anzeigen.html","description":"XRechnung online anzeigen: XML-Datei hochladen und als übersichtliche PDF mit Positionen, Summen und Steuer erhalten. Auch für ZUGFeRD. Kostenlos, ohne Anmeldung.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
+  <link rel="stylesheet" href="/assets/style.css?v=31c5eebf">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"XRechnung anzeigen – PDF Libre","url":"https://pdf-libre.de/xrechnung-anzeigen.html","description":"XRechnung online anzeigen: XML-Datei hochladen und sofort lesbar mit Positionen, Summen und Steuer sehen – auch ZUGFeRD, Factur-X und Peppol-UBL. Als PDF speichern. Kostenlos, ohne Anmeldung.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"XRechnung anzeigen","item":"https://pdf-libre.de/xrechnung-anzeigen.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ist die erzeugte PDF eine gültige Rechnung?","acceptedAnswer":{"@type":"Answer","text":"Nein. Sie ist eine lesbare Darstellung. Rechtlich maßgeblich und aufzubewahren ist die Original-Datei (XML bzw. ZUGFeRD-PDF)."}},{"@type":"Question","name":"Welche Formate werden unterstützt?","acceptedAnswer":{"@type":"Answer","text":"XRechnung in UBL- und CII-Syntax sowie ZUGFeRD 2.x und Factur-X. Normale PDFs ohne eingebettete Daten und Scans werden nicht erkannt."}},{"@type":"Question","name":"Werden die Beträge geprüft?","acceptedAnswer":{"@type":"Answer","text":"Ja. Summen, Umsatzsteuer und Zahlbetrag werden nachgerechnet, Pflichtangaben und die IBAN geprüft. Das Ergebnis steht in der PDF."}},{"@type":"Question","name":"Werden meine Rechnungen gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Datei wird nur für die Verarbeitung auf unserem Server in Deutschland verwendet und danach sofort gelöscht."}}]}</script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
@@ -107,66 +107,36 @@
 <div class="tool-head wrap">
   <nav class="crumbs" aria-label="Brotkrümelnavigation"><a href="/">Startseite</a><span aria-hidden="true">/</span><span>E-Rechnung</span></nav>
   <h1>XRechnung anzeigen</h1>
-  <p class="tool-head__lead">Lade eine XRechnung (XML) oder eine ZUGFeRD-PDF hoch und erhalte eine lesbare PDF mit allen Angaben – inklusive automatischer Prüfung der Beträge.</p>
+  <p class="tool-head__lead">Lade eine XRechnung (XML), Peppol-UBL oder ZUGFeRD-/Factur-X-PDF hoch: Die Rechnung wird sofort lesbar angezeigt – inklusive automatischer Prüfung der Beträge – und lässt sich als PDF speichern.</p>
 </div>
 
 <div class="wrap">
-  <section class="tool tool--erechnung" data-tool="xrechnung-anzeigen" data-mode="server" data-endpoint="/api/e-rechnung" data-accept=".xml,.pdf,application/xml,text/xml,application/pdf" data-kind="XML oder PDF" aria-label="XRechnung anzeigen">
-    <form class="tool__form" novalidate>
-      <div class="stage stage--pick">
-        <div class="drop" data-drop>
-          <svg class="ficon ficon--erechnung" width="56" height="66" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
+  <section class="tool tool--erechnung" data-einvoice aria-label="XRechnung anzeigen">
+    <div class="stage stage--pick">
+      <div class="drop" data-drop>
+        <svg class="ficon ficon--erechnung" width="56" height="66" viewBox="0 0 44 52" aria-hidden="true" focusable="false">
 <path class="ficon__sheet" d="M4 3h26l11 11v34a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/>
 <path class="ficon__fold" d="M30 3v10a1 1 0 0 0 1 1h10Z"/>
 <g transform="translate(10 17) scale(1)" class="ficon__glyph"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.5"/></g>
 </svg>
-          <label class="btn btn--primary btn--lg drop__btn">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg><span>Datei auswählen</span>
-            <input type="file" class="visually-hidden" accept=".xml,.pdf,application/xml,text/xml,application/pdf">
-          </label>
-          <p class="drop__or">oder Datei hierher ziehen</p>
-          <p class="drop__hint">XRechnung (.xml, UBL oder CII) oder ZUGFeRD-/Factur-X-PDF, bis zu 15 MB</p>
-        </div>
-        <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span><strong>Sicher:</strong> Verschlüsselte Übertragung, automatische Löschung nach der Verarbeitung.</span></p>
+        <label class="btn btn--primary btn--lg drop__btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></svg><span>Datei auswählen</span>
+          <input type="file" class="visually-hidden" accept=".xml,.pdf,application/xml,text/xml,application/pdf"></label>
+        <p class="drop__or">oder Datei hierher ziehen</p>
+        <p class="drop__hint">XRechnung, Peppol-UBL (.xml), CII oder ZUGFeRD-/Factur-X-PDF, bis zu 15 MB</p>
       </div>
-
-      <div class="stage stage--work" hidden>
-        <div class="work">
-          <div class="work__main">
-            <ul class="files" data-files></ul>
-            
-          </div>
-          <aside class="work__side">
-            <p class="work__summary" data-summary></p>
-            
-            <p class="form-error" data-error role="alert" hidden></p>
-            <button type="submit" class="btn btn--primary btn--lg btn--block">Rechnung anzeigen</button>
-            <button type="button" class="btn btn--link" data-action="reset">Andere Datei wählen</button>
-          </aside>
-        </div>
+    </div>
+    <div class="stage stage--busy" hidden aria-live="polite"><div class="busy"><div class="busy__bar"><span></span></div><p>Rechnung wird gelesen und nachgerechnet …</p></div></div>
+    <div class="stage stage--work" hidden>
+      <div class="ev-bar">
+        <p class="ev-status" data-status></p>
+        <button type="button" class="btn btn--primary" data-print>Als PDF speichern / drucken</button>
+        <button type="button" class="btn btn--ghost" data-pdf>Prüfbericht als PDF</button>
+        <button type="button" class="btn btn--link" data-other>Andere Datei wählen</button>
       </div>
-
-      <div class="stage stage--busy" hidden aria-live="polite">
-        <div class="busy">
-          <div class="busy__bar"><span data-progress></span></div>
-          <p data-busy-text>Wird verarbeitet …</p>
-        </div>
-      </div>
-
-      <div class="stage stage--done" hidden>
-        <div class="done">
-          <h2 class="done__title" tabindex="-1">Fertig!</h2>
-          <p class="done__info" data-done-info></p>
-          <div class="done__preview" data-done-preview hidden></div>
-          <a class="btn btn--primary btn--lg" data-download href="#">Herunterladen</a>
-          <button type="button" class="btn btn--link" data-action="reset">Noch eine Datei bearbeiten</button>
-          <div class="done__next">
-            <p>Weiter mit:</p>
-            <ul><li><a href="/e-rechnung-pruefen.html">E-Rechnung prüfen</a></li><li><a href="/merge.html">PDF zusammenfügen</a></li><li><a href="/compress.html">PDF komprimieren</a></li><li><a href="/protect.html">PDF schützen</a></li></ul>
-          </div>
-        </div>
-      </div>
-    </form>
+      <ul class="ev-findings" data-findings></ul>
+      <article class="ev-doc" data-doc></article>
+      <p class="ev-note">Diese Ansicht ist eine lesbare Darstellung. Aufbewahren musst du die Original-Datei (XML bzw. PDF).</p>
+    </div>
   </section>
 </div>
 <aside class="wrap promo" aria-label="Bekommst du regelmäßig E-Rechnungen?">
@@ -181,7 +151,7 @@
   <ol class="steps">
     <li><h3>Datei auswählen</h3><p>Wähle die XRechnung (.xml) oder die ZUGFeRD-PDF aus, die du erhalten hast.</p></li>
     <li><h3>Anzeigen</h3><p>Klicke auf „Rechnung anzeigen“. Die Daten werden ausgelesen und nachgerechnet.</p></li>
-    <li><h3>PDF speichern</h3><p>Lade die lesbare PDF herunter – zum Ablegen, Weiterleiten oder Ausdrucken.</p></li>
+    <li><h3>Ansehen und speichern</h3><p>Die Rechnung erscheint direkt auf der Seite. Mit „Als PDF speichern“ legst du sie ab, leitest sie weiter oder druckst sie aus.</p></li>
   </ol>
 </section>
 
@@ -217,6 +187,8 @@
   <h2 id="guides-title">Ratgeber</h2>
   <ul>
     <li><a href="/pdf-in-e-rechnung-umwandeln.html">PDF-Rechnung in E-Rechnung umwandeln</a></li>
+    <li><a href="/factur-x-oeffnen.html">Factur-X-Rechnung öffnen (Frankreich)</a></li>
+    <li><a href="/peppol-rechnung-oeffnen.html">Peppol-Rechnung (UBL) öffnen – z. B. aus Belgien</a></li>
   </ul>
 </section>
 <section class="wrap related" aria-labelledby="related-title">
@@ -323,7 +295,7 @@
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=8d8de0c0" defer></script>
-<script src="/assets/tool.js?v=8d8de0c0" defer></script>
+<script src="/assets/site.js?v=31c5eebf" defer></script>
+<script src="/assets/einvoice.js?v=31c5eebf" defer></script>
 </body>
 </html>

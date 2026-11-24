@@ -569,6 +569,7 @@ function workspace(t) {
   if (t.ui.mode === "form") return formWorkspace(t);
   if (t.ui.mode === "invoice") return invoiceWorkspace(t);
   if (t.ui.mode === "letter") return letterWorkspace(t);
+  if (t.ui.mode === "einvoice") return einvoiceWorkspace(t);
   const ui = t.ui;
   const c = catById[t.cat].color;
   const data = {
@@ -885,6 +886,7 @@ function formWorkspace(t) {
       </div>
       <div class="fm-empty" data-empty hidden>
         <h2>${T("Keine Felder gefunden")}</h2>
+        <p class="fm-xfa" data-xfa hidden>${T("Dieses Formular ist ein „dynamisches“ XFA-Formular (z. B. viele CERFA- und Behördenformulare). Browser können es nicht anzeigen. Lade die statische Fassung bzw. Druckversion des Formulars herunter und öffne sie hier – dann werden die Felder automatisch erkannt.")}</p>
         <p data-empty-detect>${T("Diese PDF hat keine Formularfelder, und es wurden keine Linien oder Kästchen zum Ausfüllen erkannt. Klicke oben auf „+ Textfeld“ und dann auf die Stelle in der Seite, an die du schreiben möchtest.")}</p>
         <p>${T("Oder schreibe frei auf die Seite:")}</p>
         <p><a class="btn btn--primary" href="${url("edit")}">${T("Text einfügen mit „PDF bearbeiten“")}</a> <a class="btn btn--ghost" href="${url("sign")}">${T("Nur unterschreiben")}</a></p>
@@ -901,6 +903,34 @@ function formWorkspace(t) {
         <p><button type="button" class="btn btn--link" data-back>${T("Zurück zum Formular")}</button></p>
         <p class="done__next">${T("Weiter mit:")} <a href="${url("sign")}">${esc(bySlug.sign ? bySlug.sign.name : "PDF unterschreiben")}</a> · <a href="${url("compress")}">${esc(bySlug.compress.name)}</a> · <a href="${url("merge")}">${esc(bySlug.merge.name)}</a></p>
       </div>
+    </div>
+  </section>`;
+}
+
+// E-Rechnung im Browser anzeigen (XRechnung, Peppol-UBL, ZUGFeRD/Factur-X) – Logik: public/assets/einvoice.js
+function einvoiceWorkspace(t) {
+  const c = catById[t.cat].color;
+  return `<section class="tool tool--${c}" data-einvoice aria-label="${esc(t.name)}">
+    <div class="stage stage--pick">
+      <div class="drop" data-drop>
+        ${toolIcon(t, 56)}
+        <label class="btn btn--primary btn--lg drop__btn">${ICON.upload}<span>${T("Datei auswählen")}</span>
+          <input type="file" class="visually-hidden" accept=".xml,.pdf,application/xml,text/xml,application/pdf"></label>
+        <p class="drop__or">${T("oder Datei hierher ziehen")}</p>
+        <p class="drop__hint">${T("XRechnung, Peppol-UBL (.xml), CII oder ZUGFeRD-/Factur-X-PDF, bis zu 15 MB")}</p>
+      </div>
+    </div>
+    <div class="stage stage--busy" hidden aria-live="polite"><div class="busy"><div class="busy__bar"><span></span></div><p>${T("Rechnung wird gelesen und nachgerechnet …")}</p></div></div>
+    <div class="stage stage--work" hidden>
+      <div class="ev-bar">
+        <p class="ev-status" data-status></p>
+        <button type="button" class="btn btn--primary" data-print>${T("Als PDF speichern / drucken")}</button>
+        ${LANG === "de" ? `<button type="button" class="btn btn--ghost" data-pdf>${T("Prüfbericht als PDF")}</button>` : ""}
+        <button type="button" class="btn btn--link" data-other>${T("Andere Datei wählen")}</button>
+      </div>
+      <ul class="ev-findings" data-findings></ul>
+      <article class="ev-doc" data-doc></article>
+      <p class="ev-note">${T("Diese Ansicht ist eine lesbare Darstellung. Aufbewahren musst du die Original-Datei (XML bzw. PDF).")}</p>
     </div>
   </section>`;
 }
@@ -1347,6 +1377,9 @@ ${
   }
   if (t.ui.mode === "cv") {
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/cv.js?v=${BUILD_ID}" defer></script>` });
+  }
+  if (t.ui.mode === "einvoice") {
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/einvoice.js?v=${BUILD_ID}" defer></script>` });
   }
   if (t.ui.mode === "letter") {
     const scripts = ["/vendor/pdf.min.js", "/vendor/pdf-lib.min.js", `/assets/letter.js?v=${BUILD_ID}`].map((x) => `\n<script src="${x}" defer></script>`).join("");

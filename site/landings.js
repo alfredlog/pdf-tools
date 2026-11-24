@@ -36,6 +36,58 @@ const landings = [
     ],
     related: ["e-rechnung-erstellen", "e-rechnung-pruefen", "xrechnung-anzeigen", "mahnung-schreiben"],
   },
+  // ------------------------------------------------------------------ INTERNATIONAL (Frankreich, Belgien)
+  {
+    slug: "factur-x-oeffnen",
+    base: "xrechnung-anzeigen",
+    guide: "Factur-X-Rechnung öffnen (Frankreich)",
+    name: "Factur-X öffnen",
+    title: "Factur-X öffnen – französische E-Rechnung lesen und prüfen, kostenlos | PDF Libre",
+    description: "Factur-X-Rechnung aus Frankreich öffnen: eingebettete Rechnungsdaten auslesen, Summen und Steuer prüfen, als PDF speichern. Auf Deutsch, Englisch oder Französisch. Kostenlos.",
+    h1: "Factur-X-Rechnung öffnen und prüfen",
+    lead: "Factur-X ist das französische Gegenstück zu ZUGFeRD: eine PDF mit eingebetteten Rechnungsdaten. Hier siehst du genau die Daten, die die Buchhaltung verarbeitet – und ob die Beträge stimmen.",
+    steps: [["Factur-X-PDF auswählen", "Die PDF, die du von einem Lieferanten aus Frankreich bekommen hast."], ["Daten ansehen", "Rechnungssteller, Empfänger, Positionen, Steuer und Zahlbetrag erscheinen auf Deutsch – nachgerechnet."], ["Speichern", "Mit „Als PDF speichern“ legst du die lesbare Fassung ab. Aufbewahren musst du das Original."]],
+    article: [
+      { h: "Factur-X und ZUGFeRD – fast dasselbe", p: ["Factur-X wurde von Frankreich und Deutschland gemeinsam entwickelt und ist technisch mit ZUGFeRD 2.x identisch. Deshalb kannst du eine Factur-X-Rechnung auch in Deutschland problemlos verbuchen. Seit dem 1. September 2026 müssen alle Unternehmen in Frankreich E-Rechnungen empfangen können; viele französische Lieferanten verschicken jetzt Factur-X."] },
+      { h: "Warum die eingebetteten Daten zählen", p: ["Die sichtbare PDF und die eingebetteten XML-Daten sollten übereinstimmen – tun es aber nicht immer. Dieses Werkzeug zeigt die eingebetteten Daten und rechnet Summen und Steuer nach, damit du Fehler vor dem Bezahlen bemerkst."] }
+    ],
+    faq: [["Kann ich Factur-X in Deutschland verwenden?", "Ja. Factur-X entspricht ZUGFeRD 2.x und der Norm EN 16931 und ist damit eine gültige E-Rechnung."], ["Wird die Rechnung gespeichert?", "Nein. Sie wird nur zum Auslesen verarbeitet und danach gelöscht."]],
+    related: ["xrechnung-anzeigen", "e-rechnung-pruefen", "e-rechnung-erstellen", "peppol-rechnung-oeffnen"],
+  },
+  {
+    slug: "peppol-rechnung-oeffnen",
+    base: "xrechnung-anzeigen",
+    guide: "Peppol-Rechnung (UBL) öffnen – z. B. aus Belgien",
+    name: "Peppol-Rechnung öffnen",
+    title: "Peppol-Rechnung öffnen – UBL-XML lesbar anzeigen, kostenlos | PDF Libre",
+    description: "Peppol-Rechnung (UBL-XML, Peppol BIS Billing 3.0) online öffnen: lesbar anzeigen, Summen und Steuer prüfen, als PDF speichern. Für Rechnungen aus Belgien und anderen Peppol-Ländern. Kostenlos.",
+    h1: "Peppol-Rechnung (UBL) öffnen",
+    lead: "Eine XML-Datei von einem Lieferanten aus Belgien oder einem anderen Peppol-Land? Lade sie hoch und lies sie als normale Rechnung – mit automatischer Prüfung.",
+    steps: [["XML-Datei auswählen", "Die Peppol-Rechnung im UBL-Format (.xml)."], ["Rechnung ansehen", "Alle Angaben erscheinen übersichtlich, Summen und Steuer werden nachgerechnet."], ["Als PDF speichern", "Für deine Ablage oder zum Weiterleiten an die Buchhaltung."]],
+    article: [
+      { h: "Was ist eine Peppol-Rechnung?", p: ["Peppol ist ein europäisches Netzwerk für den Austausch von E-Rechnungen. Die Rechnungen sind XML-Dateien im UBL-Format nach der Norm EN 16931 (Peppol BIS Billing 3.0). In Belgien ist die E-Rechnung über Peppol seit dem 1. Januar 2026 zwischen Unternehmen Pflicht – auch für kleine Selbständige."] },
+      { h: "XML lesen ohne Spezialsoftware", p: ["Öffnest du eine UBL-Datei im Browser, siehst du nur Code. Dieses Werkzeug macht daraus eine lesbare Rechnung und zeigt, ob Positionen, Steuer und Zahlbetrag zusammenpassen."] }
+    ],
+    faq: [["Brauche ich einen Peppol-Zugang?", "Zum Lesen nicht. Zum Senden und Empfangen über das Peppol-Netz brauchst du einen Anbieter (Access Point)."], ["Ist die PDF eine gültige Rechnung?", "Nein, sie ist eine lesbare Darstellung. Maßgeblich ist die XML-Datei."]],
+    related: ["xrechnung-anzeigen", "factur-x-oeffnen", "e-rechnung-pruefen", "e-rechnung-erstellen"],
+  },
+  {
+    slug: "cerfa-ausfuellen",
+    base: "pdf-formular-ausfuellen",
+    guide: "CERFA-Formular online ausfüllen (Frankreich)",
+    name: "CERFA ausfüllen",
+    title: "CERFA online ausfüllen – französische Formulare im Browser ausfüllen | PDF Libre",
+    description: "Französische CERFA-Formulare online ausfüllen: ausfüllbare Felder direkt im Browser, nicht ausfüllbare Fassungen werden automatisch erkannt. Ohne Adobe, ohne Upload, kostenlos.",
+    h1: "CERFA-Formular online ausfüllen",
+    lead: "Französische Behördenformulare (CERFA) lassen sich im Browser oft nicht ausfüllen. Hier schon – auch die „statische“ Fassung, die eigentlich nur zum Ausdrucken gedacht ist.",
+    steps: [["CERFA öffnen", "Lade das Formular als PDF. Zeigt es nur „Please wait…“, lade die statische Version von service-public.fr."], ["Felder ausfüllen", "Vorhandene Felder werden angezeigt; bei der statischen Version werden Linien und Kästchen automatisch zu Feldern."], ["Speichern", "Ausgefüllte PDF herunterladen, ausdrucken oder per E-Mail schicken."]],
+    article: [
+      { h: "Warum CERFA-Formulare im Browser nicht funktionieren", p: ["Viele CERFA-Formulare sind „dynamische“ XFA-Formulare. Die PDF-Anzeige von Chrome, Edge, Safari und auch Adobe Reader auf dem iPhone kann XFA nicht darstellen – man sieht nur einen Hinweis, man brauche eine neuere Adobe-Version. Die statische Fassung lässt sich zwar öffnen, hat aber keine Felder."] },
+      { h: "So geht es trotzdem", p: ["Öffne hier die statische Fassung: PDF Libre erkennt Linien und Kästchen und macht daraus Eingabefelder. Alles passiert im Browser, deine Angaben werden nicht hochgeladen."] }
+    ],
+    faq: [["Akzeptiert die Behörde das ausgefüllte Formular?", "Ja, solange der Inhalt unverändert ist und du nur die Felder ausfüllst. Unterschreibe es danach wie gewohnt."], ["Wird mein Formular hochgeladen?", "Nein. Ausfüllen und Speichern passieren in deinem Browser."]],
+    related: ["pdf-formular-ausfuellen", "pdf-ausfuellbar-machen", "sign", "merge"],
+  },
   // ------------------------------------------------------------------ BRIEFE
   {
     slug: "kuendigung-schreiben",

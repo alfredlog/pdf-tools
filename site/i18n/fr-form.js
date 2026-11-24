@@ -31,6 +31,7 @@ module.exports = {
     ["Vos données restent privées", "Les formulaires contiennent souvent des données très personnelles : adresse, date de naissance, numéro fiscal, coordonnées bancaires. C’est pourquoi tout se passe ici dans votre navigateur. Le PDF et vos saisies ne sont ni envoyés sur un serveur ni enregistrés nulle part."],
   ],
   ui: {
+    "Dieses Formular ist ein „dynamisches“ XFA-Formular (z. B. viele CERFA- und Behördenformulare). Browser können es nicht anzeigen. Lade die statische Fassung bzw. Druckversion des Formulars herunter und öffne sie hier – dann werden die Felder automatisch erkannt.": "Ce formulaire est un formulaire XFA « dynamique » (comme beaucoup de CERFA). Les navigateurs ne savent pas l’afficher. Téléchargez la version statique (imprimable) du formulaire et ouvrez-la ici : les champs seront détectés automatiquement.",
     "Feld hinzufügen:": "Ajouter un champ :",
     "+ Textfeld": "+ Champ texte",
     "+ Kästchen": "+ Case à cocher",

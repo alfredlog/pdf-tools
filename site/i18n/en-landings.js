@@ -1,5 +1,132 @@
 // English versions of the job application guides (same slugs as German, so hreflang links match)
 module.exports = {
+  "factur-x-oeffnen": {
+    "guide": "Open a Factur-X invoice (France)",
+    "name": "Open Factur-X",
+    "title": "Open Factur-X – read and check French e-invoices, free | PDF Libre",
+    "description": "Open a Factur-X invoice: read the embedded invoice data, check totals and VAT, save as PDF. In English, French or German. Free.",
+    "h1": "Open and check a Factur-X invoice",
+    "lead": "Factur-X is the French counterpart of ZUGFeRD: a PDF with embedded invoice data. Here you see exactly the data accounting software processes – and whether the amounts add up.",
+    "steps": [
+      [
+        "Choose the Factur-X PDF",
+        "The invoice PDF you received."
+      ],
+      [
+        "View the data",
+        "Seller, buyer, items, VAT and amount due are shown clearly – recalculated."
+      ],
+      [
+        "Save",
+        "“Save as PDF” stores the readable version. Keep the original for your records."
+      ]
+    ],
+    "article": [
+      [
+        "Factur-X in France: mandatory to receive",
+        "Since 1 September 2026, all businesses in France must be able to receive e-invoices; large and mid-sized companies already issue them, and small businesses and micro-entrepreneurs follow on 1 September 2027. Factur-X is one of the three accepted formats, next to UBL and CII.",
+        "Factur-X was developed jointly by France and Germany and is technically identical to ZUGFeRD 2.x, so it is valid in both countries."
+      ],
+      [
+        "Why the embedded data matters",
+        "The visible PDF and the embedded XML should match – but don’t always. This tool shows the embedded data and recalculates totals and VAT so you spot mistakes before paying."
+      ]
+    ],
+    "faq": [
+      [
+        "Is my invoice stored?",
+        "No. It is only processed to read it and deleted afterwards."
+      ],
+      [
+        "Is the saved PDF a valid invoice?",
+        "No, it’s a readable view. The original Factur-X file is the one to keep."
+      ]
+    ]
+  },
+  "peppol-rechnung-oeffnen": {
+    "guide": "Open a Peppol invoice (UBL), e.g. from Belgium",
+    "name": "Open Peppol invoice",
+    "title": "Open a Peppol invoice – view UBL XML as a readable invoice, free | PDF Libre",
+    "description": "Open a Peppol invoice (UBL XML, Peppol BIS Billing 3.0) online: view it clearly, check totals and VAT, save as PDF. For Belgium and other Peppol countries. Free.",
+    "h1": "Open a Peppol invoice (UBL)",
+    "lead": "Got an XML file through Peppol that you can’t read? Upload it and see it as a normal invoice – with an automatic check.",
+    "steps": [
+      [
+        "Choose the XML file",
+        "The Peppol invoice in UBL format (.xml)."
+      ],
+      [
+        "View the invoice",
+        "All details appear clearly, totals and VAT are recalculated."
+      ],
+      [
+        "Save as PDF",
+        "For your records or to forward to your accountant."
+      ]
+    ],
+    "article": [
+      [
+        "Peppol e-invoicing in Belgium",
+        "Since 1 January 2026, e-invoicing via Peppol is mandatory between businesses in Belgium – for all VAT-registered businesses, including self-employed people working on the side. Peppol invoices are XML files in UBL format according to EN 16931 (Peppol BIS Billing 3.0)."
+      ],
+      [
+        "Read XML without special software",
+        "Opening a UBL file in the browser only shows code. This tool turns it into a readable invoice and shows whether items, VAT and amount due match."
+      ]
+    ],
+    "faq": [
+      [
+        "Do I need a Peppol access point?",
+        "Not to read invoices. To send and receive through the Peppol network you need a provider (access point)."
+      ],
+      [
+        "Is the PDF a valid invoice?",
+        "No, it’s a readable view. The XML file is the legal original."
+      ]
+    ]
+  },
+  "cerfa-ausfuellen": {
+    "guide": "Fill in a French CERFA form online",
+    "name": "Fill in CERFA",
+    "title": "Fill in a CERFA online – French official forms in your browser | PDF Libre",
+    "description": "Fill in French CERFA forms online: fillable fields right in your browser, and non-fillable static versions are turned into forms automatically. No Adobe, no upload, free.",
+    "h1": "Fill in a CERFA form online",
+    "lead": "French official forms (CERFA) often can’t be filled in in the browser. Here they can – even the “static” version meant only for printing.",
+    "steps": [
+      [
+        "Open the CERFA",
+        "Load the form as PDF. If it only shows “Please wait…”, download the static version from service-public.fr."
+      ],
+      [
+        "Fill in the fields",
+        "Existing fields are shown; for the static version, lines and boxes automatically become fields."
+      ],
+      [
+        "Save",
+        "Download the filled PDF, print it or send it by email."
+      ]
+    ],
+    "article": [
+      [
+        "Why CERFA forms don’t work in the browser",
+        "Many CERFA forms are “dynamic” XFA forms. The PDF viewers in Chrome, Edge and Safari and Adobe Reader on iPhone can’t display XFA – you only see a message asking for a newer Adobe version. The static version opens, but has no fields."
+      ],
+      [
+        "How to do it anyway",
+        "Open the static version here: PDF Libre detects lines and boxes and turns them into input fields. Everything happens in your browser; your details are not uploaded."
+      ]
+    ],
+    "faq": [
+      [
+        "Will the authority accept the filled form?",
+        "Yes, as long as you only fill in the fields and don’t change the form. Sign it afterwards as usual."
+      ],
+      [
+        "Is my form uploaded?",
+        "No. Filling in and saving happen in your browser."
+      ]
+    ]
+  },
   "pdf-in-e-rechnung-umwandeln": {
     "guide": "Convert a PDF invoice into an e-invoice",
     "name": "Convert PDF to e-invoice",

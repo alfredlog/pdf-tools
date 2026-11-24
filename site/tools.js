@@ -1265,11 +1265,11 @@ const tools = [
     },
     title: "XRechnung anzeigen – XML lesbar als PDF, kostenlos | PDF Libre",
     description:
-      "XRechnung online anzeigen: XML-Datei hochladen und als übersichtliche PDF mit Positionen, Summen und Steuer erhalten. Auch für ZUGFeRD. Kostenlos, ohne Anmeldung.",
+      "XRechnung online anzeigen: XML-Datei hochladen und sofort lesbar mit Positionen, Summen und Steuer sehen – auch ZUGFeRD, Factur-X und Peppol-UBL. Als PDF speichern. Kostenlos, ohne Anmeldung.",
     h1: "XRechnung anzeigen",
-    lead: "Lade eine XRechnung (XML) oder eine ZUGFeRD-PDF hoch und erhalte eine lesbare PDF mit allen Angaben – inklusive automatischer Prüfung der Beträge.",
+    lead: "Lade eine XRechnung (XML), Peppol-UBL oder ZUGFeRD-/Factur-X-PDF hoch: Die Rechnung wird sofort lesbar angezeigt – inklusive automatischer Prüfung der Beträge – und lässt sich als PDF speichern.",
     ui: {
-      mode: "server",
+      mode: "einvoice",
       endpoint: "/api/e-rechnung",
       input: EINVOICE,
       action: "Rechnung anzeigen",
@@ -1278,7 +1278,7 @@ const tools = [
     steps: [
       ["Datei auswählen", "Wähle die XRechnung (.xml) oder die ZUGFeRD-PDF aus, die du erhalten hast."],
       ["Anzeigen", "Klicke auf „Rechnung anzeigen“. Die Daten werden ausgelesen und nachgerechnet."],
-      ["PDF speichern", "Lade die lesbare PDF herunter – zum Ablegen, Weiterleiten oder Ausdrucken."],
+      ["Ansehen und speichern", "Die Rechnung erscheint direkt auf der Seite. Mit „Als PDF speichern“ legst du sie ab, leitest sie weiter oder druckst sie aus."],
     ],
     article: [
       {

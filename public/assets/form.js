@@ -109,7 +109,11 @@
     }
     // Keine echten Formularfelder → Felder im Bild der Seiten suchen (Linien, Kästchen, Punktlinien)
     let detectedCount = 0;
-    if (fields.size === 0 && window.PLFormDetect) {
+    // Reines XFA-Formular (dynamisch, z. B. CERFA): keine Felder, die Seite zeigt nur „Please wait…“ → erklären statt raten
+    const xfa = fields.size === 0 && (await isXfa());
+    $("[data-xfa]").hidden = !xfa;
+    $("[data-empty-detect]").hidden = xfa;
+    if (fields.size === 0 && !xfa && window.PLFormDetect) {
       const busy = root.querySelector("[data-busy-text]");
       for (const pg of pages) {
         busy.textContent = tr("Felder werden erkannt … Seite {n} von {total}", { n: pages.indexOf(pg) + 1, total: pages.length });
@@ -122,7 +126,7 @@
     const names = fields.size;
     $("[data-empty]").hidden = names > 0;
     $("[data-save]").hidden = names === 0;
-    $("[data-empty]").querySelector("[data-empty-detect]").hidden = !window.PLFormDetect;
+    if (!xfa) $("[data-empty]").querySelector("[data-empty-detect]").hidden = !window.PLFormDetect;
     $("[data-flatten]").closest("label").hidden = names === 0;
     $("[data-highlight]").closest("label").hidden = names === 0;
     $("[data-reset]").hidden = names === 0;
@@ -140,6 +144,14 @@
     }
     pagesEl.classList.toggle("is-highlight", $("[data-highlight]").checked);
     void count;
+  }
+
+  async function isXfa() {
+    try {
+      const d = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true, updateMetadata: false });
+      const af = d.catalog.lookup(PDFLib.PDFName.of("AcroForm"));
+      return !!(af && af.get(PDFLib.PDFName.of("XFA")));
+    } catch (_) { return false; }
   }
 
   // ------------------------------------------------------------------ erkannte und selbst hinzugefügte Felder

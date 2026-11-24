@@ -31,6 +31,7 @@ module.exports = {
     ["Your details stay private", "Forms often contain very personal data: address, date of birth, tax ID, bank details. That’s why everything happens in your browser here. The PDF and your entries are not uploaded to a server and not stored anywhere."],
   ],
   ui: {
+    "Dieses Formular ist ein „dynamisches“ XFA-Formular (z. B. viele CERFA- und Behördenformulare). Browser können es nicht anzeigen. Lade die statische Fassung bzw. Druckversion des Formulars herunter und öffne sie hier – dann werden die Felder automatisch erkannt.": "This is a “dynamic” XFA form (e.g. many CERFA and government forms). Browsers can’t display it. Download the static or printable version of the form and open it here – the fields are then detected automatically.",
     "Feld hinzufügen:": "Add field:",
     "+ Textfeld": "+ Text field",
     "+ Kästchen": "+ Checkbox",
