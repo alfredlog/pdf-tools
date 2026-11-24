@@ -123,6 +123,7 @@ const EXT = {
   einvoice: [".xml", ".pdf"],
   photos: [".heic", ".heif", ".jpg", ".jpeg", ".png", ".webp"],
   cvdoc: [".pdf", ".doc", ".docx", ".odt", ".rtf"],
+  invoicedoc: [".pdf", ".jpg", ".jpeg", ".png", ".heic"],
 };
 
 function uploader(kind, { multiple = false } = {}) {

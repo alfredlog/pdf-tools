@@ -31,6 +31,10 @@ module.exports = {
     "Yes. ZUGFeRD is created in the EN 16931 profile as PDF/A-3, XRechnung in version 3.0 – both comply with the European standard EN 16931."
    ],
    [
+    "Can I convert an existing PDF invoice into an e-invoice?",
+    "Yes. Upload the PDF or a photo of the invoice. The data is read out, you confirm or correct it, then the ZUGFeRD PDF or XRechnung is created."
+   ],
+   [
     "Do small businesses (§ 19 UStG) have to issue e-invoices?",
     "No, small businesses under § 19 UStG are exempt. You may still issue e-invoices – some customers ask for them."
    ],
@@ -57,6 +61,10 @@ module.exports = {
    "What is an e-invoice – isn’t a PDF enough?",
    "An e-invoice is an invoice in a structured, machine-readable format according to the European standard EN 16931. A normal PDF from Word or a scan is an “other invoice” – it looks fine, but the recipient’s accounting software can’t read the amounts automatically.",
    "Germany uses two common formats: XRechnung is a pure XML file and mandatory above all for public authorities. ZUGFeRD (Factur-X in France) is a PDF with the same data embedded as XML – people read the PDF, software reads the data. Both meet the legal requirements."
+  ],
+  [
+   "Turn an existing PDF invoice into an e-invoice",
+   "Already writing invoices in Word, Excel or another program? Upload the PDF – or a photo or scan of a paper invoice. The data is read out automatically (with text recognition for scans) and shown as a preview for you to confirm. We recalculate the totals and compare them with the amounts in your PDF, check the IBAN and mark anything uncertain in orange. Only when you click “All correct” is the e-invoice created."
   ],
   [
    "When does the e-invoice become mandatory in Germany?",
@@ -137,7 +145,16 @@ module.exports = {
   "Deine Angaben werden nur zum Erstellen an unseren Server geschickt und nicht gespeichert. „Merken“ speichert sie nur in deinem Browser.": "Your details are only sent to our server to create the file and are not stored. “Remember” saves them only in your browser.",
   "Deine E-Rechnung ist fertig!": "Your e-invoice is ready!",
   "Zurück zur Rechnung": "Back to the invoice",
-  "Nächste Rechnung": "Next invoice"
+  "Nächste Rechnung": "Next invoice",
+  "Schon eine Rechnung als PDF oder Foto?": "Already have the invoice as a PDF or photo?",
+  "Rechnung hochladen": "Upload invoice",
+  "Rechnung wird gelesen … das dauert bei Scans etwas länger.": "Reading the invoice … this takes a little longer for scans.",
+  "Stimmen diese Angaben?": "Are these details correct?",
+  "Diese Daten wurden aus deiner Rechnung gelesen und kommen so in die E-Rechnung. Bitte prüfe sie – besonders die markierten Stellen.": "This data was read from your invoice and will go into the e-invoice exactly like this. Please check it – especially the highlighted parts.",
+  "Angaben korrigieren": "Correct details",
+  "Alles korrekt – E-Rechnung erstellen": "All correct – create e-invoice",
+  "Vorschau": "Preview",
+  "Lade sie hoch: Die Daten werden mit KI ausgelesen (auch bei Scans) und dir zur Bestätigung gezeigt. Erst danach wird die E-Rechnung erstellt.": "Upload it: the data is read out with AI (scans too) and shown to you for confirmation. Only then is the e-invoice created."
  },
  "js": {
   "Summe netto": "Net total",
@@ -180,6 +197,16 @@ module.exports = {
   "PLZ des Empfängers": "Recipient postcode",
   "Ort des Empfängers": "Recipient city",
   "USt-IdNr. oder Steuernummer des Rechnungsstellers": "Issuer VAT ID or tax number",
-  "E-Mail des Empfängers": "Recipient email"
+  "E-Mail des Empfängers": "Recipient email",
+  "Die Datei ist größer als 20 MB.": "The file is larger than 20 MB.",
+  "Die Rechnung konnte nicht gelesen werden. Bitte versuche es noch einmal.": "The invoice could not be read. Please try again.",
+  "Die Rechnung war gescannt – der Text wurde per Texterkennung gelesen. Prüfe Zahlen besonders genau.": "The invoice was scanned – the text was read with OCR. Check the numbers especially carefully.",
+  "Die Preise standen in der Rechnung inklusive Umsatzsteuer und wurden in Nettopreise umgerechnet. Bitte prüfe die Beträge.": "The prices in the invoice included VAT and were converted to net prices. Please check the amounts.",
+  "{what}: In der Rechnung steht {found} €, aus den Positionen ergeben sich {computed} €. Bitte prüfe die Positionen.": "{what}: the invoice says {found} €, the items add up to {computed} €. Please check the items.",
+  "Nettobetrag": "Net amount",
+  "Die Rechnungsnummer wurde so nicht im Dokument gefunden.": "This invoice number was not found in the document.",
+  "Die IBAN wurde so nicht im Dokument gefunden.": "This IBAN was not found in the document.",
+  "Die IBAN hat eine ungültige Prüfziffer – bitte vergleiche sie mit der Rechnung.": "The IBAN has an invalid check digit – please compare it with the invoice.",
+  "Es wurden keine Positionen erkannt. Bitte trage sie ein.": "No items were detected. Please enter them."
  }
 };

@@ -1,5 +1,60 @@
 // Versions françaises des guides de candidature (mêmes slugs qu'en allemand, pour que les liens hreflang correspondent)
 module.exports = {
+  "pdf-in-e-rechnung-umwandeln": {
+    "guide": "Transformer une facture PDF en facture électronique",
+    "name": "PDF en facture électronique",
+    "title": "Transformer un PDF en facture électronique – ZUGFeRD & XRechnung, gratuit | PDF Libre",
+    "description": "Transformer une facture PDF en facture électronique allemande : déposer un PDF, un scan ou une photo, vérifier et confirmer les données, télécharger le PDF ZUGFeRD ou la XRechnung. Avec contrôle des totaux. Gratuit, sans inscription.",
+    "h1": "Transformer une facture PDF en facture électronique",
+    "lead": "Votre facture actuelle – en PDF, scan ou photo – devient une facture électronique valable selon EN 16931. Vous voyez d’abord toutes les données détectées et les confirmez.",
+    "steps": [
+      [
+        "Déposer la facture",
+        "Cliquez sur « Déposer une facture » en haut et choisissez le PDF, le scan ou la photo."
+      ],
+      [
+        "Confirmer les données",
+        "Expéditeur, destinataire, lignes, TVA et total s’affichent en aperçu. Les éléments incertains sont surlignés en orange – corrigez-les si besoin."
+      ],
+      [
+        "Télécharger la facture électronique",
+        "Après « Tout est correct », vous obtenez le PDF ZUGFeRD ou la XRechnung (XML) et le voyez avant de le télécharger."
+      ]
+    ],
+    "article": [
+      [
+        "Pourquoi un PDF normal n’est pas une facture électronique",
+        "Un PDF issu de Word ou Excel ne contient les données que sous forme de texte sur une page. Une facture électronique les contient en plus sous forme de XML structuré selon EN 16931 – le logiciel comptable du destinataire reprend ainsi automatiquement montant, TVA, IBAN et numéro. À partir de 2027 (plus de 800 000 € de chiffre d’affaires l’année précédente) ou 2028, les entreprises en Allemagne doivent émettre leurs factures B2B nationales sous forme électronique."
+      ],
+      [
+        "Comment fonctionne la conversion",
+        "Le texte de votre facture est lu – par OCR pour les scans et photos. Une IA attribue les informations : qui émet la facture, qui la reçoit, quelles lignes, quels taux de TVA. Ensuite nous vérifions nous-mêmes : les lignes donnent-elles le total indiqué ? Le numéro de facture figure-t-il vraiment dans le document ? L’IBAN est-il valide ?",
+        "Tout ce qui n’est pas clair est surligné. La facture électronique n’est créée qu’après votre confirmation – vous restez responsable du contenu, mais vous n’avez rien à retaper."
+      ],
+      [
+        "Conseils pour un bon résultat",
+        "Les PDF générés directement par un logiciel fonctionnent le mieux. Pour une photo : facture à plat, bonne lumière, page entière visible. Sur la page de confirmation, vérifiez surtout les taux de TVA et les prix unitaires – en particulier si votre facture affiche des prix TTC."
+      ]
+    ],
+    "faq": [
+      [
+        "Puis-je convertir la photo d’une facture ?",
+        "Oui. Les JPG, PNG ou HEIC du téléphone sont lus par OCR. Vérifiez alors les chiffres avec une attention particulière."
+      ],
+      [
+        "Ma facture est-elle enregistrée ?",
+        "Non. Le texte est envoyé à notre serveur et au service d’IA uniquement pour la lecture, puis il n’est pas conservé."
+      ],
+      [
+        "Et si quelque chose est mal détecté ?",
+        "Cliquez sur « Corriger » et modifiez les champs. L’aperçu montre immédiatement le résultat."
+      ],
+      [
+        "ZUGFeRD ou XRechnung ?",
+        "ZUGFeRD (PDF avec données intégrées) pour les clients professionnels, XRechnung pour les administrations."
+      ]
+    ]
+  },
   "pdf-ausfuellbar-machen": {
     guide: "Rendre un PDF remplissable (même scanné)",
     name: "Rendre un PDF remplissable",

@@ -1,5 +1,60 @@
 // English versions of the job application guides (same slugs as German, so hreflang links match)
 module.exports = {
+  "pdf-in-e-rechnung-umwandeln": {
+    "guide": "Convert a PDF invoice into an e-invoice",
+    "name": "Convert PDF to e-invoice",
+    "title": "Convert PDF to e-invoice – ZUGFeRD & XRechnung from PDF, free | PDF Libre",
+    "description": "Convert a PDF invoice into a German e-invoice: upload a PDF, scan or photo, check and confirm the data, download ZUGFeRD PDF or XRechnung. With total check. Free, no sign-up.",
+    "h1": "Convert a PDF invoice into an e-invoice",
+    "lead": "Your existing invoice – as PDF, scan or phone photo – becomes a valid e-invoice according to EN 16931. You see all detected data first and confirm it.",
+    "steps": [
+      [
+        "Upload the invoice",
+        "Click “Upload invoice” above and choose the PDF, scan or photo."
+      ],
+      [
+        "Confirm the data",
+        "You see sender, recipient, items, VAT and total as a preview. Uncertain parts are marked orange – correct them if needed."
+      ],
+      [
+        "Download the e-invoice",
+        "After “All correct” you get the ZUGFeRD PDF or XRechnung (XML) and see it before downloading."
+      ]
+    ],
+    "article": [
+      [
+        "Why a normal PDF is not an e-invoice",
+        "A PDF from Word or Excel only contains the invoice data as text on a page. An e-invoice additionally contains it as structured XML according to EN 16931 – so the recipient’s accounting software can take over amount, VAT, IBAN and invoice number automatically. From 2027 (over €800,000 prior-year turnover) or 2028, businesses in Germany must issue invoices to other domestic businesses as e-invoices."
+      ],
+      [
+        "How the conversion works",
+        "The text of your invoice is read – with OCR for scans and photos. An AI assigns the details: who issues the invoice, who receives it, which items, which VAT rates. Then we check ourselves: do the items add up to the total on your invoice? Is the invoice number really in the document? Is the IBAN valid?",
+        "Anything unclear is highlighted. The e-invoice is only created after your confirmation – you stay responsible for the content, but you don’t have to retype anything."
+      ],
+      [
+        "Tips for a good result",
+        "PDFs created directly by a program work best. For photos: lay the invoice flat, good light, whole page in the picture. On the confirmation page, check the VAT rates and unit prices especially – above all if your invoice shows gross prices."
+      ]
+    ],
+    "faq": [
+      [
+        "Can I convert a photo of an invoice?",
+        "Yes. JPG, PNG or HEIC from your phone are read with OCR. Check the numbers especially carefully."
+      ],
+      [
+        "Is my invoice stored?",
+        "No. The text is only sent to our server and the AI service to read it, and not stored afterwards."
+      ],
+      [
+        "What if something was detected wrongly?",
+        "Click “Correct details” and change the fields. The preview shows the result immediately."
+      ],
+      [
+        "ZUGFeRD or XRechnung?",
+        "ZUGFeRD (PDF with embedded data) for business customers, XRechnung for public authorities."
+      ]
+    ]
+  },
   "pdf-ausfuellbar-machen": {
     guide: "Make a PDF fillable (scanned forms too)",
     name: "Make PDF fillable",

@@ -8,6 +8,34 @@
  *   guide     Linktext im Abschnitt „Ratgeber“ auf der Werkzeugseite
  */
 const landings = [
+  // ------------------------------------------------------------------ E-RECHNUNG
+  {
+    slug: "pdf-in-e-rechnung-umwandeln",
+    base: "e-rechnung-erstellen",
+    guide: "PDF-Rechnung in E-Rechnung umwandeln",
+    name: "PDF in E-Rechnung umwandeln",
+    title: "PDF in E-Rechnung umwandeln – ZUGFeRD & XRechnung aus PDF, kostenlos | PDF Libre",
+    description: "PDF-Rechnung in eine E-Rechnung umwandeln: PDF, Scan oder Foto hochladen, Daten prüfen und bestätigen, ZUGFeRD-PDF oder XRechnung herunterladen. Mit Summenprüfung. Kostenlos, ohne Anmeldung.",
+    h1: "PDF-Rechnung in E-Rechnung umwandeln",
+    lead: "Aus deiner bisherigen Rechnung – als PDF, Scan oder Handyfoto – wird eine gültige E-Rechnung nach EN 16931. Du siehst vorher alle erkannten Daten und bestätigst sie.",
+    steps: [
+      ["Rechnung hochladen", "Klicke oben auf „Rechnung hochladen“ und wähle die PDF, den Scan oder ein Foto der Rechnung."],
+      ["Daten bestätigen", "Du siehst Absender, Empfänger, Positionen, Steuer und Summe als Vorschau. Unsichere Stellen sind orange markiert – korrigiere sie bei Bedarf."],
+      ["E-Rechnung herunterladen", "Nach „Alles korrekt“ bekommst du die ZUGFeRD-PDF oder die XRechnung (XML) und siehst sie vor dem Download."],
+    ],
+    article: [
+      { h: "Warum eine normale PDF keine E-Rechnung ist", p: ["Eine PDF aus Word oder Excel enthält die Rechnungsdaten nur als Text auf einer Seite. Eine E-Rechnung enthält sie zusätzlich strukturiert als XML nach der Norm EN 16931 – so kann die Buchhaltungssoftware des Empfängers Betrag, Steuer, IBAN und Rechnungsnummer automatisch übernehmen. Ab 2027 (mehr als 800.000 € Vorjahresumsatz) bzw. 2028 müssen Unternehmen Rechnungen an andere Unternehmen in Deutschland als E-Rechnung ausstellen."] },
+      { h: "So funktioniert die Umwandlung", p: ["Der Text deiner Rechnung wird ausgelesen – bei Scans und Fotos per Texterkennung. Eine KI ordnet die Angaben zu: Wer stellt die Rechnung, wer bekommt sie, welche Positionen, welche Steuersätze. Danach prüfen wir selbst nach: Ergeben die Positionen die Summe, die auf deiner Rechnung steht? Steht die Rechnungsnummer wirklich im Dokument? Ist die IBAN gültig?", "Alles, was nicht eindeutig ist, wird markiert. Erzeugt wird die E-Rechnung erst nach deiner Bestätigung – die Verantwortung für den Inhalt bleibt bei dir, aber du musst nichts abtippen."] },
+      { h: "Tipps für ein gutes Ergebnis", p: ["Am besten funktionieren PDFs, die direkt aus einem Programm erzeugt wurden. Bei Fotos: Rechnung flach hinlegen, gutes Licht, ganze Seite im Bild. Prüfe auf der Bestätigungsseite besonders die Steuersätze und die Einzelpreise – vor allem, wenn deine Rechnung Bruttopreise enthält."] },
+    ],
+    faq: [
+      ["Kann ich auch ein Foto einer Rechnung umwandeln?", "Ja. JPG, PNG oder HEIC vom Handy werden per Texterkennung gelesen. Prüfe die Zahlen dann besonders genau."],
+      ["Wird meine Rechnung gespeichert?", "Nein. Der Text wird nur zum Auslesen an unseren Server und den KI-Dienst geschickt und danach nicht gespeichert."],
+      ["Was, wenn etwas falsch erkannt wurde?", "Klicke auf „Angaben korrigieren“ und ändere die Felder. Die Vorschau zeigt dir sofort das Ergebnis."],
+      ["ZUGFeRD oder XRechnung?", "Für Geschäftskunden ZUGFeRD (PDF mit eingebetteten Daten), für Behörden die XRechnung."],
+    ],
+    related: ["e-rechnung-erstellen", "e-rechnung-pruefen", "xrechnung-anzeigen", "mahnung-schreiben"],
+  },
   // ------------------------------------------------------------------ BRIEFE
   {
     slug: "kuendigung-schreiben",

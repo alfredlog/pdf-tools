@@ -972,7 +972,28 @@ function invoiceWorkspace(t) {
         ${f(`${who}.city`, "Ort", { req: true })}
         ${f(`${who}.country_code`, "Land (Code)", { small: true, val: "DE", ph: "DE" })}`;
   return `<section class="tool tool--${c}" data-invoice aria-label="${esc(t.name)}">
+    <div class="iv-import" data-import>
+      <div>
+        <p class="iv-import__title">${T("Schon eine Rechnung als PDF oder Foto?")}</p>
+        <p>${T("Lade sie hoch: Die Daten werden mit KI ausgelesen (auch bei Scans) und dir zur Bestätigung gezeigt. Erst danach wird die E-Rechnung erstellt.")}</p>
+      </div>
+      <label class="btn btn--ghost">${ICON.upload}<span>${T("Rechnung hochladen")}</span><input type="file" class="visually-hidden" accept=".pdf,.jpg,.jpeg,.png,.heic,application/pdf,image/*" data-import-file></label>
+      <p class="iv-import__busy" data-import-busy hidden><span class="iv-spin"></span> ${T("Rechnung wird gelesen … das dauert bei Scans etwas länger.")}</p>
+    </div>
+
+    <div class="iv-confirm" data-confirm hidden>
+      <h2>${T("Stimmen diese Angaben?")}</h2>
+      <p>${T("Diese Daten wurden aus deiner Rechnung gelesen und kommen so in die E-Rechnung. Bitte prüfe sie – besonders die markierten Stellen.")}</p>
+      <ul class="iv-warn" data-warnings></ul>
+      <div class="iv-confirm__sheet" data-confirm-sheet></div>
+      <div class="iv-actions">
+        <button type="button" class="btn btn--ghost" data-edit>${T("Angaben korrigieren")}</button>
+        <button type="button" class="btn btn--primary btn--lg" data-confirm-ok>${T("Alles korrekt – E-Rechnung erstellen")}</button>
+      </div>
+    </div>
+
     <form class="iv" novalidate>
+      <div class="iv-layout"><div class="iv-main">
       <fieldset class="iv-box iv-format">
         <legend>${T("Format")}</legend>
         <label class="iv-opt"><input type="radio" name="iv-format" value="pdf" checked> <span><b>${T("ZUGFeRD-PDF")}</b> ${T("– für Firmen und Privatkunden: normale PDF mit eingebetteten Rechnungsdaten")}</span></label>
@@ -1035,6 +1056,11 @@ function invoiceWorkspace(t) {
         <dl class="iv-sum" data-sum></dl>
         <label class="iv-f iv-f--wide"><span>${T("Bemerkung (optional)")}</span><textarea data-k="note" rows="2" placeholder="${T("z. B. Vielen Dank für Ihren Auftrag!")}"></textarea></label>
       </fieldset>
+      </div>
+      <aside class="iv-aside">
+        <p class="iv-aside__title">${T("Vorschau")}</p>
+        <div class="iv-sheet" data-sheet></div>
+      </aside></div>
 
       <div class="iv-missing" data-missing hidden role="alert"></div>
       <div class="iv-actions">
@@ -1048,6 +1074,7 @@ function invoiceWorkspace(t) {
       <div class="done">
         <p class="done__title">${T("Deine E-Rechnung ist fertig!")}</p>
         <p data-done-info></p>
+        <div class="iv-pdf" data-pdf></div>
         <p><a class="btn btn--primary btn--lg" data-download download>${T("Herunterladen")}</a></p>
         <p><button type="button" class="btn btn--link" data-back>${T("Zurück zur Rechnung")}</button> · <button type="button" class="btn btn--link" data-next>${T("Nächste Rechnung")}</button></p>
         <p class="done__next">${T("Weiter mit:")} <a href="${url("e-rechnung-pruefen")}">${esc(bySlug["e-rechnung-pruefen"].name)}</a> · <a href="${url("xrechnung-anzeigen")}">${esc(bySlug["xrechnung-anzeigen"].name)}</a></p>
@@ -1326,7 +1353,8 @@ ${
     return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts });
   }
   if (t.ui.mode === "invoice") {
-    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts: `\n<script src="/assets/invoice.js?v=${BUILD_ID}" defer></script>` });
+    const scripts = ["/vendor/pdf.min.js", `/assets/invoice.js?v=${BUILD_ID}`].map((x) => `\n<script src="${x}" defer></script>`).join("");
+    return page({ title: t.title, description: t.description, slug: t.slug, body, jsonLd, activeSlug: t.slug, scripts });
   }
   if (t.ui.mode === "form") {
     const scripts = ["/vendor/pdf.min.js", "/vendor/pdf-lib.min.js", `/assets/form-detect.js?v=${BUILD_ID}`, `/assets/form.js?v=${BUILD_ID}`].map((s) => `\n<script src="${s}" defer></script>`).join("");
@@ -1845,7 +1873,7 @@ function datenschutz() {
   <h3>Lebenslauf erstellen</h3>
   <p>Beim Lebenslauf-Generator werden deine Eingaben zum Erstellen der Vorschau und der PDF an unseren Server übertragen und direkt danach gelöscht. Dein Entwurf wird zusätzlich nur lokal in deinem Browser (localStorage) gespeichert; du kannst ihn jederzeit mit „Neu beginnen“ löschen. Die heruntergeladene PDF enthält nur den sichtbaren Lebenslauf.</p>
   <h3>KI-Funktionen</h3>
-  <p>Bei den KI-Funktionen (PDF zusammenfassen, PDF übersetzen, Lebenslauf importieren, Rechtschreibprüfung) wird der Text deines Dokuments bzw. deiner Eingaben an einen KI-Dienst übermittelt, der ihn in unserem Auftrag verarbeitet (Auftragsverarbeitung nach Art. 28 DSGVO): ${esc(config.aiProvider || "")}. Der Anbieter verwendet die Daten nach seinen Bedingungen für API-Kunden nicht zum Training seiner Modelle. Eine Übermittlung in Drittländer (z. B. USA) kann nicht ausgeschlossen werden; sie erfolgt auf Grundlage von EU-Standardvertragsklauseln bzw. des EU-US Data Privacy Framework. Wir speichern weder den Text noch das Ergebnis. Nutze die KI-Funktionen nicht, wenn du das nicht möchtest – alle anderen Werkzeuge funktionieren ohne KI.</p>
+  <p>Bei den KI-Funktionen (PDF zusammenfassen, PDF übersetzen, Lebenslauf importieren, Rechtschreibprüfung, Rechnung für die E-Rechnung importieren) wird der Text deines Dokuments bzw. deiner Eingaben an einen KI-Dienst übermittelt, der ihn in unserem Auftrag verarbeitet (Auftragsverarbeitung nach Art. 28 DSGVO): ${esc(config.aiProvider || "")}. Der Anbieter verwendet die Daten nach seinen Bedingungen für API-Kunden nicht zum Training seiner Modelle. Eine Übermittlung in Drittländer (z. B. USA) kann nicht ausgeschlossen werden; sie erfolgt auf Grundlage von EU-Standardvertragsklauseln bzw. des EU-US Data Privacy Framework. Wir speichern weder den Text noch das Ergebnis. Nutze die KI-Funktionen nicht, wenn du das nicht möchtest – alle anderen Werkzeuge funktionieren ohne KI.</p>
 
   <h2>Server-Logdateien</h2>
   <p>Beim Aufruf der Website werden technisch notwendige Daten wie IP-Adresse, Datum und Uhrzeit, aufgerufene Seite und Browsertyp verarbeitet, um die Website auszuliefern und vor Missbrauch zu schützen (Art. 6 Abs. 1 lit. f DSGVO).</p>

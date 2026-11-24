@@ -31,6 +31,10 @@ module.exports = {
     "Oui. ZUGFeRD est créé dans le profil EN 16931 en PDF/A-3, la XRechnung en version 3.0 – les deux sont conformes à la norme européenne EN 16931."
    ],
    [
+    "Puis-je transformer une facture PDF existante en facture électronique ?",
+    "Oui. Déposez le PDF ou une photo de la facture. Les données sont lues, vous les confirmez ou corrigez, puis le PDF ZUGFeRD ou la XRechnung est créé."
+   ],
+   [
     "Les micro-entreprises (§ 19 UStG) doivent-elles émettre des factures électroniques ?",
     "Non, en Allemagne les entreprises en franchise de TVA (§ 19 UStG) sont exemptées. Elles peuvent quand même en émettre si un client le demande."
    ],
@@ -57,6 +61,10 @@ module.exports = {
    "Qu’est-ce qu’une facture électronique – un PDF ne suffit-il pas ?",
    "Une facture électronique est une facture dans un format structuré, lisible par machine, selon la norme européenne EN 16931. Un PDF normal issu de Word ou un scan est une « autre facture » : il a l’air correct, mais le logiciel comptable du destinataire ne peut pas lire les montants automatiquement.",
    "En Allemagne, deux formats sont courants : la XRechnung est un simple fichier XML, obligatoire surtout pour les administrations. ZUGFeRD (Factur-X en France) est un PDF contenant les mêmes données en XML – l’humain lit le PDF, le logiciel lit les données. Les deux répondent aux exigences légales."
+  ],
+  [
+   "Transformer une facture PDF existante en facture électronique",
+   "Vous faites déjà vos factures avec Word, Excel ou un autre logiciel ? Déposez le PDF – ou la photo ou le scan d’une facture papier. Les données sont lues automatiquement (avec OCR pour les scans) et présentées en aperçu pour confirmation. Nous recalculons les totaux et les comparons aux montants de votre PDF, vérifions l’IBAN et surlignons en orange tout ce qui est incertain. La facture électronique n’est créée qu’après votre clic sur « Tout est correct »."
   ],
   [
    "Quand la facture électronique devient-elle obligatoire en Allemagne ?",
@@ -137,7 +145,16 @@ module.exports = {
   "Deine Angaben werden nur zum Erstellen an unseren Server geschickt und nicht gespeichert. „Merken“ speichert sie nur in deinem Browser.": "Vos données sont envoyées à notre serveur uniquement pour créer le fichier et ne sont pas enregistrées. « Mémoriser » les garde seulement dans votre navigateur.",
   "Deine E-Rechnung ist fertig!": "Votre facture électronique est prête !",
   "Zurück zur Rechnung": "Retour à la facture",
-  "Nächste Rechnung": "Facture suivante"
+  "Nächste Rechnung": "Facture suivante",
+  "Schon eine Rechnung als PDF oder Foto?": "Vous avez déjà la facture en PDF ou en photo ?",
+  "Rechnung hochladen": "Déposer une facture",
+  "Rechnung wird gelesen … das dauert bei Scans etwas länger.": "Lecture de la facture … un peu plus long pour un scan.",
+  "Stimmen diese Angaben?": "Ces informations sont-elles correctes ?",
+  "Diese Daten wurden aus deiner Rechnung gelesen und kommen so in die E-Rechnung. Bitte prüfe sie – besonders die markierten Stellen.": "Ces données ont été lues dans votre facture et seront reprises telles quelles dans la facture électronique. Vérifiez-les – surtout les éléments surlignés.",
+  "Angaben korrigieren": "Corriger",
+  "Alles korrekt – E-Rechnung erstellen": "Tout est correct – créer la facture électronique",
+  "Vorschau": "Aperçu",
+  "Lade sie hoch: Die Daten werden mit KI ausgelesen (auch bei Scans) und dir zur Bestätigung gezeigt. Erst danach wird die E-Rechnung erstellt.": "Déposez-la : les données sont lues par IA (même sur un scan) et vous sont présentées pour confirmation. La facture électronique n’est créée qu’ensuite."
  },
  "js": {
   "Summe netto": "Total HT",
@@ -180,6 +197,16 @@ module.exports = {
   "PLZ des Empfängers": "Code postal du destinataire",
   "Ort des Empfängers": "Ville du destinataire",
   "USt-IdNr. oder Steuernummer des Rechnungsstellers": "N° de TVA ou numéro fiscal de l’émetteur",
-  "E-Mail des Empfängers": "E-mail du destinataire"
+  "E-Mail des Empfängers": "E-mail du destinataire",
+  "Die Datei ist größer als 20 MB.": "Le fichier dépasse 20 Mo.",
+  "Die Rechnung konnte nicht gelesen werden. Bitte versuche es noch einmal.": "La facture n’a pas pu être lue. Veuillez réessayer.",
+  "Die Rechnung war gescannt – der Text wurde per Texterkennung gelesen. Prüfe Zahlen besonders genau.": "La facture était scannée – le texte a été lu par OCR. Vérifiez les chiffres avec une attention particulière.",
+  "Die Preise standen in der Rechnung inklusive Umsatzsteuer und wurden in Nettopreise umgerechnet. Bitte prüfe die Beträge.": "Les prix de la facture étaient TTC et ont été convertis en HT. Vérifiez les montants.",
+  "{what}: In der Rechnung steht {found} €, aus den Positionen ergeben sich {computed} €. Bitte prüfe die Positionen.": "{what} : la facture indique {found} €, les lignes donnent {computed} €. Vérifiez les lignes.",
+  "Nettobetrag": "Total HT",
+  "Die Rechnungsnummer wurde so nicht im Dokument gefunden.": "Ce numéro de facture n’a pas été trouvé dans le document.",
+  "Die IBAN wurde so nicht im Dokument gefunden.": "Cet IBAN n’a pas été trouvé dans le document.",
+  "Die IBAN hat eine ungültige Prüfziffer – bitte vergleiche sie mit der Rechnung.": "L’IBAN a une clé de contrôle invalide – comparez-le avec la facture.",
+  "Es wurden keine Positionen erkannt. Bitte trage sie ein.": "Aucune ligne n’a été détectée. Veuillez les saisir."
  }
 };

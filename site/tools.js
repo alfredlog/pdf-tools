@@ -1204,6 +1204,13 @@ const tools = [
         ],
       },
       {
+        h: "Vorhandene PDF-Rechnung in eine E-Rechnung umwandeln",
+        p: [
+          "Du schreibst deine Rechnungen schon mit Word, Excel oder einem anderen Programm? Dann lade einfach die PDF hoch – oder ein Foto bzw. einen Scan einer Papierrechnung. Die Daten werden automatisch ausgelesen (bei Scans mit Texterkennung) und dir als Vorschau zur Bestätigung gezeigt.",
+          "Dabei rechnen wir die Summen nach und vergleichen sie mit den Beträgen in deiner PDF, prüfen die IBAN und markieren unsichere Stellen orange. Erst wenn du auf „Alles korrekt“ klickst, wird die E-Rechnung erzeugt – so landet nie eine falsch gelesene Zahl ungeprüft in einer Rechnung.",
+        ],
+      },
+      {
         h: "Ab wann ist die E-Rechnung Pflicht?",
         p: [
           "Seit dem 1. Januar 2025 müssen alle Unternehmen in Deutschland E-Rechnungen empfangen können. Ausstellen müssen sie Unternehmen mit mehr als 800.000 € Vorjahresumsatz ab dem 1. Januar 2027 für Rechnungen an andere Unternehmen im Inland, ab dem 1. Januar 2028 gilt die Pflicht für alle übrigen Unternehmen.",
@@ -1233,6 +1240,7 @@ const tools = [
     ],
     faq: [
       ["Ist das Erstellen der E-Rechnung kostenlos?", "Ja, kostenlos und ohne Anmeldung, auch für mehrere Rechnungen."],
+      ["Kann ich eine vorhandene PDF-Rechnung in eine E-Rechnung umwandeln?", "Ja. Lade die PDF oder ein Foto der Rechnung hoch. Die Daten werden ausgelesen, du bestätigst oder korrigierst sie, dann wird die ZUGFeRD-PDF oder XRechnung erstellt."],
       ["Ist die Rechnung eine gültige E-Rechnung?", "Ja. ZUGFeRD wird im Profil EN 16931 als PDF/A-3 erstellt, die XRechnung in Version 3.0 – beide entsprechen der europäischen Norm EN 16931."],
       ["Muss ich als Kleinunternehmer E-Rechnungen schreiben?", "Nein, Kleinunternehmer nach § 19 UStG sind von der Pflicht ausgenommen. Du darfst aber trotzdem E-Rechnungen ausstellen – manche Kunden wünschen das."],
       ["Wo bekomme ich die Leitweg-ID?", "Die Leitweg-ID teilt dir die Behörde mit, meist in der Bestellung oder im Auftrag. Ohne Leitweg-ID kannst du eine Bestellnummer eintragen."],

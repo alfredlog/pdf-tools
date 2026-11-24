@@ -240,6 +240,119 @@ function normalizeCv(j) {
   };
 }
 
+
+// ------------------------------------------------------------------ Rechnungs-Import
+const INVOICE_IMPORT_PROMPT = `Du liest den Text einer Rechnung (evtl. aus Texterkennung, mit Fehlern) und gibst NUR die Daten zurück, die wirklich im Text stehen.
+Erfinde nichts. Fehlt etwas, lass das Feld leer ("") bzw. null.
+Rechnungssteller (seller) = wer die Rechnung schreibt und das Geld bekommt (meist Briefkopf, Fußzeile mit IBAN/Steuernummer).
+Rechnungsempfänger (buyer) = an wen die Rechnung adressiert ist (Anschriftfeld).
+Antworte als JSON:
+{
+ "type": "invoice" | "credit_note",
+ "number": "", "issue_date": "YYYY-MM-DD", "delivery_date": "YYYY-MM-DD oder leer", "due_date": "YYYY-MM-DD oder leer", "due_days": Zahl oder null,
+ "buyer_reference": "Leitweg-ID oder Bestellnummer, falls angegeben",
+ "seller": {"name":"","street":"","postal_code":"","city":"","country_code":"DE","vat_id":"","tax_number":"","email":"","contact_name":"","phone":""},
+ "buyer": {"name":"","street":"","postal_code":"","city":"","country_code":"DE","email":""},
+ "iban": "", "bic": "",
+ "small_business": true nur wenn die Rechnung auf § 19 UStG / Kleinunternehmer hinweist,
+ "prices_are_gross": true wenn die Einzelpreise der Positionen INKLUSIVE Umsatzsteuer angegeben sind,
+ "lines": [{"name":"", "quantity": Zahl, "unit": "Stück|Stunde|Tag|Monat|kg|Pauschale", "unit_price": Zahl (Preis pro Einheit wie im Dokument), "vat_rate": 19|7|0}],
+ "totals": {"net": Zahl oder null, "vat": Zahl oder null, "gross": Zahl oder null},
+ "note": "kurzer Hinweistext der Rechnung, falls vorhanden (z. B. Dank, Leistungszeitraum)",
+ "uncertain": ["Liste der Felder, bei denen du unsicher bist, z. B. 'seller.street', 'lines.2.unit_price'"]
+}
+Zahlen als JSON-Zahlen mit Punkt (1234.5). Ländercodes nach ISO (DE, AT, FR …). Rechnungsnummer genau wie gedruckt.`;
+
+const UNIT = { "stück": "C62", stk: "C62", stunde: "HUR", std: "HUR", h: "HUR", tag: "DAY", monat: "MON", kg: "KGM", pauschale: "LS", pauschal: "LS" };
+const round2 = (x) => Math.round((x + Math.sign(x) * Number.EPSILON) * 100) / 100;
+const numOf = (v) => {
+  if (typeof v === "number") return isFinite(v) ? v : NaN;
+  let s = String(v ?? "").replace(/[\s€]/g, "");
+  if (s.includes(",")) s = s.replace(/\.(?=\d{3}\b)/g, "").replace(",", ".");
+  return s ? Number(s) : NaN;
+};
+const istr = (v, n = 200) => (typeof v === "string" ? v.trim().slice(0, n) : typeof v === "number" ? String(v) : "");
+const isDate = (v) => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+
+// KI-Ergebnis → Entwurf für das Formular + Warnungen für die Bestätigungsseite
+function checkInvoice(raw, text) {
+  const party = (p = {}, keys) => Object.fromEntries(keys.map((k) => [k, istr(p[k])]));
+  const sellerKeys = ["name", "street", "postal_code", "city", "country_code", "vat_id", "tax_number", "email", "contact_name", "phone"];
+  const draft = {
+    type_code: raw.type === "credit_note" ? "381" : "380",
+    number: istr(raw.number, 60),
+    issue_date: isDate(raw.issue_date) ? raw.issue_date : "",
+    delivery_date: isDate(raw.delivery_date) ? raw.delivery_date : "",
+    due_days: 14,
+    buyer_reference: istr(raw.buyer_reference, 80),
+    seller: party(raw.seller, sellerKeys),
+    buyer: party(raw.buyer, ["name", "street", "postal_code", "city", "country_code", "email"]),
+    iban: istr(raw.iban, 40).replace(/\s+/g, ""),
+    bic: istr(raw.bic, 20).replace(/\s+/g, ""),
+    small_business: raw.small_business === true,
+    note: istr(raw.note, 500),
+    lines: [],
+  };
+  for (const p of [draft.seller, draft.buyer]) p.country_code = (p.country_code || "DE").toUpperCase().slice(0, 2);
+  if (isDate(raw.due_date) && draft.issue_date) {
+    const d = Math.round((new Date(raw.due_date) - new Date(draft.issue_date)) / 86400000);
+    if (d >= 0 && d < 400) draft.due_days = d;
+  } else if (Number.isInteger(raw.due_days) && raw.due_days >= 0 && raw.due_days < 400) draft.due_days = raw.due_days;
+
+  const warnings = [];
+  for (const l of (Array.isArray(raw.lines) ? raw.lines : []).slice(0, 100)) {
+    const name = istr(l.name, 300);
+    let q = numOf(l.quantity), price = numOf(l.unit_price);
+    const rate = draft.small_business ? 0 : [19, 7, 0].includes(numOf(l.vat_rate)) ? numOf(l.vat_rate) : 19;
+    if (!name && isNaN(price)) continue;
+    if (isNaN(q) || q === 0) q = 1;
+    if (raw.prices_are_gross === true && !isNaN(price) && rate) price = Math.round((price / (1 + rate / 100)) * 10000) / 10000; // Brutto → Netto
+    draft.lines.push({ name, quantity: String(q), unit_code: UNIT[String(l.unit || "").toLowerCase()] || "C62", unit_price: isNaN(price) ? "" : String(price), vat_rate: String(rate) });
+  }
+  if (raw.prices_are_gross === true) warnings.push({ field: "lines", text: "Die Preise standen in der Rechnung inklusive Umsatzsteuer und wurden in Nettopreise umgerechnet. Bitte prüfe die Beträge." });
+
+  // Summen nachrechnen (gleiche Rundung wie der E-Rechnung-Dienst) und mit der Rechnung vergleichen
+  const groups = new Map();
+  let net = 0;
+  for (const l of draft.lines) {
+    const n = round2(numOf(l.quantity) * (numOf(l.unit_price) || 0));
+    net += n;
+    groups.set(l.vat_rate, (groups.get(l.vat_rate) || 0) + n);
+  }
+  let vat = 0;
+  for (const [r, b] of groups) vat += round2((b * Number(r)) / 100);
+  const computed = { net: round2(net), vat: round2(vat), gross: round2(net + vat) };
+  const found = { net: numOf(raw.totals?.net), vat: numOf(raw.totals?.vat), gross: numOf(raw.totals?.gross) };
+  for (const k of ["gross", "net"]) {
+    if (!isNaN(found[k]) && Math.abs(found[k] - computed[k]) > 0.02) {
+      // Text mit Platzhaltern, damit der Browser ihn übersetzen kann
+      warnings.push({ field: "totals", text: "{what}: In der Rechnung steht {found} €, aus den Positionen ergeben sich {computed} €. Bitte prüfe die Positionen.", vars: { what: k === "gross" ? "Gesamtbetrag" : "Nettobetrag", found: found[k].toFixed(2), computed: computed[k].toFixed(2) } });
+      break;
+    }
+  }
+
+  // Steht das wirklich im Dokument? (Ziffern/Buchstaben ohne Leerzeichen vergleichen)
+  // Texterkennung verwechselt oft O/0 und I/l/1 → beide Seiten gleich vereinfachen
+  const norm = (x) => String(x).replace(/[\s.\-/]/g, "").toUpperCase().replace(/O/g, "0").replace(/[IL]/g, "1");
+  const flat = norm(text);
+  const inText = (v) => !v || flat.includes(norm(v));
+  if (draft.number && !inText(draft.number)) warnings.push({ field: "number", text: "Die Rechnungsnummer wurde so nicht im Dokument gefunden." });
+  if (draft.iban && !inText(draft.iban)) warnings.push({ field: "iban", text: "Die IBAN wurde so nicht im Dokument gefunden." });
+  if (draft.iban && !ibanOk(draft.iban)) warnings.push({ field: "iban", text: "Die IBAN hat eine ungültige Prüfziffer – bitte vergleiche sie mit der Rechnung." });
+  if (!draft.lines.length) warnings.push({ field: "lines", text: "Es wurden keine Positionen erkannt. Bitte trage sie ein." });
+
+  const uncertain = (Array.isArray(raw.uncertain) ? raw.uncertain : []).filter((u) => typeof u === "string").slice(0, 30);
+  return { draft, computed, found: Object.fromEntries(Object.entries(found).map(([k, v]) => [k, isNaN(v) ? null : v])), warnings, uncertain };
+}
+function ibanOk(iban) {
+  const s = iban.toUpperCase();
+  if (!/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(s)) return false;
+  const moved = (s.slice(4) + s.slice(0, 4)).replace(/[A-Z]/g, (c) => String(c.charCodeAt(0) - 55));
+  let rest = 0;
+  for (const ch of moved) rest = (rest * 10 + Number(ch)) % 97;
+  return rest === 1;
+}
+
 module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert }) {
   const r = express.Router();
   const script = path.join(__dirname, "..", "pdf_ai.py");
@@ -429,6 +542,47 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
         throw new ApiError("Der Lebenslauf konnte nicht gelesen werden. Bitte versuche es noch einmal.", 502);
       }
       res.json({ data: normalizeCv(parsed), source: "ai" });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // ------------------------------------------------------------------ Rechnung (PDF/Foto) → Daten für „E-Rechnung erstellen“
+  // Text auslesen (gescannt/Foto → Texterkennung), KI liest die Rechnungsdaten als JSON.
+  // Danach prüfen wir selbst: Summen nachrechnen, Rechnungsnummer/IBAN/Beträge im Originaltext suchen.
+  // Ergebnis geht zur Bestätigung an den Nutzer – erzeugt wird die E-Rechnung erst nach seinem OK.
+  r.post("/invoice-import", jobDir, uploader("invoicedoc"), cvReady, cvLimiter, async (req, res, next) => {
+    try {
+      const [file] = requireFiles(req);
+      let pdf = file.path;
+      if (!/\.pdf$/i.test(file.path)) {
+        pdf = path.join(req.jobDir, "photo.pdf");
+        await run(PYTHON, [moreScript, "images", pdf, file.path]);
+      }
+      const textFile = path.join(req.jobDir, "text.json");
+      let { pages } = await pythonJson(["text", pdf, textFile], textFile);
+      let text = pages.slice(0, 6).join("\n\n").replace(/[ \t]+/g, " ").trim();
+      let ocr = false;
+      if (text.replace(/\s/g, "").length < 80) {
+        const out = path.join(req.jobDir, "ocr.pdf");
+        try {
+          await run(PYTHON, [moreScript, "ocr", pdf, out, "deu+eng"], { timeout: 4 * 60 * 1000 });
+          ({ pages } = await pythonJson(["text", out, textFile], textFile));
+          text = pages.slice(0, 6).join("\n\n").replace(/[ \t]+/g, " ").trim();
+          ocr = true;
+        } catch {
+          /* Texterkennung nicht möglich */
+        }
+      }
+      if (text.replace(/\s/g, "").length < 60) throw new ApiError("In dieser Datei wurde kaum Text gefunden. Ist die Rechnung ein unscharfes Foto? Versuche einen Scan oder eine bessere Aufnahme.", 422);
+      const content = await chat([{ role: "system", content: INVOICE_IMPORT_PROMPT }, { role: "user", content: text.slice(0, 24000) }], { json: true, maxTokens: 3000, strong: true });
+      let raw;
+      try {
+        raw = JSON.parse(content);
+      } catch {
+        throw new ApiError("Die Rechnung konnte nicht gelesen werden. Bitte versuche es noch einmal.", 502);
+      }
+      res.json({ ...checkInvoice(raw, text), ocr });
     } catch (e) {
       next(e);
     }
