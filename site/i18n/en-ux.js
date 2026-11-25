@@ -10,7 +10,8 @@ module.exports = {
   "Die Datei wird nicht hochgeladen": "The file is not uploaded",
   "Im Browser": "In browser",
   "Als App installieren": "Install as app",
-  "Design: Automatisch": "Design: auto"
+  "Design: Automatisch": "Design: auto",
+  "Dunkles Design ein/aus": "Dark design on/off"
  },
  "js": {
   "Die Datei „{name}“ passt nicht zu diesem Werkzeug.": "The file “{name}” doesn’t fit this tool.",

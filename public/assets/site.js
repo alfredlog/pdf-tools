@@ -356,20 +356,18 @@
   }));
   window.addEventListener("appinstalled", () => installBtns.forEach((b) => (b.hidden = true)));
 
-  // ------------------------------------------------------------------ Design: Automatisch → Hell → Dunkel
-  const themeBtn = document.querySelector("[data-theme-toggle]");
-  if (themeBtn) {
-    // Standard ist hell; dunkel nur, wenn man es hier wählt
-    const label = { "": tr("Design: Hell"), light: tr("Design: Hell"), dark: tr("Design: Dunkel") };
-    const cur = () => document.documentElement.dataset.theme || "";
-    themeBtn.textContent = label[cur()];
-    themeBtn.addEventListener("click", () => {
-      const next = cur() === "dark" ? "" : "dark";
-      if (next) document.documentElement.dataset.theme = next; else delete document.documentElement.dataset.theme;
-      try { next ? localStorage.setItem("pl_theme", next) : localStorage.removeItem("pl_theme"); } catch (_) {}
-      themeBtn.textContent = label[next];
+  // ------------------------------------------------------------------ Hell / Dunkel (Knopf oben neben der Sprache)
+  // Standard ist hell; die Wahl wird im Browser gemerkt (das Skript im <head> setzt sie vor dem Zeichnen)
+  document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+    const sync = () => btn.setAttribute("aria-pressed", String(document.documentElement.dataset.theme === "dark"));
+    sync();
+    btn.addEventListener("click", () => {
+      const dark = document.documentElement.dataset.theme !== "dark";
+      if (dark) document.documentElement.dataset.theme = "dark"; else delete document.documentElement.dataset.theme;
+      try { dark ? localStorage.setItem("pl_theme", "dark") : localStorage.removeItem("pl_theme"); } catch (_) {}
+      document.querySelectorAll("[data-theme-toggle]").forEach((b) => b.setAttribute("aria-pressed", String(dark)));
     });
-  }
+  });
 
   // ------------------------------------------------------------------ Handy: Hauptknopf unten fixieren
   // Der wichtigste Knopf des aktuellen Schritts (z. B. „Komprimieren“, „Herunterladen“) erscheint als Leiste

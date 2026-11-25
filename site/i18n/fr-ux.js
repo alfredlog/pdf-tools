@@ -10,7 +10,8 @@ module.exports = {
   "Die Datei wird nicht hochgeladen": "Le fichier n’est pas envoyé",
   "Im Browser": "Dans le navigateur",
   "Als App installieren": "Installer l’application",
-  "Design: Automatisch": "Thème : automatique"
+  "Design: Automatisch": "Thème : automatique",
+  "Dunkles Design ein/aus": "Mode sombre activé/désactivé"
  },
  "js": {
   "Die Datei „{name}“ passt nicht zu diesem Werkzeug.": "Le fichier « {name} » ne convient pas à cet outil.",
