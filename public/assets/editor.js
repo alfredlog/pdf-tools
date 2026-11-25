@@ -147,7 +147,7 @@
   };
 
   const signMode = root.hasAttribute("data-sign"); // „PDF unterschreiben“: alles im Browser, kostenlos
-  const defaults = { font: "helv", size: 16, color: "#16213d", bold: false, italic: false, stroke: "#2b4bdb", fill: "#ffffff", nofill: true, strokeWidth: 2, opacity: 100 };
+  const defaults = { font: "helv", size: 16, color: "#1a1d2b", bold: false, italic: false, stroke: "#1e2f6b", fill: "#ffffff", nofill: true, strokeWidth: 2, opacity: 100 };
 
   root.__editor = state; // für Tests und Fehlersuche in der Browser-Konsole
 
@@ -161,8 +161,8 @@
   Object.assign(fabric.Object.prototype, {
     transparentCorners: false,
     cornerColor: "#ffffff",
-    cornerStrokeColor: "#2b4bdb",
-    borderColor: "#2b4bdb",
+    cornerStrokeColor: "#1e2f6b",
+    borderColor: "#1e2f6b",
     cornerStyle: "circle",
     cornerSize: 11,
     touchCornerSize: 28,
@@ -304,7 +304,7 @@
     const canvas = new fabric.Canvas(el.querySelector(".ed-page__fab"), {
       preserveObjectStacking: true,
       selectionColor: "rgba(43,75,219,.08)",
-      selectionBorderColor: "#2b4bdb",
+      selectionBorderColor: "#1e2f6b",
       enableRetinaScaling: true,
       stopContextMenu: true,
     });
@@ -529,8 +529,8 @@
       opacity: defaults.opacity / 100,
       strokeWidth: 0,
       lineHeight: 1.16,
-      editingBorderColor: "#2b4bdb",
-      cursorColor: "#2b4bdb",
+      editingBorderColor: "#1e2f6b",
+      cursorColor: "#1e2f6b",
       data: opts.orig ? { kind: "text", font: "orig", orig: opts.orig } : { kind: "text", font },
     });
   }

@@ -340,21 +340,30 @@
     // sofort registrieren (nicht erst bei „load“ – das kann sich durch langsame Werbe-/Statistik-Skripte stark verzögern)
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   }
+  // Knopf oben ist immer da: bietet der Browser die Installation an (Chrome/Edge), startet sie direkt,
+  // sonst erscheint eine kurze Anleitung für das eigene Gerät. In der installierten App wird er ausgeblendet.
   let installEvent = null;
-  const installBtns = document.querySelectorAll("[data-install]");
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault(); // eigenen Knopf zeigen statt der Browser-Leiste
-    installEvent = e;
-    installBtns.forEach((b) => (b.hidden = false));
-  });
-  installBtns.forEach((b) => b.addEventListener("click", async () => {
-    if (!installEvent) return;
-    installEvent.prompt();
-    await installEvent.userChoice.catch(() => {});
-    installEvent = null;
-    installBtns.forEach((x) => (x.hidden = true));
+  const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const openBtns = document.querySelectorAll("[data-install-open]");
+  if (standalone) openBtns.forEach((b) => (b.hidden = true));
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvent = e; });
+  window.addEventListener("appinstalled", () => openBtns.forEach((b) => (b.hidden = true)));
+  const dlg = document.querySelector("[data-install-dlg]");
+  openBtns.forEach((b) => b.addEventListener("click", async () => {
+    if (installEvent) {
+      installEvent.prompt();
+      await installEvent.userChoice.catch(() => {});
+      installEvent = null;
+      return;
+    }
+    if (!dlg) return;
+    const ua = navigator.userAgent;
+    const platform = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1) ? "ios" : /Android/.test(ua) ? "android" : /Firefox/.test(ua) ? "firefox" : "desktop";
+    dlg.querySelectorAll("[data-platform]").forEach((li) => li.classList.toggle("is-mine", li.dataset.platform === platform));
+    const mine = dlg.querySelector(".is-mine");
+    if (mine) mine.parentNode.prepend(mine);
+    dlg.showModal();
   }));
-  window.addEventListener("appinstalled", () => installBtns.forEach((b) => (b.hidden = true)));
 
   // ------------------------------------------------------------------ Hell / Dunkel (Knopf oben neben der Sprache)
   // Standard ist hell; die Wahl wird im Browser gemerkt (das Skript im <head> setzt sie vor dem Zeichnen)

@@ -11,7 +11,19 @@ module.exports = {
   "Im Browser": "Dans le navigateur",
   "Als App installieren": "Installer l’application",
   "Design: Automatisch": "Thème : automatique",
-  "Dunkles Design ein/aus": "Mode sombre activé/désactivé"
+  "Dunkles Design ein/aus": "Mode sombre activé/désactivé",
+  "App installieren": "Installer l’app",
+  "PDF Libre als App installieren": "Installer PDF Libre comme une app",
+  "Dann öffnest du PDF Libre wie eine App vom Startbildschirm – und kannst auf dem Handy Dateien direkt über „Teilen“ an PDF Libre schicken.": "Vous ouvrez alors PDF Libre comme une app depuis l’écran d’accueil – et sur téléphone, vous envoyez vos fichiers directement à PDF Libre via « Partager ».",
+  "Android (Chrome)": "Android (Chrome)",
+  "Menü ⋮ oben rechts → „App installieren“ oder „Zum Startbildschirm hinzufügen“.": "Menu ⋮ en haut à droite → « Installer l’application » ou « Ajouter à l’écran d’accueil ».",
+  "iPhone und iPad (Safari)": "iPhone et iPad (Safari)",
+  "Teilen-Symbol (Quadrat mit Pfeil) → „Zum Home-Bildschirm“.": "Icône Partager (carré avec flèche) → « Sur l’écran d’accueil ».",
+  "Computer (Chrome oder Edge)": "Ordinateur (Chrome ou Edge)",
+  "In der Adressleiste auf das Symbol „Installieren“ (Bildschirm mit Pfeil) klicken – oder Menü ⋮ → „Streamen, speichern und teilen“ → „Seite als App installieren“.": "Cliquez sur l’icône « Installer » (écran avec flèche) dans la barre d’adresse – ou menu ⋮ → « Caster, enregistrer et partager » → « Installer la page en tant qu’application ».",
+  "Firefox": "Firefox",
+  "Firefox kann Web-Apps auf dem Computer nicht installieren. Nutze dafür Chrome oder Edge – auf Android geht es auch mit Firefox über das Menü.": "Firefox ne sait pas installer d’applications web sur ordinateur. Utilisez Chrome ou Edge – sur Android, Firefox le permet via le menu.",
+  "Verstanden": "Compris"
  },
  "js": {
   "Die Datei „{name}“ passt nicht zu diesem Werkzeug.": "Le fichier « {name} » ne convient pas à cet outil.",

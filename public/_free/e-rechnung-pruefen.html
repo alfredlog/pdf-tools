@@ -10,7 +10,7 @@
   <link rel="alternate" hreflang="en" href="https://pdf-libre.de/en/e-rechnung-pruefen.html">
   <link rel="alternate" hreflang="fr" href="https://pdf-libre.de/fr/e-rechnung-pruefen.html">
   <link rel="alternate" hreflang="x-default" href="https://pdf-libre.de/e-rechnung-pruefen.html">
-  <meta name="theme-color" content="#2b4bdb">
+  <meta name="theme-color" content="#1e2f6b">
   <script>try{var t=localStorage.getItem("pl_theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="PDF Libre">
@@ -28,7 +28,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=6d367911">
+  <link rel="stylesheet" href="/assets/style.css?v=cf91aabe">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"E-Rechnung prüfen – PDF Libre","url":"https://pdf-libre.de/e-rechnung-pruefen.html","description":"E-Rechnung online prüfen: XRechnung oder ZUGFeRD hochladen, Beträge, Umsatzsteuer, Pflichtangaben und IBAN werden kontrolliert. Prüfbericht als PDF. Kostenlos.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"E-Rechnung prüfen","item":"https://pdf-libre.de/e-rechnung-pruefen.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ersetzt das die Prüfung durch meinen Steuerberater?","acceptedAnswer":{"@type":"Answer","text":"Nein. Das Werkzeug findet formale und rechnerische Fehler. Ob eine Rechnung steuerlich korrekt ist, beurteilt dein Steuerberater."}},{"@type":"Question","name":"Kann ich auch eine normale PDF-Rechnung prüfen?","acceptedAnswer":{"@type":"Answer","text":"Nein. Eine normale PDF enthält keine strukturierten Daten. Unterstützt werden XRechnung (XML) und ZUGFeRD-/Factur-X-PDFs."}},{"@type":"Question","name":"Was bedeutet „Hinweis“ im Bericht?","acceptedAnswer":{"@type":"Answer","text":"Ein Hinweis ist kein Fehler, sollte aber angeschaut werden – zum Beispiel eine fehlende Steuernummer oder eine Rundungsdifferenz."}},{"@type":"Question","name":"Werden meine Rechnungen gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Datei wird nur für die Prüfung auf unserem Server in Deutschland verwendet und danach sofort gelöscht."}}]}</script>
@@ -53,7 +53,9 @@
       <a href="/docx-to-pdf.html">Word in PDF</a>
     </nav>
     
-    <div class="hdr-tools"><button type="button" class="themesw" data-theme-toggle aria-label="Dunkles Design ein/aus" title="Dunkles Design ein/aus">
+    <div class="hdr-tools"><button type="button" class="themesw" data-install-open aria-label="App installieren" title="App installieren">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7m0 0-3-3m3 3 3-3M10 18h4"/></svg>
+    </button><button type="button" class="themesw" data-theme-toggle aria-label="Dunkles Design ein/aus" title="Dunkles Design ein/aus">
       <svg class="themesw__moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
       <svg class="themesw__sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
     </button>
@@ -331,11 +333,24 @@
     </div>
     <div class="site-footer__legal">
       <p>© <span data-year>2026</span> PDF Libre · Entwickelt von <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
-      <p><a href="/ueber-uns.html">Über uns</a><a href="/ueber-uns.html#kontakt">Kontakt</a><a href="/impressum.html">Impressum</a><a href="/Datenschutz.html">Datenschutz</a><a href="#" data-consent-settings>Datenschutzeinstellungen</a><button type="button" class="linkbtn" data-install hidden>Als App installieren</button></p>
+      <p><a href="/ueber-uns.html">Über uns</a><a href="/ueber-uns.html#kontakt">Kontakt</a><a href="/impressum.html">Impressum</a><a href="/Datenschutz.html">Datenschutz</a><a href="#" data-consent-settings>Datenschutzeinstellungen</a></p>
     </div>
   </div>
 </footer>
-<script src="/assets/site.js?v=6d367911" defer></script>
-<script src="/assets/tool.js?v=6d367911" defer></script>
+<dialog class="install-dlg" data-install-dlg aria-labelledby="install-title">
+  <form method="dialog">
+    <h2 id="install-title">PDF Libre als App installieren</h2>
+    <p>Dann öffnest du PDF Libre wie eine App vom Startbildschirm – und kannst auf dem Handy Dateien direkt über „Teilen“ an PDF Libre schicken.</p>
+    <ol class="install-dlg__list">
+      <li data-platform="android"><b>Android (Chrome)</b><span>Menü ⋮ oben rechts → „App installieren“ oder „Zum Startbildschirm hinzufügen“.</span></li>
+      <li data-platform="ios"><b>iPhone und iPad (Safari)</b><span>Teilen-Symbol (Quadrat mit Pfeil) → „Zum Home-Bildschirm“.</span></li>
+      <li data-platform="desktop"><b>Computer (Chrome oder Edge)</b><span>In der Adressleiste auf das Symbol „Installieren“ (Bildschirm mit Pfeil) klicken – oder Menü ⋮ → „Streamen, speichern und teilen“ → „Seite als App installieren“.</span></li>
+      <li data-platform="firefox"><b>Firefox</b><span>Firefox kann Web-Apps auf dem Computer nicht installieren. Nutze dafür Chrome oder Edge – auf Android geht es auch mit Firefox über das Menü.</span></li>
+    </ol>
+    <button class="btn btn--primary" value="ok">Verstanden</button>
+  </form>
+</dialog>
+<script src="/assets/site.js?v=cf91aabe" defer></script>
+<script src="/assets/tool.js?v=cf91aabe" defer></script>
 </body>
 </html>

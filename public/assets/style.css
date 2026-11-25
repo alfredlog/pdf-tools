@@ -10,29 +10,29 @@
 @font-face { font-family: "Source Sans 3"; src: url("/fonts/source-sans-3-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 
 :root {
-  --bg: #f3f5f9;
+  --bg: #f7f4ee;
   --surface: #ffffff;
-  --ink: #16213d;
-  --ink-2: #4a5470;
-  --ink-3: #6b7490;
-  --line: #dde2ec;
-  --line-2: #c8cfdd;
-  --brand: #2b4bdb;
-  --brand-ink: #1e37a8;
-  --brand-tint: #e8edff;
+  --ink: #1a1d2b;
+  --ink-2: #45485a;
+  --ink-3: #5f6070;
+  --line: #e4ddd0;
+  --line-2: #d3cabb;
+  --brand: #1e2f6b;
+  --brand-ink: #14204d;
+  --brand-tint: #e6e9f4;
   --danger: #c7322b;
   --danger-tint: #fdecea;
   --ok: #13906a;
 
-  --c-organize: #d9541e;
-  --c-optimize: #13906a;
-  --c-topdf: #2f62d8;
-  --c-frompdf: #7447d1;
-  --c-edit: #c23b78;
-  --c-security: #243152;
-  --c-ai: #0f7c8c;
-  --c-erechnung: #0e7c74;
-  --c-career: #7c3aed;
+  --c-organize: #c4572a;
+  --c-optimize: #2e8a63;
+  --c-topdf: #2f55b8;
+  --c-frompdf: #6a4bb5;
+  --c-edit: #b23f6e;
+  --c-security: #3a4766;
+  --c-ai: #1f7f8c;
+  --c-erechnung: #1d7a6f;
+  --c-career: #6b3fb0;
 
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -42,6 +42,8 @@
   --r-lg: 16px;
   --shadow: 0 1px 2px rgba(22, 33, 61, 0.06), 0 6px 20px -8px rgba(22, 33, 61, 0.14);
   --wrap: 1180px;
+  /* Palette „Ivoire et bleu nuit“: Elfenbein-Papier, Schrift in Tinte, Nachtblau als Marke, Bernstein für Hinweise */
+  --amber: #c7841a; --amber-tint: #fbeed6; --amber-ink: #7a4a08;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -1084,7 +1086,7 @@ textarea.fm-field { padding-top: 2px; }
 .search-empty { padding: 14px; text-align: center; background: var(--surface); border: 1px dashed var(--line-2); border-radius: var(--r); }
 .tcard__badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .tbadge { font-size: .7rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; }
-.tbadge--local { background: #e8f6ee; color: #1f7a3d; }
+.tbadge--local { background: var(--amber-tint); color: var(--amber-ink); }
 .tbadge--ai { background: #f1ebff; color: #6a3fc8; }
 .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 100; padding: 10px 18px; background: #1b2236; color: #fff; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,.25); font-weight: 600; transition: opacity .5s; }
 .toast.is-out { opacity: 0; }
@@ -1118,7 +1120,7 @@ body.has-mbar .toast { bottom: 90px; }
 /* Links ohne Leerzeichen dazwischen → als umbrechende Zeile anordnen (sonst zu breit auf dem Handy) */
 .site-footer__legal p { display: flex; flex-wrap: wrap; gap: 8px 18px; min-width: 0; }
 .site-footer__legal a + a, .site-footer__legal .linkbtn { margin-left: 0; }
-html[data-theme="dark"] .langhint { background: #2b4bdb; }
+html[data-theme="dark"] .langhint { background: #2a3a7a; }
 
 /* Hell/Dunkel-Knopf oben */
 .themesw { display: inline-grid; place-items: center; width: 34px; height: 34px; margin-right: 6px; padding: 0; border: 1px solid var(--line); border-radius: var(--r-sm); background: none; color: var(--ink); cursor: pointer; }
@@ -1129,5 +1131,15 @@ html[data-theme="dark"] .themesw__moon { display: none; }
 /* Dunkel: Fußzeile und Pro-Band als tiefe Tinte statt cremefarbener Fläche */
 html[data-theme="dark"] .site-footer { background: #12100d; }
 html[data-theme="dark"] .pro-band { background: #12100d; }
-html[data-theme="dark"] .langhint { background: #2b4bdb; }
+html[data-theme="dark"] .langhint { background: #2a3a7a; }
 .hdr-tools { display: flex; align-items: center; gap: 6px; } .hdr-tools .themesw { margin-right: 0; }
+/* Anleitung „App installieren“ */
+.install-dlg { max-width: 460px; width: calc(100% - 32px); padding: 22px 22px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.install-dlg::backdrop { background: rgba(20, 18, 14, .45); }
+.install-dlg h2 { margin: 0 0 8px; font-size: 1.25rem; }
+.install-dlg p { margin: 0 0 12px; color: var(--ink-2); }
+.install-dlg__list { margin: 0 0 16px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.install-dlg__list li { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: .93rem; }
+.install-dlg__list li.is-mine { border-color: var(--brand); background: var(--brand-tint); }
+.install-dlg__list span { color: var(--ink-2); }
+.install-dlg .btn { width: 100%; justify-content: center; }

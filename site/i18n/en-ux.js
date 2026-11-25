@@ -11,7 +11,19 @@ module.exports = {
   "Im Browser": "In browser",
   "Als App installieren": "Install as app",
   "Design: Automatisch": "Design: auto",
-  "Dunkles Design ein/aus": "Dark design on/off"
+  "Dunkles Design ein/aus": "Dark design on/off",
+  "App installieren": "Install app",
+  "PDF Libre als App installieren": "Install PDF Libre as an app",
+  "Dann öffnest du PDF Libre wie eine App vom Startbildschirm – und kannst auf dem Handy Dateien direkt über „Teilen“ an PDF Libre schicken.": "Open PDF Libre like an app from your home screen – and on your phone, send files straight to PDF Libre via “Share”.",
+  "Android (Chrome)": "Android (Chrome)",
+  "Menü ⋮ oben rechts → „App installieren“ oder „Zum Startbildschirm hinzufügen“.": "Menu ⋮ top right → “Install app” or “Add to home screen”.",
+  "iPhone und iPad (Safari)": "iPhone and iPad (Safari)",
+  "Teilen-Symbol (Quadrat mit Pfeil) → „Zum Home-Bildschirm“.": "Share icon (square with arrow) → “Add to Home Screen”.",
+  "Computer (Chrome oder Edge)": "Computer (Chrome or Edge)",
+  "In der Adressleiste auf das Symbol „Installieren“ (Bildschirm mit Pfeil) klicken – oder Menü ⋮ → „Streamen, speichern und teilen“ → „Seite als App installieren“.": "Click the “Install” icon (screen with arrow) in the address bar – or menu ⋮ → “Cast, save and share” → “Install page as app”.",
+  "Firefox": "Firefox",
+  "Firefox kann Web-Apps auf dem Computer nicht installieren. Nutze dafür Chrome oder Edge – auf Android geht es auch mit Firefox über das Menü.": "Firefox can’t install web apps on a computer. Use Chrome or Edge – on Android, Firefox can do it via the menu.",
+  "Verstanden": "Got it"
  },
  "js": {
   "Die Datei „{name}“ passt nicht zu diesem Werkzeug.": "The file “{name}” doesn’t fit this tool.",

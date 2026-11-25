@@ -253,7 +253,7 @@ function head({ title, description, slug, jsonLd = [], noindex = false, extraHea
   <meta name="description" content="${esc(description)}">
   ${noindex ? '<meta name="robots" content="noindex, follow">' : `<link rel="canonical" href="${canonical}">`}
   ${alternates}
-  <meta name="theme-color" content="#2b4bdb">
+  <meta name="theme-color" content="#1e2f6b">
   <script>try{var t=localStorage.getItem("pl_theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="${config.name}">
@@ -296,7 +296,9 @@ function langSwitch(slug) {
     const href = ok ? url(slug, l) : url("", l);
     return `<li><a href="${href}" hreflang="${l}" lang="${l}"${l === LANG ? ' aria-current="true"' : ""} data-lang-link="${l}">${LANG_NAMES[l]}</a></li>`;
   }).join("");
-  return `<div class="hdr-tools"><button type="button" class="themesw" data-theme-toggle aria-label="${T("Dunkles Design ein/aus")}" title="${T("Dunkles Design ein/aus")}">
+  return `<div class="hdr-tools"><button type="button" class="themesw" data-install-open aria-label="${T("App installieren")}" title="${T("App installieren")}">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M12 7v7m0 0-3-3m3 3 3-3M10 18h4"/></svg>
+    </button><button type="button" class="themesw" data-theme-toggle aria-label="${T("Dunkles Design ein/aus")}" title="${T("Dunkles Design ein/aus")}">
       <svg class="themesw__moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
       <svg class="themesw__sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
     </button>
@@ -353,10 +355,28 @@ function footer() {
     </div>
     <div class="site-footer__legal">
       <p>© <span data-year>2026</span> ${config.name} · ${T("Entwickelt von")} <a href="https://alfredlog.github.io" rel="author">Alfred Mushagalusa Munganga</a> · <a href="https://github.com/alfredlog" rel="me">GitHub</a></p>
-      <p>${FREE ? "" : `<a href="/preise.html">${T("Preise")}</a>`}<a href="/ueber-uns.html">${T("Über uns")}</a><a href="/ueber-uns.html#kontakt">${T("Kontakt")}</a><a href="/impressum.html">${T("Impressum")}</a><a href="/Datenschutz.html">${T("Datenschutz")}</a>${FREE ? "" : `<a href="/agb.html">${T("AGB")}</a>`}<a href="#" data-consent-settings>${T("Datenschutzeinstellungen")}</a><button type="button" class="linkbtn" data-install hidden>${T("Als App installieren")}</button></p>
+      <p>${FREE ? "" : `<a href="/preise.html">${T("Preise")}</a>`}<a href="/ueber-uns.html">${T("Über uns")}</a><a href="/ueber-uns.html#kontakt">${T("Kontakt")}</a><a href="/impressum.html">${T("Impressum")}</a><a href="/Datenschutz.html">${T("Datenschutz")}</a>${FREE ? "" : `<a href="/agb.html">${T("AGB")}</a>`}<a href="#" data-consent-settings>${T("Datenschutzeinstellungen")}</a></p>
     </div>
   </div>
 </footer>`;
+}
+
+// „App installieren“: Anleitung je Gerät (wenn der Browser die Installation nicht selbst anbietet)
+function installDialog() {
+  const step = (id, title, text) => `<li data-platform="${id}"><b>${T(title)}</b><span>${T(text)}</span></li>`;
+  return `<dialog class="install-dlg" data-install-dlg aria-labelledby="install-title">
+  <form method="dialog">
+    <h2 id="install-title">${T("PDF Libre als App installieren")}</h2>
+    <p>${T("Dann öffnest du PDF Libre wie eine App vom Startbildschirm – und kannst auf dem Handy Dateien direkt über „Teilen“ an PDF Libre schicken.")}</p>
+    <ol class="install-dlg__list">
+      ${step("android", "Android (Chrome)", "Menü ⋮ oben rechts → „App installieren“ oder „Zum Startbildschirm hinzufügen“.")}
+      ${step("ios", "iPhone und iPad (Safari)", "Teilen-Symbol (Quadrat mit Pfeil) → „Zum Home-Bildschirm“.")}
+      ${step("desktop", "Computer (Chrome oder Edge)", "In der Adressleiste auf das Symbol „Installieren“ (Bildschirm mit Pfeil) klicken – oder Menü ⋮ → „Streamen, speichern und teilen“ → „Seite als App installieren“.")}
+      ${step("firefox", "Firefox", "Firefox kann Web-Apps auf dem Computer nicht installieren. Nutze dafür Chrome oder Edge – auf Android geht es auch mit Firefox über das Menü.")}
+    </ol>
+    <button class="btn btn--primary" value="ok">${T("Verstanden")}</button>
+  </form>
+</dialog>`;
 }
 
 function page({ title, description, slug, body, jsonLd, activeSlug, noindex, scripts = "", ads = true }) {
@@ -367,6 +387,7 @@ ${header(activeSlug, slug)}
 ${body}
 </main>
 ${footer()}
+${installDialog()}
 ${LANG === "de" ? "" : `<script>window.PL_LANG=${JSON.stringify(LANG)};window.PL_T=${JSON.stringify(I18N[LANG].js || {}).replace(/</g, "\\u003c")};</script>\n`}<script src="/assets/site.js?v=${BUILD_ID}" defer></script>${scripts}
 </body>
 </html>
@@ -1571,7 +1592,7 @@ function editorWorkspace(t) {
           <button type="button" class="ed-toggle" data-prop="italic" aria-pressed="false" title="Kursiv"><i>K</i></button>
         </div>
         <div class="ed-group" data-group="shape" hidden>
-          <label class="ed-color">Linie <input type="color" data-prop="stroke" value="#2b4bdb"></label>
+          <label class="ed-color">Linie <input type="color" data-prop="stroke" value="#1e2f6b"></label>
           <label class="ed-color" data-fill-wrap>Füllung <input type="color" data-prop="fill" value="#ffffff"></label>
           <label class="ed-check" data-fill-wrap><input type="checkbox" data-prop="nofill" checked> ohne Füllung</label>
           <label>Stärke <input type="number" data-prop="strokeWidth" min="0" max="40" value="2"></label>
