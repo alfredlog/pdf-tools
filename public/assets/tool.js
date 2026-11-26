@@ -50,7 +50,9 @@
     trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>',
   };
 
+  let slowTimers = []; // Hinweise bei langer Verarbeitung (siehe startBusy)
   function show(name) {
+    if (name !== "busy") { slowTimers.forEach(clearTimeout); slowTimers = []; }
     for (const [k, el] of Object.entries(stages)) el.hidden = k !== name;
   }
 
@@ -484,9 +486,18 @@
 
   const nextFrame = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
 
+  // Dauert die Verarbeitung länger (große Datei oder Warteschlange), wechselt der Hinweis
+  // ruhig weiter – der Nutzer sieht, dass es vorangeht, statt einer Fehlermeldung.
   function startBusy(text, determinate = false) {
+    slowTimers.forEach(clearTimeout);
+    slowTimers = [];
     show("busy");
     $("[data-busy-text]").textContent = text;
+    if (!determinate) {
+      const say = (t) => () => { $("[data-busy-text]").textContent = t; };
+      slowTimers.push(setTimeout(say(L("Noch einen Moment – große Dateien brauchen etwas länger …")), 12000));
+      slowTimers.push(setTimeout(say(L("Fast geschafft – bitte lass dieses Fenster geöffnet …")), 45000));
+    }
     const bar = $(".busy__bar");
     bar.classList.toggle("is-indeterminate", !determinate);
     $("[data-progress]").style.width = determinate ? "0%" : "";

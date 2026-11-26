@@ -167,6 +167,8 @@ module.exports = {
     "Wird hochgeladen …": "Uploading …",
     "Wird in deinem Browser verarbeitet …": "Processing in your browser …",
     "Wird verarbeitet …": "Processing …",
+    "Noch einen Moment – große Dateien brauchen etwas länger …": "Just a moment – large files take a little longer …",
+    "Fast geschafft – bitte lass dieses Fenster geöffnet …": "Almost there – please keep this window open …",
     "Wähle mindestens eine Seite aus.": "Select at least one page.",
     "Wähle mindestens eine Seite zum Entfernen aus.": "Select at least one page to remove.",
     "ZIP herunterladen ({s})": "Download ZIP ({s})",

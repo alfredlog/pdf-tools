@@ -36,8 +36,10 @@ const PORT = Number(process.env.PORT) || 3000;
 const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 200;
 const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 500; // Summe aller Dateien eines Auftrags
 const MAX_JOBS = Number(process.env.MAX_JOBS) || 2; // gleichzeitige schwere Programme (Ghostscript, LibreOffice, OCR …)
-const MAX_QUEUE = Number(process.env.MAX_QUEUE) || 30; // wartende Aufträge, danach "Server ausgelastet"
-const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS) || 2 * 60 * 1000; // max. Wartezeit in der Schlange
+// Optionale Notbremse (Standard: aus). Ohne diese Werte wartet jeder Auftrag einfach, bis er dran ist –
+// die Nutzer sehen nur eine etwas längere Ladeanzeige, nie eine Meldung "Server ausgelastet".
+const MAX_QUEUE = Number(process.env.MAX_QUEUE) || Infinity;
+const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS) || 0;
 const MAX_FILES = Number(process.env.MAX_FILES) || 20;
 const TMP_ROOT = path.join(os.tmpdir(), "pdf-libre");
 const JOB_TIMEOUT_MS = 3 * 60 * 1000;
@@ -91,7 +93,7 @@ function acquireSlot() {
   }
   return new Promise((resolve, reject) => {
     const entry = { resolve, timer: null };
-    entry.timer = setTimeout(() => {
+    if (QUEUE_WAIT_MS) entry.timer = setTimeout(() => {
       const i = waiting.indexOf(entry);
       if (i >= 0) waiting.splice(i, 1);
       reject(new UserError("Der Server ist gerade ausgelastet. Bitte versuche es in einer Minute erneut.", 503));
@@ -152,11 +154,20 @@ function formatError(err) {
 }
 
 // Temporärer Ordner pro Anfrage – wird nach dem Download immer gelöscht
+// Ordner laufender Anfragen – das Aufräumen unten lässt sie in Ruhe, auch wenn sie lange warten.
+const activeDirs = new Set();
 function jobDir(req, res, next) {
-  const dir = path.join(TMP_ROOT, crypto.randomUUID());
+  const name = crypto.randomUUID();
+  const dir = path.join(TMP_ROOT, name);
   fs.mkdirSync(dir, { recursive: true });
   req.jobDir = dir;
-  const cleanup = () => fsp.rm(dir, { recursive: true, force: true }).catch(() => {});
+  activeDirs.add(name);
+  // Bricht der Nutzer ab, wird der Ordner gelöscht: ein noch wartender Auftrag findet seine
+  // Datei dann nicht mehr und endet sofort, statt einen Platz in der Schlange zu verschwenden.
+  const cleanup = () => {
+    activeDirs.delete(name);
+    fsp.rm(dir, { recursive: true, force: true }).catch(() => {});
+  };
   res.on("finish", cleanup);
   res.on("close", cleanup);
   next();
@@ -1066,6 +1077,7 @@ async function sweep() {
     const cutoff = Date.now() - 30 * 60 * 1000;
     await Promise.all(
       entries.map(async (e) => {
+        if (activeDirs.has(e.name)) return;
         const p = path.join(TMP_ROOT, e.name);
         const st = await fsp.stat(p).catch(() => null);
         if (st && st.mtimeMs < cutoff) await fsp.rm(p, { recursive: true, force: true });
