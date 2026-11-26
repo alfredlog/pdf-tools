@@ -33,7 +33,11 @@ const agentApi = require("./server/agent-api");
 // Konfiguration (über Umgebungsvariablen anpassbar)
 // ---------------------------------------------------------------------------
 const PORT = Number(process.env.PORT) || 3000;
-const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 50;
+const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 100;
+const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 300; // Summe aller Dateien eines Auftrags
+const MAX_JOBS = Number(process.env.MAX_JOBS) || 2; // gleichzeitige schwere Programme (Ghostscript, LibreOffice, OCR …)
+const MAX_QUEUE = Number(process.env.MAX_QUEUE) || 30; // wartende Aufträge, danach "Server ausgelastet"
+const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS) || 2 * 60 * 1000; // max. Wartezeit in der Schlange
 const MAX_FILES = Number(process.env.MAX_FILES) || 20;
 const TMP_ROOT = path.join(os.tmpdir(), "pdf-libre");
 const JOB_TIMEOUT_MS = 3 * 60 * 1000;
@@ -70,8 +74,52 @@ class UserError extends Error {
   }
 }
 
+/**
+ * Warteschlange: Höchstens MAX_JOBS Programme laufen gleichzeitig. Weitere Aufträge
+ * warten der Reihe nach (FIFO), bis ein Platz frei wird. So können viele gleichzeitige
+ * große Dateien den Arbeitsspeicher des Servers nicht überlasten.
+ */
+let activeJobs = 0;
+const waiting = [];
+function acquireSlot() {
+  if (activeJobs < MAX_JOBS) {
+    activeJobs++;
+    return Promise.resolve();
+  }
+  if (waiting.length >= MAX_QUEUE) {
+    return Promise.reject(new UserError("Der Server ist gerade ausgelastet. Bitte versuche es in einer Minute erneut.", 503));
+  }
+  return new Promise((resolve, reject) => {
+    const entry = { resolve, timer: null };
+    entry.timer = setTimeout(() => {
+      const i = waiting.indexOf(entry);
+      if (i >= 0) waiting.splice(i, 1);
+      reject(new UserError("Der Server ist gerade ausgelastet. Bitte versuche es in einer Minute erneut.", 503));
+    }, QUEUE_WAIT_MS);
+    waiting.push(entry);
+  });
+}
+function releaseSlot() {
+  const next = waiting.shift();
+  if (next) {
+    clearTimeout(next.timer);
+    next.resolve(); // Platz direkt weitergeben, activeJobs bleibt gleich
+  } else {
+    activeJobs--;
+  }
+}
+
 /** Führt ein Programm OHNE Shell aus – Dateinamen können so nichts einschleusen. */
-function run(cmd, args, opts = {}) {
+async function run(cmd, args, opts = {}) {
+  await acquireSlot();
+  try {
+    return await runNow(cmd, args, opts);
+  } finally {
+    releaseSlot();
+  }
+}
+
+function runNow(cmd, args, opts = {}) {
   return new Promise((resolve, reject) => {
     execFile(cmd, args, { timeout: JOB_TIMEOUT_MS, maxBuffer: 10 * 1024 * 1024, ...opts }, (err, stdout, stderr) => {
       if (err) {
@@ -150,7 +198,14 @@ function uploader(kind, { multiple = false } = {}) {
         if (err.code === "LIMIT_FILE_COUNT") return next(new UserError(`Maximal ${MAX_FILES} Dateien auf einmal.`, 413));
         return next(new UserError("Upload fehlgeschlagen."));
       }
-      next(err);
+      if (err) return next(err);
+      const files = req.files || (req.file ? [req.file] : []);
+      const total = files.reduce((n, f) => n + f.size, 0);
+      if (total > MAX_TOTAL_MB * 1024 * 1024) {
+        for (const f of files) fs.unlink(f.path, () => {});
+        return next(new UserError(`Alle Dateien zusammen dürfen höchstens ${MAX_TOTAL_MB} MB groß sein.`, 413));
+      }
+      next();
     });
 }
 

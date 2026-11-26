@@ -28,10 +28,10 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=c5027389">
+  <link rel="stylesheet" href="/assets/style.css?v=3e114079">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF zusammenfügen – PDF Libre","url":"https://pdf-libre.de/merge.html","description":"PDFs online zusammenfügen: mehrere PDF-Dateien per Drag & Drop sortieren und zu einer PDF kombinieren. Kostenlos, ohne Anmeldung, sofort gelöscht.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"PDF zusammenfügen","item":"https://pdf-libre.de/merge.html"}]}</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie viele PDFs kann ich auf einmal zusammenfügen?","acceptedAnswer":{"@type":"Answer","text":"Bis zu 20 Dateien mit jeweils maximal 50 MB. Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."}},{"@type":"Question","name":"Kann ich einzelne Seiten statt ganzer Dateien kombinieren?","acceptedAnswer":{"@type":"Answer","text":"Ja: Füge zuerst die Dateien zusammen und entferne danach mit „Seiten entfernen“ oder „PDF organisieren“ die Seiten, die du nicht brauchst."}},{"@type":"Question","name":"Funktioniert das auch mit passwortgeschützten PDFs?","acceptedAnswer":{"@type":"Answer","text":"Nein. Entsperre die Datei zuerst mit „PDF entsperren“ – dafür brauchst du das Passwort."}},{"@type":"Question","name":"Werden meine Dateien gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Dateien werden nur für die Verarbeitung auf dem Server abgelegt und direkt nach dem Download automatisch gelöscht."}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie viele PDFs kann ich auf einmal zusammenfügen?","acceptedAnswer":{"@type":"Answer","text":"Bis zu 20 Dateien mit jeweils maximal 100 MB (zusammen höchstens 300 MB). Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."}},{"@type":"Question","name":"Kann ich einzelne Seiten statt ganzer Dateien kombinieren?","acceptedAnswer":{"@type":"Answer","text":"Ja: Füge zuerst die Dateien zusammen und entferne danach mit „Seiten entfernen“ oder „PDF organisieren“ die Seiten, die du nicht brauchst."}},{"@type":"Question","name":"Funktioniert das auch mit passwortgeschützten PDFs?","acceptedAnswer":{"@type":"Answer","text":"Nein. Entsperre die Datei zuerst mit „PDF entsperren“ – dafür brauchst du das Passwort."}},{"@type":"Question","name":"Werden meine Dateien gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die Dateien werden nur für die Verarbeitung auf dem Server abgelegt und direkt nach dem Download automatisch gelöscht."}}]}</script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
   gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
   gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);
@@ -134,7 +134,7 @@
             <input type="file" class="visually-hidden" accept=".pdf,application/pdf" multiple>
           </label>
           <p class="drop__or">oder Dateien hierher ziehen</p>
-          <p class="drop__hint">Mindestens 2 PDF-Dateien, bis zu 50 MB pro Datei</p>
+          <p class="drop__hint">Mindestens 2 PDF-Dateien, bis zu 100 MB pro Datei</p>
         </div>
         <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 10 4-1.7 7-5.5 7-10V6Z"/><path d="m9 12 2 2 4-4"/></svg><span><strong>Sicher:</strong> Verschlüsselte Übertragung, automatische Löschung nach der Verarbeitung.</span></p>
       </div>
@@ -203,7 +203,7 @@
   <h2 id="faq-title">Häufige Fragen</h2>
   <details>
     <summary>Wie viele PDFs kann ich auf einmal zusammenfügen?</summary>
-    <p>Bis zu 20 Dateien mit jeweils maximal 50 MB. Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen.</p>
+    <p>Bis zu 20 Dateien mit jeweils maximal 100 MB (zusammen höchstens 300 MB). Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen.</p>
   </details>
   <details>
     <summary>Kann ich einzelne Seiten statt ganzer Dateien kombinieren?</summary>
@@ -361,8 +361,8 @@
     <button type="button" class="btn btn--ghost" data-consent="granted">Akzeptieren</button>
   </div>
 </div>
-<script src="/assets/site.js?v=c5027389" defer></script>
+<script src="/assets/site.js?v=3e114079" defer></script>
 <script src="/vendor/Sortable.min.js" defer></script>
-<script src="/assets/tool.js?v=c5027389" defer></script>
+<script src="/assets/tool.js?v=3e114079" defer></script>
 </body>
 </html>

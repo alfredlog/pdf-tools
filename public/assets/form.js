@@ -42,7 +42,7 @@
 
   async function open(file) {
     if (!/\.pdf$/i.test(file.name) && file.type !== "application/pdf") return alert(tr("Bitte wähle eine PDF-Datei aus."));
-    if (file.size > 50 * 1024 * 1024) return alert(tr("Die Datei ist größer als 50 MB."));
+    if (file.size > 100 * 1024 * 1024) return alert(tr("Die Datei ist größer als 100 MB."));
     fileName = file.name;
     show("busy");
     try {

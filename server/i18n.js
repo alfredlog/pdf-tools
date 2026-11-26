@@ -135,6 +135,8 @@ const PATTERNS = [
   [/^Dateityp (.+) wird hier nicht unterstützt\. Erlaubt: (.+)$/, { en: "File type $1 isn’t supported here. Allowed: $2", fr: "Le type de fichier $1 n’est pas pris en charge ici. Autorisés : $2" }],
   [/^Die Datei ist größer als (\d+) MB\.$/, { en: "The file is larger than $1 MB.", fr: "Le fichier dépasse $1 Mo." }],
   [/^Die PDF hat zu viele Seiten \(höchstens (\d+)\)\. Teile sie zuerst mit „PDF teilen“\.$/, { en: "The PDF has too many pages (at most $1). Split it first with “Split PDF”.", fr: "Le PDF a trop de pages ($1 au maximum). Divisez-le d’abord avec « Diviser PDF »." }],
+  [/^Alle Dateien zusammen dürfen höchstens (\d+) MB groß sein\.$/, { en: "All files together may be at most $1 MB.", fr: "L'ensemble des fichiers ne doit pas dépasser $1 Mo." }],
+  [/^Der Server ist gerade ausgelastet\. Bitte versuche es in einer Minute erneut\.$/, { en: "The server is busy right now. Please try again in a minute.", fr: "Le serveur est très sollicité en ce moment. Réessaie dans une minute." }],
   [/^Maximal (\d+) Dateien auf einmal\.$/, { en: "At most $1 files at once.", fr: "$1 fichiers au maximum à la fois." }],
 ];
 

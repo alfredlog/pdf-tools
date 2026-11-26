@@ -480,7 +480,7 @@ function homePage() {
         ],
     [T("Was passiert mit meinen Dateien?"), T("Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht.")],
     [T("Brauche ich ein Programm oder eine App?"), T("Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone.")],
-    [T("Wie groß dürfen meine Dateien sein?"), T("Bei Werkzeugen, die auf dem Server laufen, bis zu 50 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt.")],
+    [T("Wie groß dürfen meine Dateien sein?"), T("Bei Werkzeugen, die auf dem Server laufen, bis zu 100 MB pro Datei. Browser-Werkzeuge sind nur durch den Arbeitsspeicher deines Geräts begrenzt.")],
   ];
   const jsonLd = [
     { "@context": "https://schema.org", "@type": "WebSite", name: config.name, url: absUrl(""), inLanguage: { de: "de-DE", en: "en", fr: "fr" }[LANG] },
@@ -725,7 +725,7 @@ function workspace(t) {
             <input type="file" class="visually-hidden" accept="${esc(ui.input.accept)}"${ui.multiple ? " multiple" : ""}>
           </label>
           <p class="drop__or">${ui.multiple ? T("oder Dateien hierher ziehen") : T("oder Datei hierher ziehen")}</p>
-          <p class="drop__hint">${esc(ui.dropHint || (ui.mode === "client" ? T("PDF-Datei") : T("PDF-Datei, bis zu 50 MB")))}</p>
+          <p class="drop__hint">${esc(ui.dropHint || (ui.mode === "client" ? T("PDF-Datei") : T("PDF-Datei, bis zu 100 MB")))}</p>
         </div>
         <p class="privacy">${privacy}</p>
       </div>
@@ -970,7 +970,7 @@ function formWorkspace(t) {
           <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
         </label>
         <p class="drop__or">${T("oder Datei hierher ziehen")}</p>
-        <p class="drop__hint">${T("PDF-Formular, bis zu 50 MB")}</p>
+        <p class="drop__hint">${T("PDF-Formular, bis zu 100 MB")}</p>
       </div>
       <p class="privacy">${ICON.shield}<span>${T("<strong>Im Browser:</strong> Deine Datei wird nicht hochgeladen.")}</span></p>
     </div>
@@ -1238,7 +1238,7 @@ function slidesWorkspace(t) {
           <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
         </label>
         <p class="drop__or">oder Datei hierher ziehen</p>
-        <p class="drop__hint">PDF-Datei, bis zu 50 MB und 80 Seiten</p>
+        <p class="drop__hint">PDF-Datei, bis zu 100 MB und 80 Seiten</p>
       </div>
       <p class="privacy">${ICON.shield}<span><strong>Sicher:</strong> Verschlüsselte Übertragung, die Dateien werden spätestens nach 30 Minuten gelöscht.</span></p>
     </div>

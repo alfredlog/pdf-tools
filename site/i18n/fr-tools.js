@@ -9,7 +9,7 @@ module.exports = {
     h1: "Créer votre dossier de candidature en un seul PDF",
     lead: "Importez lettre de motivation, CV et certificats – en PDF, Word ou photo. Vous obtenez un PDF propre, dans le bon ordre et assez léger pour tous les portails de candidature.",
     action: "Créer le dossier PDF",
-    dropHint: "PDF, Word (DOCX), JPG ou PNG – jusqu’à 50 Mo par fichier",
+    dropHint: "PDF, Word (DOCX), JPG ou PNG – jusqu’à 100 Mo par fichier",
     inputLabel: "Documents",
     options: {
       cover: { label: "Page de garde", choices: { yes: "Avec page de garde", no: "Sans page de garde" } },
@@ -45,7 +45,7 @@ module.exports = {
     h1: "Fusionner des PDF",
     lead: "Réunissez plusieurs fichiers PDF en un seul document. Fixez l’ordre par glisser-déposer, c’est tout.",
     action: "Fusionner les PDF",
-    dropHint: "Au moins 2 fichiers PDF, jusqu’à 50 Mo chacun",
+    dropHint: "Au moins 2 fichiers PDF, jusqu’à 100 Mo chacun",
     steps: [
       ["Choisir les PDF", "Cliquez sur « Choisir des fichiers » ou glissez plusieurs PDF dans la zone."],
       ["Définir l’ordre", "Déplacez les fichiers dans la liste. Le fichier du haut vient en premier."],
@@ -53,7 +53,7 @@ module.exports = {
       ["Télécharger", "Téléchargez le PDF combiné. Vos fichiers d’origine restent inchangés."],
     ],
     faq: [
-      ["Combien de PDF puis-je fusionner à la fois ?", "Jusqu’à 20 fichiers de 50 Mo maximum chacun. Au-delà, fusionnez en plusieurs fois."],
+      ["Combien de PDF puis-je fusionner à la fois ?", "Jusqu’à 20 fichiers de 100 Mo maximum chacun (300 Mo au total). Au-delà, fusionnez en plusieurs fois."],
       ["Puis-je combiner certaines pages au lieu de fichiers entiers ?", "Oui : fusionnez d’abord les fichiers, puis supprimez les pages inutiles avec « Supprimer des pages » ou « Organiser un PDF »."],
       ["Est-ce possible avec des PDF protégés par mot de passe ?", "Non. Déverrouillez d’abord le fichier avec « Déverrouiller un PDF » – il vous faut le mot de passe."],
       ["Mes fichiers sont-ils conservés ?", "Non. Ils sont stockés uniquement pour le traitement sur le serveur et supprimés automatiquement juste après le téléchargement."],
@@ -206,7 +206,7 @@ module.exports = {
     h1: "Fusionner et compresser des PDF",
     lead: "Le raccourci pour les candidatures et les envois : combinez les fichiers et ramenez-les directement à une taille prête à l’envoi.",
     action: "Fusionner et compresser",
-    dropHint: "Plusieurs fichiers PDF, jusqu’à 50 Mo chacun",
+    dropHint: "Plusieurs fichiers PDF, jusqu’à 100 Mo chacun",
     options: { level: { label: "Compression", choices: { recommended: ["Recommandée", "Bonne qualité, nettement plus léger"], strong: ["Forte", "Fichier le plus léger"], low: ["Faible", "Qualité impression"] } } },
     steps: [
       ["Choisir les PDF", "Sélectionnez tous les fichiers à réunir."],
@@ -216,7 +216,7 @@ module.exports = {
     ],
     faq: [
       ["Puis-je importer un seul fichier ?", "Oui, il est alors seulement compressé – comme avec « Compresser PDF »."],
-      ["Combien de fichiers sont possibles ?", "Jusqu’à 20 PDF de 50 Mo maximum chacun."],
+      ["Combien de fichiers sont possibles ?", "Jusqu’à 20 PDF de 100 Mo maximum chacun, 300 Mo au total."],
       ["Les fichiers sont-ils conservés ?", "Non, ils sont supprimés juste après le traitement."],
     ],
   },
@@ -228,7 +228,7 @@ module.exports = {
     h1: "Rendre un PDF cherchable – reconnaissance de texte (OCR)",
     lead: "Transformez un scan en PDF dans lequel vous pouvez chercher avec Ctrl+F et copier du texte. L’aspect des pages reste exactement le même.",
     action: "Reconnaître le texte",
-    dropHint: "PDF scanné, jusqu’à 50 Mo",
+    dropHint: "PDF scanné, jusqu’à 100 Mo",
     options: { lang: { label: "Langue du document", choices: { deu: "Allemand (et anglais)", eng: "Anglais", fra: "Français (et anglais)", mix: "Mixte : allemand, anglais, français" } } },
     steps: [
       ["Importer un scan", "Choisissez le PDF scanné – par exemple un contrat, un diplôme, un courrier ou une facture."],
@@ -305,7 +305,7 @@ module.exports = {
     h1: "Convertir DOCX en PDF – Word en PDF",
     lead: "Convertissez gratuitement vos fichiers DOCX et DOC en PDF identiques sur tous les appareils – idéal pour candidatures, factures, mémoires et contrats.",
     action: "Convertir en PDF",
-    dropHint: "DOC, DOCX, ODT ou RTF, jusqu’à 50 Mo",
+    dropHint: "DOC, DOCX, ODT ou RTF, jusqu’à 100 Mo",
     steps: [
       ["Choisir un fichier DOCX", "Cliquez sur « Choisir un fichier » ou glissez votre DOCX dans la zone. DOC, ODT et RTF fonctionnent aussi."],
       ["Convertir en PDF", "Cliquez sur « Convertir en PDF ». La conversion prend généralement quelques secondes."],
@@ -357,7 +357,7 @@ module.exports = {
     h1: "Convertir HEIC en PDF",
     lead: "Votre iPhone enregistre les photos en HEIC – beaucoup de portails ne l’acceptent pas. Importez vos photos et obtenez un PDF propre en pages A4.",
     action: "Convertir en PDF",
-    dropHint: "HEIC, JPG, PNG ou WebP – jusqu’à 50 Mo par fichier",
+    dropHint: "HEIC, JPG, PNG ou WebP – jusqu’à 100 Mo par fichier",
     inputLabel: "Photo",
     steps: [
       ["Choisir les photos", "Sélectionnez les photos de votre iPhone ou d’un dossier – HEIC, JPG, PNG et WebP peuvent être mélangés."],
@@ -379,7 +379,7 @@ module.exports = {
     h1: "Convertir Excel en PDF",
     lead: "Transformez tableaux, factures et rapports Excel en un PDF facile à lire et à imprimer.",
     action: "Convertir en PDF",
-    dropHint: "XLS, XLSX, ODS ou CSV, jusqu’à 50 Mo",
+    dropHint: "XLS, XLSX, ODS ou CSV, jusqu’à 100 Mo",
     steps: [
       ["Choisir un tableau", "Sélectionnez un fichier XLSX, XLS, ODS ou CSV."],
       ["Convertir", "Cliquez sur « Convertir en PDF ». Toutes les feuilles sont reprises."],
@@ -399,7 +399,7 @@ module.exports = {
     h1: "Convertir PowerPoint en PDF",
     lead: "Faites de votre présentation un PDF que tout le monde peut ouvrir – même sans PowerPoint.",
     action: "Convertir en PDF",
-    dropHint: "PPT, PPTX ou ODP, jusqu’à 50 Mo",
+    dropHint: "PPT, PPTX ou ODP, jusqu’à 100 Mo",
     steps: [
       ["Choisir une présentation", "Sélectionnez un fichier PPTX, PPT ou ODP."],
       ["Convertir", "Cliquez sur « Convertir en PDF ». Chaque diapositive devient une page PDF."],
@@ -440,7 +440,7 @@ module.exports = {
     h1: "Convertir un PDF en Word – même scanné",
     lead: "Retransformez un PDF en document Word modifiable – avec paragraphes, tableaux et images. Les pages scannées sont converties automatiquement en vrai texte grâce à la reconnaissance de texte (OCR).",
     action: "Convertir en Word",
-    dropHint: "Fichier PDF, jusqu’à 50 Mo – scans compris",
+    dropHint: "Fichier PDF, jusqu’à 100 Mo – scans compris",
     options: {
       mode: { label: "Mise en page", choices: { flow: ["Modifiable", "Vrais paragraphes et tableaux – pour continuer à écrire (recommandé)"], exact: ["Comme l’original", "Chaque bloc de texte à sa place exacte – idéal pour formulaires et flyers"] } },
       ocr: { label: "Reconnaissance de texte pour les pages scannées", choices: { deu: "Automatique – allemand et anglais", fra: "Automatique – français et anglais", mix: "Automatique – allemand, anglais, français", eng: "Automatique – anglais seulement", off: "Désactivée – garder les scans en image" } },
@@ -468,7 +468,7 @@ module.exports = {
     h1: "Convertir un PDF en Excel",
     lead: "Récupérez les tableaux de votre PDF – avec de vrais nombres pour continuer vos calculs dans Excel, LibreOffice ou Google Sheets.",
     action: "Convertir en Excel",
-    dropHint: "PDF avec du texte (pas de scans), jusqu’à 50 Mo",
+    dropHint: "PDF avec du texte (pas de scans), jusqu’à 100 Mo",
     steps: [
       ["Choisir un PDF", "Sélectionnez le PDF contenant les tableaux, ex. un relevé bancaire, une facture ou un rapport."],
       ["Convertir", "Cliquez sur « Convertir en Excel ». Les tableaux sont détectés – même sans lignes visibles."],
@@ -512,7 +512,7 @@ module.exports = {
     h1: "Résumer un PDF avec l’IA",
     lead: "Importez un PDF et comprenez en quelques secondes de quoi il s’agit – avec les délais, les montants et ce que vous devez faire.",
     action: "Résumer",
-    dropHint: "PDF avec du texte, jusqu’à 50 Mo",
+    dropHint: "PDF avec du texte, jusqu’à 100 Mo",
     options: {
       length: { label: "Longueur", choices: { medium: "Normale – vue d’ensemble et points clés", short: "Courte – 5 points au maximum", long: "Détaillée – section par section" } },
       lang: { label: "Langue du résumé", choices: { de: "Allemand", auto: "Comme le document", en: "Anglais", fr: "Français", es: "Espagnol", it: "Italien", pt: "Portugais", nl: "Néerlandais", pl: "Polonais", tr: "Turc", ro: "Roumain", ru: "Russe", uk: "Ukrainien" } },
