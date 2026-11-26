@@ -456,6 +456,31 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
       }
       if (cur.length) batches.push(cur);
 
+      // Formatierungs-Tags zählen: <b>, <i>, <u>, <s> (fett, kursiv, unterstrichen, durchgestrichen)
+      const tagCount = (t) => {
+        const c = { b: 0, i: 0, u: 0, s: 0 };
+        for (const m of String(t).matchAll(/<([bius])>/g)) c[m[1]]++;
+        return "bius".split("").map((k) => c[k]).join(",");
+      };
+      // Hat die KI Tags vergessen oder verdoppelt, fragen wir für genau diese Einträge noch einmal nach.
+      // Klappt es wieder nicht, bleibt die erste Übersetzung – der Text stimmt, nur die Hervorhebung fehlt dann.
+      async function fixTags(batch) {
+        const bad = batch.filter((b) => tagCount(b.markup) !== tagCount(b.translation));
+        if (!bad.length) return;
+        const strict = `${system} WICHTIG: Jeder Eintrag muss genau dieselben Tags in derselben Anzahl enthalten wie im Original – setze sie um die Wörter, die dem markierten Originaltext entsprechen.`;
+        try {
+          const again = await chat([{ role: "system", content: strict }, { role: "user", content: JSON.stringify({ items: bad.map((b) => b.markup) }) }], { json: true, maxTokens: 2500 });
+          const items = JSON.parse(again).items;
+          if (Array.isArray(items) && items.length === bad.length) {
+            bad.forEach((b, i) => {
+              if (items[i] && tagCount(items[i]) === tagCount(b.markup)) b.translation = String(items[i]);
+            });
+          }
+        } catch {
+          /* erste Übersetzung behalten */
+        }
+      }
+
       async function translateBatch(batch) {
         const content = await chat([{ role: "system", content: system }, { role: "user", content: JSON.stringify({ items: batch.map((b) => b.markup) }) }], { json: true, maxTokens: 2500 });
         let items = null;
@@ -466,6 +491,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
         }
         if (Array.isArray(items) && items.length === batch.length) {
           batch.forEach((b, i) => (b.translation = String(items[i] ?? b.markup)));
+          await fixTags(batch);
           return;
         }
         // Antwort passt nicht: kleiner aufteilen

@@ -60,6 +60,15 @@ def _family(fontname):
 
 
 # ---------------------------------------------------------------------------- Unterstreichen / Durchstreichen
+LINE_COLOR = {}  # Linie → Farbe (für farbige Unterstreichungen)
+
+
+def _hex(rgb):
+    if not rgb:
+        return None
+    return "#%02x%02x%02x" % tuple(max(0, min(255, round(c * 255))) for c in rgb[:3])
+
+
 def _page_lines(page):
     """Dünne Linien der Seite: waagerechte (Unterstreichung, Durchstreichung, Tabellenrahmen) und senkrechte (Zellgrenzen)."""
     horiz, vert = [], []
@@ -72,7 +81,9 @@ def _page_lines(page):
         if r is None:
             continue
         if r.width >= 2 and r.height <= 2.5:
-            horiz.append(pymupdf.Rect(r))
+            rr = pymupdf.Rect(r)
+            LINE_COLOR[tuple(round(v, 2) for v in rr)] = d.get("color") or d.get("fill")
+            horiz.append(rr)
         elif r.height >= 2 and r.width <= 2.5:
             vert.append(pymupdf.Rect(r))
     return horiz, vert
@@ -141,6 +152,13 @@ def _unit(pno, rect, runs, lines, page_rect, line_boxes, margins=None):
         for r in st["_lines"]:
             if r.width <= (rect[2] - rect[0]) + 4 and list(r) not in decos:
                 decos.append([round(v, 2) for v in r])
+    # Farbe der Unter-/Durchstreichung, falls sie sich von der Textfarbe unterscheidet (z. B. roter Strich unter schwarzem Text)
+    deco_color = None
+    for r in decos:
+        c = _hex(LINE_COLOR.get(tuple(round(v, 2) for v in r)))
+        if c and c != "#%06x" % max(colors, key=colors.get):
+            deco_color = c
+            break
     # Ausrichtung aus den Zeilen ablesen
     size = max(sizes, key=sizes.get)
     align = "left"
@@ -181,6 +199,7 @@ def _unit(pno, rect, runs, lines, page_rect, line_boxes, margins=None):
         "align": align,
         "single": len(line_boxes) <= 1,
         "decos": decos,
+        "deco_color": deco_color,
     }
 
 
@@ -370,9 +389,27 @@ ALLOWED = re.compile(r"&lt;(/?)([bius])&gt;")
 
 
 def _html(translation):
-    """Übersetzung sicher als HTML: alles maskieren, nur <b> <i> <u> <s> wieder erlauben."""
+    """Übersetzung sicher als HTML: alles maskieren, nur <b> <i> <u> <s> wieder erlauben – und zwar ausbalanciert:
+    Ein vergessenes </u> der KI darf nicht den ganzen Rest unterstreichen, ein loses </b> wird ignoriert."""
     t = html.escape(html.unescape(translation), quote=False)
-    return ALLOWED.sub(r"<\1\2>", t)
+    out, pos, open_tags = [], 0, []
+    for m in ALLOWED.finditer(t):
+        out.append(t[pos:m.start()])
+        pos = m.end()
+        closing, tag = m.group(1) == "/", m.group(2)
+        if not closing:
+            if tag not in open_tags:
+                open_tags.append(tag)
+                out.append(f"<{tag}>")
+        elif tag in open_tags:
+            # innere Tags schließen, den gesuchten schließen, innere wieder öffnen
+            idx = open_tags.index(tag)
+            inner = open_tags[idx + 1:]
+            out.append("".join(f"</{x}>" for x in reversed(inner)) + f"</{tag}>" + "".join(f"<{x}>" for x in inner))
+            open_tags.pop(idx)
+    out.append(t[pos:])
+    out.append("".join(f"</{x}>" for x in reversed(open_tags)))
+    return "".join(out)
 
 
 def cmd_apply(in_path, blocks_path, out_path):
@@ -424,8 +461,36 @@ def cmd_apply(in_path, blocks_path, out_path):
                 f" font-weight: {'bold' if b.get('bold') else 'normal'}; font-style: {'italic' if b.get('italic') else 'normal'};"
                 f" text-decoration: {deco}; line-height: 1.15;"
             )
+            def flat_lines():
+                # alle waagerechten Linienstücke der Seite (MuPDF fasst Unterstreichungen zu einem Pfad zusammen)
+                out = []
+                for d in page.get_drawings():
+                    for item in d["items"]:
+                        if item[0] == "l" and abs(item[1].y - item[2].y) < 0.3:
+                            out.append((round(item[1].x, 1), round(item[1].y, 1), round(item[2].x, 1), round(item[2].y, 1), d.get("width") or 0.7))
+                        elif item[0] == "re" and item[1].height <= 2.5:
+                            r = item[1]
+                            out.append((round(r.x0, 1), round(r.y0, 1), round(r.x1, 1), round(r.y1, 1), -1))
+                return out
+
+            before = set(flat_lines()) if b.get("deco_color") else None
             page.insert_htmlbox(rect, f'<div style="{style}">{_html(b["translation"])}</div>', css="\n".join(fonts.css), archive=fonts.archive)
-    doc.save(out_path, garbage=3, deflate=True)
+            if before is not None:
+                # Die neue Unterstreichung hat die Textfarbe – in der Originalfarbe exakt darüber zeichnen
+                col = tuple(int(b["deco_color"][i:i + 2], 16) / 255 for i in (1, 3, 5))
+                for x0, y0, x1, y1, w in flat_lines():
+                    if (x0, y0, x1, y1, w) in before or not rect.intersects(pymupdf.Rect(min(x0, x1), y0 - 1, max(x0, x1), y1 + 1)):
+                        continue
+                    if w < 0:
+                        page.draw_rect(pymupdf.Rect(x0, y0, x1, y1), color=None, fill=col, width=0)
+                    else:
+                        page.draw_line((x0, y0), (x1, y1), color=col, width=w + 0.05)
+    # Eingebettete Schriften auf die verwendeten Zeichen verkleinern – sonst wird aus 30 KB schnell mehrere MB
+    try:
+        doc.subset_fonts()
+    except Exception:
+        pass
+    doc.save(out_path, garbage=4, deflate=True, deflate_fonts=True)
 
 
 def cmd_report(html_path, title, out_path):
