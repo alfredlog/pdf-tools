@@ -180,8 +180,8 @@ async function run(cmd, args, opts = {}) {
   const mb = jobWeightMb(args);
   await acquireSlot(mb);
   // Große Dateien brauchen länger: Grundzeit + 3 s pro MB, höchstens 45 Minuten.
-  const sized = Math.min(45 * 60 * 1000, JOB_TIMEOUT_MS + mb * 3000);
-  const timeout = Math.max(opts.timeout || JOB_TIMEOUT_MS, sized);
+  const sized = Math.round(Math.min(45 * 60 * 1000, JOB_TIMEOUT_MS + mb * 3000)); // ganze Millisekunden, sonst lehnt Node ab
+  const timeout = Math.round(Math.max(opts.timeout || JOB_TIMEOUT_MS, sized));
   try {
     return await runNow(cmd, args, { ...opts, timeout });
   } finally {
