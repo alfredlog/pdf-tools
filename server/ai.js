@@ -63,8 +63,12 @@ async function chat(messages, { json = false, maxTokens = 1800, strong = false }
     });
   let res;
   try {
-    res = await send(NEW_STYLE.has(model));
-    if (res.status === 400 && !NEW_STYLE.has(model)) {
+    // Neuere Modelle (gpt-5, o-Serie) wollen max_completion_tokens statt max_tokens.
+    // Wichtig bei parallelen Anfragen: Entscheidend ist, wie DIESE Anfrage gesendet wurde –
+    // sonst bricht jede Anfrage ab, die vor dem ersten "Umlernen" schon unterwegs war.
+    const modern = NEW_STYLE.has(model) || /^(gpt-5|o\d)/i.test(model);
+    res = await send(modern);
+    if (res.status === 400 && !modern) {
       const text = await res.text().catch(() => "");
       if (/max_tokens|max_completion_tokens|temperature/.test(text)) {
         NEW_STYLE.add(model);
