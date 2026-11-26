@@ -35,7 +35,12 @@ const agentApi = require("./server/agent-api");
 const PORT = Number(process.env.PORT) || 3000;
 const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 200;
 const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 500; // Summe aller Dateien eines Auftrags
-const MAX_JOBS = Number(process.env.MAX_JOBS) || 2; // gleichzeitige schwere Programme (Ghostscript, LibreOffice, OCR …)
+// Warteschlange – greift nur, wenn der Server wirklich viel zu tun hat (siehe run()).
+const SMALL_MB = Number(process.env.SMALL_MB) || 20; // bis zu dieser Größe gilt ein Auftrag als "klein"
+const MAX_SMALL = Number(process.env.MAX_SMALL) || 6; // so viele kleine Aufträge laufen gleichzeitig
+const BIG_BUDGET_MB = Number(process.env.BIG_BUDGET_MB) || 400; // Summe der großen Dateien, die gleichzeitig verarbeitet werden
+const MIN_FREE_MB = Number(process.env.MIN_FREE_MB) || 700; // freier Arbeitsspeicher, den ein großer Auftrag zum Start braucht
+const LOW_RAM_MB = Number(process.env.LOW_RAM_MB) || 300; // darunter warten auch kleine Aufträge kurz
 // Optionale Notbremse (Standard: aus). Ohne diese Werte wartet jeder Auftrag einfach, bis er dran ist –
 // die Nutzer sehen nur eine etwas längere Ladeanzeige, nie eine Meldung "Server ausgelastet".
 const MAX_QUEUE = Number(process.env.MAX_QUEUE) || Infinity;
@@ -77,22 +82,81 @@ class UserError extends Error {
 }
 
 /**
- * Warteschlange: Höchstens MAX_JOBS Programme laufen gleichzeitig. Weitere Aufträge
- * warten der Reihe nach (FIFO), bis ein Platz frei wird. So können viele gleichzeitige
- * große Dateien den Arbeitsspeicher des Servers nicht überlasten.
+ * Intelligente Warteschlange
+ * --------------------------
+ * Jeder Programmaufruf bekommt ein "Gewicht" = Größe seiner Eingabedateien in MB.
+ *  - Kleine Aufträge (< SMALL_MB) starten sofort, bis zu MAX_SMALL gleichzeitig.
+ *    Nur wenn der Arbeitsspeicher fast voll ist (< LOW_RAM_MB frei), warten sie kurz.
+ *  - Große Aufträge starten, solange die Summe der gerade verarbeiteten großen Dateien
+ *    unter BIG_BUDGET_MB bleibt UND genug Arbeitsspeicher frei ist (MIN_FREE_MB).
+ *    Ein großer Auftrag darf immer starten, wenn gerade kein anderer großer läuft.
+ *  - Kleine Aufträge dürfen an wartenden großen vorbei – sie sind in Sekunden fertig.
+ * Bei normalem Betrieb merkt also niemand etwas; gewartet wird nur bei echter Last.
  */
-let activeJobs = 0;
+const state = { small: 0, big: 0, bigMb: 0 };
 const waiting = [];
-function acquireSlot() {
-  if (activeJobs < MAX_JOBS) {
-    activeJobs++;
-    return Promise.resolve();
+
+/** Wirklich verfügbarer Arbeitsspeicher in MB (Linux: MemAvailable, sonst os.freemem). */
+function availableMb() {
+  try {
+    const m = /MemAvailable:\s+(\d+)/.exec(fs.readFileSync("/proc/meminfo", "utf8"));
+    if (m) return Number(m[1]) / 1024;
+  } catch {}
+  return os.freemem() / 1024 / 1024;
+}
+
+/** Gewicht eines Aufrufs: Summe der vorhandenen Eingabedateien aus dem Arbeitsordner. */
+function jobWeightMb(args) {
+  let bytes = 0;
+  for (const a of args) {
+    if (typeof a !== "string" || !a.startsWith(TMP_ROOT)) continue;
+    try {
+      const st = fs.statSync(a);
+      if (st.isFile()) bytes += st.size;
+    } catch {}
+  }
+  return bytes / 1024 / 1024;
+}
+
+function canStart(mb) {
+  const free = availableMb();
+  if (mb < SMALL_MB) return state.small < MAX_SMALL && (free > LOW_RAM_MB || state.small + state.big === 0);
+  if (state.big === 0) return true; // ein großer Auftrag läuft immer
+  return state.bigMb + mb <= BIG_BUDGET_MB && free > MIN_FREE_MB;
+}
+
+function take(mb) {
+  if (mb < SMALL_MB) state.small++;
+  else { state.big++; state.bigMb += mb; }
+}
+
+function pump() {
+  // In Reihenfolge prüfen, aber jeden starten, der gerade passt (kleine überholen große).
+  for (let i = 0; i < waiting.length; ) {
+    const e = waiting[i];
+    if (canStart(e.mb)) {
+      waiting.splice(i, 1);
+      clearTimeout(e.timer);
+      take(e.mb);
+      e.resolve();
+    } else i++;
+  }
+}
+// Falls nur der Arbeitsspeicher knapp war: regelmäßig nachsehen, ob wieder Platz ist.
+setInterval(() => waiting.length && pump(), 2000).unref();
+
+function acquireSlot(mb) {
+  if (!waiting.length || mb < SMALL_MB) {
+    if (canStart(mb)) {
+      take(mb);
+      return Promise.resolve();
+    }
   }
   if (waiting.length >= MAX_QUEUE) {
     return Promise.reject(new UserError("Der Server ist gerade ausgelastet. Bitte versuche es in einer Minute erneut.", 503));
   }
   return new Promise((resolve, reject) => {
-    const entry = { resolve, timer: null };
+    const entry = { resolve, mb, timer: null };
     if (QUEUE_WAIT_MS) entry.timer = setTimeout(() => {
       const i = waiting.indexOf(entry);
       if (i >= 0) waiting.splice(i, 1);
@@ -101,23 +165,21 @@ function acquireSlot() {
     waiting.push(entry);
   });
 }
-function releaseSlot() {
-  const next = waiting.shift();
-  if (next) {
-    clearTimeout(next.timer);
-    next.resolve(); // Platz direkt weitergeben, activeJobs bleibt gleich
-  } else {
-    activeJobs--;
-  }
+
+function releaseSlot(mb) {
+  if (mb < SMALL_MB) state.small--;
+  else { state.big--; state.bigMb -= mb; }
+  pump();
 }
 
 /** Führt ein Programm OHNE Shell aus – Dateinamen können so nichts einschleusen. */
 async function run(cmd, args, opts = {}) {
-  await acquireSlot();
+  const mb = jobWeightMb(args);
+  await acquireSlot(mb);
   try {
     return await runNow(cmd, args, opts);
   } finally {
-    releaseSlot();
+    releaseSlot(mb);
   }
 }
 
