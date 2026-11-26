@@ -518,7 +518,28 @@
         if (el && (el.closest?.("[data-no-send]") || el.type === "file")) continue;
         fd.append(k, val);
       }
+      // Lange Aufträge (Übersetzen): Auftragsnummer mitschicken und den Fortschritt beim Server erfragen
+      const job = cfg.live ? Math.random().toString(36).slice(2) + Date.now().toString(36) : "";
+      if (job) fd.append("job", job);
       for (const { file } of state.files) fd.append("file", file, file.name);
+
+      let poll = null;
+      const stopPoll = () => poll && clearInterval(poll);
+      const startPoll = () => {
+        if (!job) return;
+        poll = setInterval(async () => {
+          try {
+            const p = await (await fetch(`/api/progress/${job}`, { cache: "no-store" })).json();
+            if (p.phase === "read") setProgress(3, L("Text wird gelesen …"));
+            else if (p.phase === "translate" && p.total) {
+              const pct = Math.max(5, Math.round((p.done / p.total) * 90));
+              setProgress(pct, L("Wird übersetzt … {d} von {n} Abschnitten", { d: p.done, n: p.total }));
+            } else if (p.phase === "build") setProgress(95, L("PDF wird erstellt …"));
+          } catch {
+            /* Fortschritt ist nur Komfort */
+          }
+        }, 1500);
+      };
 
       startBusy(L("Wird hochgeladen …"), true);
       const xhr = new XMLHttpRequest();
@@ -527,7 +548,11 @@
       xhr.upload.onprogress = (e) => {
         if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100), L("Wird hochgeladen … {p} %", { p: Math.round((e.loaded / e.total) * 100) }));
       };
-      xhr.upload.onload = () => startBusy(L("Wird verarbeitet …"));
+      xhr.upload.onload = () => {
+        startBusy(L("Wird verarbeitet …"), !!job);
+        startPoll();
+      };
+      xhr.addEventListener("loadend", stopPoll);
       xhr.onerror = () => reject(Object.assign(new Error(), { userMessage: L("Keine Verbindung zum Server. Prüfe deine Internetverbindung.") }));
       xhr.onload = async () => {
         if (xhr.status !== 200) {

@@ -696,6 +696,7 @@ function workspace(t) {
     select: ui.select,
     savings: ui.showSavings ? "true" : undefined,
     pro: t.pro ? "true" : undefined,
+    live: ui.endpoint === "/api/ai/translate" ? "true" : undefined, // Fortschritt beim Server erfragen
   };
   const dataAttrs = Object.entries(data)
     .filter(([, v]) => v !== undefined)

@@ -1088,7 +1088,18 @@ app.get("/api/health", async (req, res) => {
 app.use("/api/auth", auth.router());
 app.use("/api/billing", billing.router());
 app.use("/api/pro", apiLimiter, editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_MB: MEM_FILE_MB }));
-app.use("/api/ai", aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert }));
+// Fortschritt langer Aufträge (z. B. Übersetzen): Der Browser fragt alle paar Sekunden nach.
+// Nur Zähler, keine Inhalte; Einträge verschwinden nach 15 Minuten.
+const progress = new Map();
+setInterval(() => {
+  for (const [k, v] of progress) if (Date.now() - v.t > 15 * 60 * 1000) progress.delete(k);
+}, 60 * 1000).unref();
+app.get("/api/progress/:id", (req, res) => {
+  res.set("Cache-Control", "no-store");
+  const p = progress.get(req.params.id);
+  res.json(p ? { phase: p.phase, done: p.done, total: p.total } : { phase: "unknown" });
+});
+app.use("/api/ai", aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert, progress }));
 
 // Agenten-API (Bezahlung pro Aufruf in BSV, siehe server/agent-api.js) – nur wenn AGENT_API_ENABLED=true
 if (agentApi.enabled) {

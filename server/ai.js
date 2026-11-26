@@ -353,7 +353,7 @@ function ibanOk(iban) {
   return rest === 1;
 }
 
-module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert }) {
+module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert, progress = new Map() }) {
   const r = express.Router();
   const script = path.join(__dirname, "..", "pdf_ai.py");
 
@@ -430,6 +430,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
     try {
       const [file] = requireFiles(req);
       const target = LANGUAGES[req.body.lang] ? req.body.lang : "en";
+      if (/^[a-z0-9]{8,40}$/.test(req.body.job || "")) progress.set(req.body.job, { phase: "read", done: 0, total: 0, t: Date.now() });
       const blocksFile = path.join(req.jobDir, "blocks.json");
       const data = await pythonJson(["blocks", file.path, blocksFile], blocksFile);
       if (data.pageCount > data.maxPages) throw new ApiError(`Bitte übersetze höchstens ${data.maxPages} Seiten auf einmal. Teile die PDF vorher mit „PDF teilen“.`, 413);
@@ -439,23 +440,24 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
       if (total > MAX_TRANSLATE_CHARS) throw new ApiError("Diese PDF enthält sehr viel Text. Bitte teile sie mit „PDF teilen“ in kleinere Teile auf (bis ca. 20 Seiten Fließtext).", 413);
 
       // In Paketen übersetzen; die KI gibt dieselbe Anzahl Einträge zurück
-      const system = `Übersetze jeden Eintrag der Liste ins ${LANGUAGES[target]}. Antworte nur mit JSON im Format {"items": ["…", …]} – gleiche Anzahl und Reihenfolge wie die Eingabe. Behalte Zahlen, Namen, E-Mail-Adressen und Abkürzungen bei. Übersetze natürlich und vollständig, nicht wörtlich. Ist ein Eintrag schon in der Zielsprache, gib ihn unverändert zurück.`;
+      const system = `Übersetze jeden Eintrag der Liste ins ${LANGUAGES[target]}. Antworte nur mit JSON im Format {"items": ["…", …]} – gleiche Anzahl und Reihenfolge wie die Eingabe. Behalte Zahlen, Namen, E-Mail-Adressen und Abkürzungen bei. Übersetze natürlich und vollständig, nicht wörtlich. Ist ein Eintrag schon in der Zielsprache, gib ihn unverändert zurück. Manche Einträge enthalten die Formatierungs-Tags <b>, <i>, <u> oder <s> (fett, kursiv, unterstrichen, durchgestrichen): Behalte sie bei und setze sie um die entsprechenden übersetzten Wörter. Füge keine anderen Tags hinzu.`;
       const batches = [];
       let cur = [];
       let size = 0;
       for (const b of blocks) {
-        if (cur.length && (size + b.text.length > 4000 || cur.length >= 60)) {
+        // Kleine Pakete, viele parallel: Die KI schreibt jedes Paket schneller, und die Gesamtzeit sinkt deutlich.
+        if (cur.length && (size + b.markup.length > 1500 || cur.length >= 25)) {
           batches.push(cur);
           cur = [];
           size = 0;
         }
         cur.push(b);
-        size += b.text.length;
+        size += b.markup.length;
       }
       if (cur.length) batches.push(cur);
 
       async function translateBatch(batch) {
-        const content = await chat([{ role: "system", content: system }, { role: "user", content: JSON.stringify({ items: batch.map((b) => b.text) }) }], { json: true, maxTokens: 4000 });
+        const content = await chat([{ role: "system", content: system }, { role: "user", content: JSON.stringify({ items: batch.map((b) => b.markup) }) }], { json: true, maxTokens: 2500 });
         let items = null;
         try {
           items = JSON.parse(content).items;
@@ -463,24 +465,40 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
           items = null;
         }
         if (Array.isArray(items) && items.length === batch.length) {
-          batch.forEach((b, i) => (b.translation = String(items[i] ?? b.text)));
+          batch.forEach((b, i) => (b.translation = String(items[i] ?? b.markup)));
           return;
         }
         // Antwort passt nicht: kleiner aufteilen
         if (batch.length === 1) {
-          batch[0].translation = batch[0].text;
+          batch[0].translation = batch[0].markup;
           return;
         }
         const mid = Math.ceil(batch.length / 2);
         await translateBatch(batch.slice(0, mid));
         await translateBatch(batch.slice(mid));
       }
-      for (let i = 0; i < batches.length; i += 3) await Promise.all(batches.slice(i, i + 3).map(translateBatch));
+      // Bis zu 6 Pakete gleichzeitig; sobald eines fertig ist, startet das nächste (keine Wartezeit auf das langsamste)
+      const job = /^[a-z0-9]{8,40}$/.test(req.body.job || "") ? req.body.job : null;
+      let done = 0;
+      const report = (phase) => job && progress.set(job, { phase, done, total: batches.length, t: Date.now() });
+      report("translate");
+      let next = 0;
+      async function worker() {
+        while (next < batches.length) {
+          const batch = batches[next++];
+          await translateBatch(batch);
+          done++;
+          report("translate");
+        }
+      }
+      await Promise.all(Array.from({ length: Math.min(6, batches.length) }, worker));
+      report("build");
 
       const trFile = path.join(req.jobDir, "translated.json");
       const out = path.join(req.jobDir, "translated.pdf");
       await fsp.writeFile(trFile, JSON.stringify({ blocks }));
       await run(PYTHON, [script, "apply", file.path, trFile, out]);
+      if (job) progress.delete(job);
       await sendFile(res, out, outName(file.originalname, `_${target.toUpperCase()}`, ".pdf"));
     } catch (e) {
       next(e);
