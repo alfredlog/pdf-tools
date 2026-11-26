@@ -32,6 +32,11 @@ function T(text, vars) {
 const BASE_TOOLS = new Map(tools.map((t) => [t.slug, structuredClone(t)]));
 const RAW_LANDINGS = require("./landings").landings;
 // Artikel: [[Überschrift, Absatz, …], …] → [{ h, p: [...] }]
+/** Vergleichstabelle in einem Ratgeber-Abschnitt: { head: [...], rows: [[...], ...] } */
+const articleTable = (tb) =>
+  `<div class="cmp-wrap"><table class="cmp"><thead><tr>${tb.head.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${tb.rows
+    .map((r) => `<tr>${r.map((c, i) => (i ? `<td>${esc(c)}</td>` : `<th scope="row">${esc(c)}</th>`)).join("")}</tr>`)
+    .join("")}</tbody></table></div>\n  `;
 const toArticle = (a) => (a || []).map((x) => (Array.isArray(x) ? { h: x[0], p: x.slice(1) } : x));
 function availableIn(slug, lang) {
   if (lang === "de" || slug === "" || slug === "404" || slug === "bewerbung") return true;
@@ -480,7 +485,7 @@ function homePage() {
         ],
     [T("Was passiert mit meinen Dateien?"), T("Werkzeuge mit dem Hinweis „Im Browser“ verarbeiten deine Datei direkt auf deinem Gerät, sie wird gar nicht hochgeladen. Bei allen anderen Werkzeugen wird die Datei verschlüsselt übertragen und direkt nach der Verarbeitung automatisch gelöscht.")],
     [T("Brauche ich ein Programm oder eine App?"), T("Nein. PDF Libre läuft in jedem aktuellen Browser – auf Windows, Mac, Linux, Android und iPhone.")],
-    [T("Wie groß dürfen meine Dateien sein?"), T("Auch große Dateien sind kein Problem – gescannte Dokumente mit mehreren hundert Seiten eingeschlossen. Sehr große Dateien brauchen nur etwas länger. Werkzeuge, die im Browser laufen, sind nur durch den Arbeitsspeicher deines Geräts begrenzt.")],
+    [T("Wie groß dürfen meine Dateien sein?"), T("Bis zu 500 MB pro Datei und bis zu 1 GB pro Upload – deutlich mehr als bei den meisten kostenlosen PDF-Diensten, und ohne Tageslimit. Werkzeuge, die im Browser laufen, sind nur durch den Arbeitsspeicher deines Geräts begrenzt.")],
   ];
   const jsonLd = [
     { "@context": "https://schema.org", "@type": "WebSite", name: config.name, url: absUrl(""), inLanguage: { de: "de-DE", en: "en", fr: "fr" }[LANG] },
@@ -725,7 +730,7 @@ function workspace(t) {
             <input type="file" class="visually-hidden" accept="${esc(ui.input.accept)}"${ui.multiple ? " multiple" : ""}>
           </label>
           <p class="drop__or">${ui.multiple ? T("oder Dateien hierher ziehen") : T("oder Datei hierher ziehen")}</p>
-          <p class="drop__hint">${esc(ui.dropHint || (ui.mode === "client" ? T("PDF-Datei") : T("PDF-Datei")))}</p>
+          <p class="drop__hint">${esc(ui.dropHint || (ui.mode === "client" ? T("PDF-Datei") : T("PDF-Datei, bis zu 500 MB")))}</p>
         </div>
         <p class="privacy">${privacy}</p>
       </div>
@@ -970,7 +975,7 @@ function formWorkspace(t) {
           <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
         </label>
         <p class="drop__or">${T("oder Datei hierher ziehen")}</p>
-        <p class="drop__hint">${T("PDF-Formular")}</p>
+        <p class="drop__hint">${T("PDF-Formular, bis zu 500 MB")}</p>
       </div>
       <p class="privacy">${ICON.shield}<span>${T("<strong>Im Browser:</strong> Deine Datei wird nicht hochgeladen.")}</span></p>
     </div>
@@ -1238,7 +1243,7 @@ function slidesWorkspace(t) {
           <input type="file" class="visually-hidden" accept=".pdf,application/pdf">
         </label>
         <p class="drop__or">oder Datei hierher ziehen</p>
-        <p class="drop__hint">PDF-Datei, bis zu 80 Seiten</p>
+        <p class="drop__hint">PDF-Datei, bis zu 500 MB und 80 Seiten</p>
       </div>
       <p class="privacy">${ICON.shield}<span><strong>Sicher:</strong> Verschlüsselte Übertragung, die Dateien werden spätestens nach 30 Minuten gelöscht.</span></p>
     </div>
@@ -1449,7 +1454,7 @@ ${t.promo ? promoBox(t.promo) : ""}
 </section>
 
 <section class="wrap article"${t.article.length ? "" : " hidden"}>
-  ${t.article.map((a) => `<h2>${esc(a.h)}</h2>\n  ${a.p.map((p) => `<p>${esc(p)}</p>`).join("\n  ")}`).join("\n  ")}
+  ${t.article.map((a) => `<h2>${esc(a.h)}</h2>\n  ${a.table ? articleTable(a.table) : ""}${a.p.map((p) => `<p>${esc(p)}</p>`).join("\n  ")}`).join("\n  ")}
 </section>
 
 <section class="wrap faq" aria-labelledby="faq-title">

@@ -46,7 +46,7 @@ const tools = [
     glyph: "merge",
     title: "PDF zusammenfügen – kostenlos & online | PDF Libre",
     description:
-      "PDFs online zusammenfügen: mehrere PDF-Dateien per Drag & Drop sortieren und zu einer PDF kombinieren. Kostenlos, ohne Anmeldung, sofort gelöscht.",
+      "PDFs online zusammenfügen: mehrere PDF-Dateien per Drag & Drop sortieren und zu einer PDF kombinieren. Kostenlos, ohne Anmeldung, sofort gelöscht. Dateien bis 500 MB.",
     h1: "PDF zusammenfügen",
     lead: "Kombiniere mehrere PDF-Dateien zu einem Dokument. Reihenfolge per Drag & Drop festlegen, fertig.",
     ui: {
@@ -57,7 +57,7 @@ const tools = [
       min: 2,
       sortable: true,
       action: "PDFs zusammenfügen",
-      dropHint: "Mindestens 2 PDF-Dateien",
+      dropHint: "Mindestens 2 PDF-Dateien, bis zu 500 MB pro Datei",
     },
     steps: [
       ["PDFs auswählen", "Klicke auf „Dateien auswählen“ oder ziehe mehrere PDF-Dateien in das Feld."],
@@ -82,7 +82,7 @@ const tools = [
       },
     ],
     faq: [
-      ["Wie viele PDFs kann ich auf einmal zusammenfügen?", "Bis zu 20 Dateien auf einmal – auch große Dateien und lange Scans. Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."],
+      ["Wie viele PDFs kann ich auf einmal zusammenfügen?", "Bis zu 20 Dateien mit jeweils bis zu 500 MB, zusammen bis zu 1 GB pro Upload. Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."],
       ["Kann ich einzelne Seiten statt ganzer Dateien kombinieren?", "Ja: Füge zuerst die Dateien zusammen und entferne danach mit „Seiten entfernen“ oder „PDF organisieren“ die Seiten, die du nicht brauchst."],
       ["Funktioniert das auch mit passwortgeschützten PDFs?", "Nein. Entsperre die Datei zuerst mit „PDF entsperren“ – dafür brauchst du das Passwort."],
       ["Werden meine Dateien gespeichert?", "Nein. Die Dateien werden nur für die Verarbeitung auf dem Server abgelegt und direkt nach dem Download automatisch gelöscht."],
@@ -370,7 +370,7 @@ const tools = [
     glyph: "compress",
     title: "PDF komprimieren – Dateigröße online verkleinern | PDF Libre",
     description:
-      "PDF verkleinern in Sekunden: drei Stufen, ideal für E-Mail und Upload-Portale. Kostenlos, ohne Anmeldung und ohne Wasserzeichen.",
+      "PDF verkleinern in Sekunden: drei Stufen, ideal für E-Mail und Upload-Portale. Kostenlos, ohne Anmeldung und ohne Wasserzeichen. Dateien bis 500 MB.",
     h1: "PDF komprimieren",
     lead: "Verkleinere deine PDF für E-Mail, Bewerbungsportale oder Behörden-Uploads. Du wählst, wie stark komprimiert wird.",
     ui: {
@@ -442,7 +442,7 @@ const tools = [
       sortable: true,
       action: "Zusammenfügen & komprimieren",
       showSavings: true,
-      dropHint: "Mehrere PDF-Dateien",
+      dropHint: "Mehrere PDF-Dateien, bis zu 500 MB pro Datei",
       options: [
         {
           type: "radio",
@@ -472,7 +472,7 @@ const tools = [
     ],
     faq: [
       ["Kann ich auch nur eine Datei hochladen?", "Ja, dann wird sie nur komprimiert – genau wie bei „PDF komprimieren“."],
-      ["Wie viele Dateien sind möglich?", "Bis zu 20 PDFs auf einmal, auch große Dateien."],
+      ["Wie viele Dateien sind möglich?", "Bis zu 20 PDFs mit jeweils bis zu 500 MB, zusammen bis zu 1 GB."],
       ["Werden die Dateien gespeichert?", "Nein, sie werden direkt nach der Verarbeitung gelöscht."],
     ],
     related: ["bewerbungsmappe", "merge", "organize", "jpg-to-pdf"],
@@ -488,7 +488,7 @@ const tools = [
     glyph: "word",
     title: "DOCX in PDF umwandeln – Word zu PDF, kostenlos online | PDF Libre",
     description:
-      "DOCX in PDF umwandeln (docx to pdf): Word-Dateien online in PDF konvertieren – ohne Word, ohne Anmeldung, ohne Wasserzeichen. Auch DOC, ODT und RTF. Kostenlos.",
+      "DOCX in PDF umwandeln (docx to pdf): Word-Dateien online in PDF konvertieren – ohne Word, ohne Anmeldung, ohne Wasserzeichen. Auch DOC, ODT und RTF. Kostenlos. Dateien bis 500 MB.",
     h1: "DOCX in PDF umwandeln – Word zu PDF",
     lead: "Wandle DOCX- und DOC-Dateien kostenlos in PDFs um, die auf jedem Gerät gleich aussehen – ideal für Bewerbungen, Rechnungen, Hausarbeiten und Verträge.",
     ui: {
@@ -496,7 +496,7 @@ const tools = [
       endpoint: "/api/word-to-pdf",
       input: { accept: ".doc,.docx,.odt,.rtf", label: "Word" },
       action: "In PDF umwandeln",
-      dropHint: "DOC, DOCX, ODT oder RTF",
+      dropHint: "DOC, DOCX, ODT oder RTF, bis zu 500 MB",
     },
     steps: [
       ["DOCX-Datei auswählen", "Klicke auf „Datei auswählen“ oder ziehe deine DOCX-Datei in das Feld. Auch DOC, ODT und RTF funktionieren."],
@@ -560,7 +560,7 @@ const tools = [
       endpoint: "/api/powerpoint-to-pdf",
       input: { accept: ".ppt,.pptx,.odp", label: "PowerPoint" },
       action: "In PDF umwandeln",
-      dropHint: "PPT, PPTX oder ODP",
+      dropHint: "PPT, PPTX oder ODP, bis zu 500 MB",
     },
     steps: [
       ["Präsentation auswählen", "Wähle eine PPTX-, PPT- oder ODP-Datei aus."],
@@ -600,7 +600,7 @@ const tools = [
       endpoint: "/api/excel-to-pdf",
       input: { accept: ".xls,.xlsx,.ods,.csv", label: "Excel" },
       action: "In PDF umwandeln",
-      dropHint: "XLS, XLSX, ODS oder CSV",
+      dropHint: "XLS, XLSX, ODS oder CSV, bis zu 500 MB",
     },
     steps: [
       ["Tabelle auswählen", "Wähle eine XLSX-, XLS-, ODS- oder CSV-Datei aus."],
@@ -710,7 +710,7 @@ const tools = [
     glyph: "word",
     title: "PDF in Word umwandeln – auch Scans mit OCR, Layout bleibt | PDF Libre",
     description:
-      "PDF in Word umwandeln: PDF online in ein bearbeitbares DOCX konvertieren – Tabellen, Bilder und Layout bleiben erhalten. Gescannte PDFs werden per Texterkennung (OCR) bearbeitbar. Kostenlos, ohne Anmeldung.",
+      "PDF in Word umwandeln: PDF online in ein bearbeitbares DOCX konvertieren – Tabellen, Bilder und Layout bleiben erhalten. Gescannte PDFs werden per Texterkennung (OCR) bearbeitbar. Kostenlos, ohne Anmeldung. Dateien bis 500 MB.",
     h1: "PDF in Word umwandeln – auch gescannte PDFs",
     lead: "Mach aus einer PDF wieder ein bearbeitbares Word-Dokument – mit Absätzen, Tabellen und Bildern. Gescannte Seiten werden automatisch per Texterkennung (OCR) in echten Text umgewandelt.",
     ui: {
@@ -718,7 +718,7 @@ const tools = [
       endpoint: "/api/pdf-to-word",
       input: PDF,
       action: "In Word umwandeln",
-      dropHint: "PDF-Datei – auch Scans",
+      dropHint: "PDF-Datei, bis zu 500 MB – auch Scans",
       options: [
         {
           type: "radio",

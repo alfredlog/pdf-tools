@@ -220,7 +220,7 @@ module.exports = [
       sortable: true,
       showSavings: false,
       action: "Bewerbungsmappe erstellen",
-      dropHint: "PDF, Word (DOCX), JPG oder PNG",
+      dropHint: "PDF, Word (DOCX), JPG oder PNG – bis zu 500 MB pro Datei",
       options: [
         {
           type: "select",
@@ -323,7 +323,7 @@ module.exports = [
       endpoint: "/api/pdf-to-excel",
       input: PDF,
       action: "In Excel umwandeln",
-      dropHint: "PDF-Datei mit Text (keine Scans)",
+      dropHint: "PDF-Datei mit Text (keine Scans), bis zu 500 MB",
     },
     steps: [
       ["PDF auswählen", "Wähle die PDF mit den Tabellen aus, z. B. einen Kontoauszug, eine Rechnung oder einen Bericht."],
@@ -422,7 +422,7 @@ module.exports = [
       endpoint: "/api/ai/summarize",
       input: PDF,
       action: "Zusammenfassen",
-      dropHint: "PDF mit Text",
+      dropHint: "PDF mit Text, bis zu 500 MB",
       options: [
         {
           type: "select",
@@ -538,7 +538,7 @@ module.exports = [
     glyph: "ocr",
     title: "OCR online: PDF durchsuchbar machen – Texterkennung kostenlos | PDF Libre",
     description:
-      "Gescannte PDF durchsuchbar machen: Die OCR-Texterkennung erkennt den Text in Scans und Fotos – danach kannst du suchen, markieren und kopieren. Deutsch, Englisch, Französisch. Kostenlos, ohne Anmeldung.",
+      "Gescannte PDF durchsuchbar machen: Die OCR-Texterkennung erkennt den Text in Scans und Fotos – danach kannst du suchen, markieren und kopieren. Deutsch, Englisch, Französisch. Kostenlos, ohne Anmeldung. Dateien bis 500 MB.",
     h1: "PDF durchsuchbar machen – OCR-Texterkennung",
     lead: "Aus einem Scan wird eine PDF, in der du mit Strg+F suchen und Text kopieren kannst. Das Aussehen der Seiten bleibt genau gleich.",
     ui: {
@@ -546,7 +546,7 @@ module.exports = [
       endpoint: "/api/ocr",
       input: PDF,
       action: "Text erkennen",
-      dropHint: "Gescannte PDF",
+      dropHint: "Gescannte PDF, bis zu 500 MB",
       options: [
         {
           type: "select",
@@ -750,7 +750,7 @@ module.exports = [
       sortable: true,
       min: 1,
       action: "In PDF umwandeln",
-      dropHint: "HEIC, JPG, PNG oder WebP",
+      dropHint: "HEIC, JPG, PNG oder WebP – bis zu 500 MB pro Datei",
     },
     steps: [
       ["Fotos auswählen", "Wähle die Fotos vom iPhone oder aus deinem Ordner aus – HEIC, JPG, PNG und WebP gehen gemischt."],
