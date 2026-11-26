@@ -33,8 +33,8 @@ const agentApi = require("./server/agent-api");
 // Konfiguration (über Umgebungsvariablen anpassbar)
 // ---------------------------------------------------------------------------
 const PORT = Number(process.env.PORT) || 3000;
-const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 100;
-const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 300; // Summe aller Dateien eines Auftrags
+const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 200;
+const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 500; // Summe aller Dateien eines Auftrags
 const MAX_JOBS = Number(process.env.MAX_JOBS) || 2; // gleichzeitige schwere Programme (Ghostscript, LibreOffice, OCR …)
 const MAX_QUEUE = Number(process.env.MAX_QUEUE) || 30; // wartende Aufträge, danach "Server ausgelastet"
 const QUEUE_WAIT_MS = Number(process.env.QUEUE_WAIT_MS) || 2 * 60 * 1000; // max. Wartezeit in der Schlange

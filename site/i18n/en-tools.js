@@ -9,7 +9,7 @@ module.exports = {
     h1: "Create your job application as one PDF",
     lead: "Upload your cover letter, CV and certificates – as PDF, Word or photo. You get one clean PDF in the right order, small enough for any application portal.",
     action: "Create application PDF",
-    dropHint: "PDF, Word (DOCX), JPG or PNG – up to 100 MB per file",
+    dropHint: "PDF, Word (DOCX), JPG or PNG",
     options: {
       cover: { label: "Cover page", choices: { yes: "With cover page", no: "Without cover page" } },
       name: { label: "Your name", placeholder: "Jane Doe" },
@@ -44,7 +44,7 @@ module.exports = {
     h1: "Merge PDF",
     lead: "Combine several PDF files into one document. Set the order by drag & drop – done.",
     action: "Merge PDFs",
-    dropHint: "At least 2 PDF files, up to 100 MB each",
+    dropHint: "At least 2 PDF files",
     steps: [
       ["Select PDFs", "Click “Select files” or drag several PDF files into the box."],
       ["Set the order", "Drag the files in the list to the right position. The top file comes first."],
@@ -52,7 +52,7 @@ module.exports = {
       ["Download", "Download the combined PDF. Your original files stay unchanged."],
     ],
     faq: [
-      ["How many PDFs can I merge at once?", "Up to 20 files of up to 100 MB each (300 MB in total). For more, merge the files in several rounds."],
+      ["How many PDFs can I merge at once?", "Up to 20 files at once – large files and long scans included. For more, merge the files in several rounds."],
       ["Can I combine single pages instead of whole files?", "Yes: merge the files first and then remove the pages you don’t need with “Remove pages” or “Organize PDF”."],
       ["Does it work with password-protected PDFs?", "No. Unlock the file first with “Unlock PDF” – you need the password for that."],
       ["Are my files stored?", "No. The files are only stored for processing on the server and are deleted automatically right after the download."],
@@ -205,7 +205,7 @@ module.exports = {
     h1: "Merge & compress PDFs",
     lead: "The shortcut for applications and uploads: combine files and bring them straight to a size that’s ready to send.",
     action: "Merge & compress",
-    dropHint: "Several PDF files, up to 100 MB each",
+    dropHint: "Several PDF files",
     options: { level: { label: "Compression", choices: { recommended: ["Recommended", "Good quality, much smaller"], strong: ["Strong", "Smallest file"], low: ["Low", "Print quality"] } } },
     steps: [
       ["Select PDFs", "Choose all files that should go into the document."],
@@ -215,7 +215,7 @@ module.exports = {
     ],
     faq: [
       ["Can I upload just one file?", "Yes, then it is only compressed – just like with “Compress PDF”."],
-      ["How many files are possible?", "Up to 20 PDFs of up to 100 MB each, 300 MB in total."],
+      ["How many files are possible?", "Up to 20 PDFs at once, large files included."],
       ["Are the files stored?", "No, they are deleted right after processing."],
     ],
   },
@@ -227,7 +227,7 @@ module.exports = {
     h1: "Make PDF searchable – OCR text recognition",
     lead: "Turn a scan into a PDF you can search with Ctrl+F and copy text from. The pages look exactly the same.",
     action: "Recognize text",
-    dropHint: "Scanned PDF, up to 100 MB",
+    dropHint: "Scanned PDF",
     options: { lang: { label: "Document language", choices: { deu: "German (and English)", eng: "English", fra: "French (and English)", mix: "Mixed: German, English, French" } } },
     steps: [
       ["Upload a scan", "Choose the scanned PDF – for example a contract, a certificate, a letter or an invoice."],
@@ -304,7 +304,7 @@ module.exports = {
     h1: "Convert DOCX to PDF – Word to PDF",
     lead: "Convert DOCX and DOC files for free into PDFs that look the same on every device – ideal for applications, invoices, essays and contracts.",
     action: "Convert to PDF",
-    dropHint: "DOC, DOCX, ODT or RTF, up to 100 MB",
+    dropHint: "DOC, DOCX, ODT or RTF",
     steps: [
       ["Select a DOCX file", "Click “Select file” or drag your DOCX file into the box. DOC, ODT and RTF work too."],
       ["Convert to PDF", "Click “Convert to PDF”. Converting DOCX to PDF usually takes just a few seconds."],
@@ -356,7 +356,7 @@ module.exports = {
     h1: "Convert HEIC to PDF",
     lead: "Your iPhone saves photos as HEIC – many portals don’t accept that. Upload your photos and get a clean PDF with A4 pages.",
     action: "Convert to PDF",
-    dropHint: "HEIC, JPG, PNG or WebP – up to 100 MB per file",
+    dropHint: "HEIC, JPG, PNG or WebP",
     inputLabel: "Photo",
     steps: [
       ["Select photos", "Choose photos from your iPhone or a folder – HEIC, JPG, PNG and WebP can be mixed."],
@@ -378,7 +378,7 @@ module.exports = {
     h1: "Convert Excel to PDF",
     lead: "Turn spreadsheets, invoices and reports from Excel into a PDF that is easy to read and print.",
     action: "Convert to PDF",
-    dropHint: "XLS, XLSX, ODS or CSV, up to 100 MB",
+    dropHint: "XLS, XLSX, ODS or CSV",
     steps: [
       ["Select a spreadsheet", "Choose an XLSX, XLS, ODS or CSV file."],
       ["Convert", "Click “Convert to PDF”. All sheets are included."],
@@ -398,7 +398,7 @@ module.exports = {
     h1: "Convert PowerPoint to PDF",
     lead: "Turn your presentation into a PDF anyone can open – even without PowerPoint.",
     action: "Convert to PDF",
-    dropHint: "PPT, PPTX or ODP, up to 100 MB",
+    dropHint: "PPT, PPTX or ODP",
     steps: [
       ["Select a presentation", "Choose a PPTX, PPT or ODP file."],
       ["Convert", "Click “Convert to PDF”. Each slide becomes a PDF page."],
@@ -439,7 +439,7 @@ module.exports = {
     h1: "Convert PDF to Word – scanned PDFs too",
     lead: "Turn a PDF back into an editable Word document – with paragraphs, tables and images. Scanned pages are converted into real text automatically with text recognition (OCR).",
     action: "Convert to Word",
-    dropHint: "PDF file, up to 100 MB – scans too",
+    dropHint: "PDF file – scans too",
     options: {
       mode: { label: "Layout", choices: { flow: ["Editable", "Real paragraphs and tables – to keep writing (recommended)"], exact: ["Like the original", "Every text block in its exact place – ideal for forms and flyers"] } },
       ocr: { label: "Text recognition for scanned pages", choices: { deu: "Automatic – German and English", fra: "Automatic – French and English", mix: "Automatic – German, English, French", eng: "Automatic – English only", off: "Off – keep scans as images" } },
@@ -467,7 +467,7 @@ module.exports = {
     h1: "Convert PDF to Excel",
     lead: "Get the tables out of your PDF – with real numbers you can keep calculating with in Excel, LibreOffice or Google Sheets.",
     action: "Convert to Excel",
-    dropHint: "PDF with text (no scans), up to 100 MB",
+    dropHint: "PDF with text (no scans)",
     steps: [
       ["Select a PDF", "Choose the PDF with the tables, e.g. a bank statement, an invoice or a report."],
       ["Convert", "Click “Convert to Excel”. Tables are detected – even without visible lines."],
@@ -511,7 +511,7 @@ module.exports = {
     h1: "Summarize PDF with AI",
     lead: "Upload a PDF and read in seconds what it’s about – with deadlines, amounts and what you need to do.",
     action: "Summarize",
-    dropHint: "PDF with text, up to 100 MB",
+    dropHint: "PDF with text",
     options: {
       length: { label: "Length", choices: { medium: "Normal – overview and key points", short: "Short – at most 5 points", long: "Detailed – section by section" } },
       lang: { label: "Language of the summary", choices: { de: "German", auto: "Same as the document", en: "English", fr: "French", es: "Spanish", it: "Italian", pt: "Portuguese", nl: "Dutch", pl: "Polish", tr: "Turkish", ro: "Romanian", ru: "Russian", uk: "Ukrainian" } },

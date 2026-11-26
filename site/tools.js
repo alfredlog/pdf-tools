@@ -57,7 +57,7 @@ const tools = [
       min: 2,
       sortable: true,
       action: "PDFs zusammenfügen",
-      dropHint: "Mindestens 2 PDF-Dateien, bis zu 100 MB pro Datei",
+      dropHint: "Mindestens 2 PDF-Dateien",
     },
     steps: [
       ["PDFs auswählen", "Klicke auf „Dateien auswählen“ oder ziehe mehrere PDF-Dateien in das Feld."],
@@ -82,7 +82,7 @@ const tools = [
       },
     ],
     faq: [
-      ["Wie viele PDFs kann ich auf einmal zusammenfügen?", "Bis zu 20 Dateien mit jeweils maximal 100 MB (zusammen höchstens 300 MB). Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."],
+      ["Wie viele PDFs kann ich auf einmal zusammenfügen?", "Bis zu 20 Dateien auf einmal – auch große Dateien und lange Scans. Für größere Mengen fügst du die Dateien in mehreren Durchgängen zusammen."],
       ["Kann ich einzelne Seiten statt ganzer Dateien kombinieren?", "Ja: Füge zuerst die Dateien zusammen und entferne danach mit „Seiten entfernen“ oder „PDF organisieren“ die Seiten, die du nicht brauchst."],
       ["Funktioniert das auch mit passwortgeschützten PDFs?", "Nein. Entsperre die Datei zuerst mit „PDF entsperren“ – dafür brauchst du das Passwort."],
       ["Werden meine Dateien gespeichert?", "Nein. Die Dateien werden nur für die Verarbeitung auf dem Server abgelegt und direkt nach dem Download automatisch gelöscht."],
@@ -442,7 +442,7 @@ const tools = [
       sortable: true,
       action: "Zusammenfügen & komprimieren",
       showSavings: true,
-      dropHint: "Mehrere PDF-Dateien, bis zu 100 MB pro Datei",
+      dropHint: "Mehrere PDF-Dateien",
       options: [
         {
           type: "radio",
@@ -472,7 +472,7 @@ const tools = [
     ],
     faq: [
       ["Kann ich auch nur eine Datei hochladen?", "Ja, dann wird sie nur komprimiert – genau wie bei „PDF komprimieren“."],
-      ["Wie viele Dateien sind möglich?", "Bis zu 20 PDFs mit jeweils maximal 100 MB, zusammen höchstens 300 MB."],
+      ["Wie viele Dateien sind möglich?", "Bis zu 20 PDFs auf einmal, auch große Dateien."],
       ["Werden die Dateien gespeichert?", "Nein, sie werden direkt nach der Verarbeitung gelöscht."],
     ],
     related: ["bewerbungsmappe", "merge", "organize", "jpg-to-pdf"],
@@ -496,7 +496,7 @@ const tools = [
       endpoint: "/api/word-to-pdf",
       input: { accept: ".doc,.docx,.odt,.rtf", label: "Word" },
       action: "In PDF umwandeln",
-      dropHint: "DOC, DOCX, ODT oder RTF, bis zu 100 MB",
+      dropHint: "DOC, DOCX, ODT oder RTF",
     },
     steps: [
       ["DOCX-Datei auswählen", "Klicke auf „Datei auswählen“ oder ziehe deine DOCX-Datei in das Feld. Auch DOC, ODT und RTF funktionieren."],
@@ -560,7 +560,7 @@ const tools = [
       endpoint: "/api/powerpoint-to-pdf",
       input: { accept: ".ppt,.pptx,.odp", label: "PowerPoint" },
       action: "In PDF umwandeln",
-      dropHint: "PPT, PPTX oder ODP, bis zu 100 MB",
+      dropHint: "PPT, PPTX oder ODP",
     },
     steps: [
       ["Präsentation auswählen", "Wähle eine PPTX-, PPT- oder ODP-Datei aus."],
@@ -600,7 +600,7 @@ const tools = [
       endpoint: "/api/excel-to-pdf",
       input: { accept: ".xls,.xlsx,.ods,.csv", label: "Excel" },
       action: "In PDF umwandeln",
-      dropHint: "XLS, XLSX, ODS oder CSV, bis zu 100 MB",
+      dropHint: "XLS, XLSX, ODS oder CSV",
     },
     steps: [
       ["Tabelle auswählen", "Wähle eine XLSX-, XLS-, ODS- oder CSV-Datei aus."],
@@ -718,7 +718,7 @@ const tools = [
       endpoint: "/api/pdf-to-word",
       input: PDF,
       action: "In Word umwandeln",
-      dropHint: "PDF-Datei, bis zu 100 MB – auch Scans",
+      dropHint: "PDF-Datei – auch Scans",
       options: [
         {
           type: "radio",
