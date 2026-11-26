@@ -23,7 +23,12 @@ module.exports = {
   "In der Adressleiste auf das Symbol „Installieren“ (Bildschirm mit Pfeil) klicken – oder Menü ⋮ → „Streamen, speichern und teilen“ → „Seite als App installieren“.": "Cliquez sur l’icône « Installer » (écran avec flèche) dans la barre d’adresse – ou menu ⋮ → « Caster, enregistrer et partager » → « Installer la page en tant qu’application ».",
   "Firefox": "Firefox",
   "Firefox kann Web-Apps auf dem Computer nicht installieren. Nutze dafür Chrome oder Edge – auf Android geht es auch mit Firefox über das Menü.": "Firefox ne sait pas installer d’applications web sur ordinateur. Utilisez Chrome ou Edge – sur Android, Firefox le permet via le menu.",
-  "Verstanden": "Compris"
+  "Verstanden": "Compris",
+  "Mit Google Analytics sehen wir, welche Werkzeuge genutzt werden, und können die Seite verbessern. Deine Dateien werden dabei nie übertragen. Du kannst deine Wahl jederzeit unter „Datenschutzeinstellungen“ ändern.": "Avec Google Analytics, nous voyons quels outils sont utilisés et pouvons améliorer le site. Vos fichiers ne sont jamais transmis. Vous pouvez modifier votre choix à tout moment dans « Paramètres de confidentialité ».",
+  "Mehr erfahren": "En savoir plus",
+  "Ablehnen": "Refuser",
+  "Akzeptieren": "Accepter",
+  "Darf PDF Libre die Nutzung statistisch auswerten?": "PDF Libre peut-il mesurer l’utilisation du site ?"
  },
  "js": {
   "Die Datei „{name}“ passt nicht zu diesem Werkzeug.": "Le fichier « {name} » ne convient pas à cet outil.",

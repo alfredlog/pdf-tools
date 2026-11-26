@@ -34,9 +34,38 @@
   // „Datenschutzeinstellungen“: öffnet den Google-Cookie-Banner (Google CMP) erneut.
   // Ist der Banner nicht geladen (noch nicht in AdSense veröffentlicht, Werbeblocker …),
   // geht es zur Erklärung in der Datenschutzerklärung.
+  // ------------------------------------------------------------------ eigener Analytics-Banner
+  // Nur solange der Google-Banner fehlt (AdSense noch nicht freigegeben). Er steuert nur analytics_storage.
+  const ownBanner = document.querySelector("[data-own-consent]");
+  const googleCmp = () => !!(window.__tcfapi || document.querySelector(".fc-consent-root, .fc-dialog-container"));
+  const readConsent = () => {
+    try { const c = JSON.parse(localStorage.getItem("pl_consent") || "null"); return c && Date.now() - c.t < 365 * 864e5 ? c.v : null; } catch (_) { return null; }
+  };
+  function dropAnalyticsCookies() {
+    const host = location.hostname.replace(/^www\./, "");
+    for (const name of document.cookie.split(";").map((c) => c.split("=")[0].trim()).filter((n) => /^_ga(_|$)|^_gid$|^_gat/.test(n))) {
+      for (const d of ["", "; domain=" + host, "; domain=." + host]) document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${d}`;
+    }
+  }
+  if (ownBanner) {
+    ownBanner.querySelectorAll("[data-consent]").forEach((b) => b.addEventListener("click", () => {
+      const v = b.dataset.consent;
+      try { localStorage.setItem("pl_consent", JSON.stringify({ v, t: Date.now() })); } catch (_) {}
+      if (typeof window.gtag === "function") window.gtag("consent", "update", { analytics_storage: v === "granted" ? "granted" : "denied" });
+      if (v !== "granted") dropAnalyticsCookies();
+      ownBanner.hidden = true;
+    }));
+    // Erst kurz warten: kommt der Google-Banner, bleibt unserer weg
+    if (!readConsent()) setTimeout(() => { if (!googleCmp()) ownBanner.hidden = false; }, 2500);
+    const watch = setInterval(() => { if (googleCmp()) { ownBanner.hidden = true; clearInterval(watch); } }, 1000);
+    setTimeout(() => clearInterval(watch), 15000);
+  }
+
   document.querySelectorAll("[data-consent-settings]").forEach((a) =>
     a.addEventListener("click", (e) => {
       e.preventDefault();
+      // Ohne Google-Banner: unseren Banner wieder öffnen
+      if (ownBanner && !googleCmp()) { ownBanner.hidden = false; ownBanner.querySelector("[data-consent]").focus(); return; }
       const fc = window.googlefc;
       if (fc && typeof fc.showRevocationMessage === "function") {
         fc.showRevocationMessage();

@@ -28,13 +28,14 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=cf91aabe">
+  <link rel="stylesheet" href="/assets/style.css?v=c5027389">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF übersetzen – PDF Libre","url":"https://pdf-libre.de/translate.html","description":"PDF online übersetzen: Deutsch, Englisch, Französisch, Spanisch, Türkisch und mehr. Der übersetzte Text steht an derselben Stelle, Bilder und Tabellen bleiben erhalten.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"PDF übersetzen","item":"https://pdf-libre.de/translate.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Was kostet die Übersetzung?","acceptedAnswer":{"@type":"Answer","text":"Nichts. PDF übersetzen ist kostenlos und ohne Anmeldung nutzbar (mit einer fairen Begrenzung pro Stunde)."}},{"@type":"Question","name":"Welche Sprachen gibt es?","acceptedAnswer":{"@type":"Answer","text":"Deutsch, Englisch, Französisch, Spanisch, Italienisch, Portugiesisch, Niederländisch, Polnisch, Türkisch, Rumänisch, Russisch und Ukrainisch."}},{"@type":"Question","name":"Wie viele Seiten kann ich übersetzen?","acceptedAnswer":{"@type":"Answer","text":"Bis zu 30 Seiten auf einmal. Größere Dokumente teilst du vorher mit „PDF teilen“."}},{"@type":"Question","name":"Was passiert mit meinem Dokument?","acceptedAnswer":{"@type":"Answer","text":"Der Text wird verschlüsselt an den KI-Dienst übertragen, nur für die Übersetzung verwendet und nicht gespeichert. Die Datei wird direkt danach gelöscht."}}]}</script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
   gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
-  gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);</script>
+  gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);
+  try{var c=JSON.parse(localStorage.getItem('pl_consent')||'null');if(c&&c.v==='granted'&&Date.now()-c.t<31536000000)gtag('consent','update',{analytics_storage:'granted'});}catch(e){}</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MD8R6SK1YW"></script>
   <script>gtag('js',new Date());gtag('config','G-MD8R6SK1YW');</script>
   <meta name="google-adsense-account" content="ca-pub-3689729622700252">
@@ -340,7 +341,17 @@
     <button class="btn btn--primary" value="ok">Verstanden</button>
   </form>
 </dialog>
-<script src="/assets/site.js?v=cf91aabe" defer></script>
-<script src="/assets/tool.js?v=cf91aabe" defer></script>
+<div class="ckb" data-own-consent role="dialog" aria-live="polite" aria-labelledby="ckb-title" hidden>
+  <div class="ckb__text">
+    <p id="ckb-title" class="ckb__title">Darf PDF Libre die Nutzung statistisch auswerten?</p>
+    <p>Mit Google Analytics sehen wir, welche Werkzeuge genutzt werden, und können die Seite verbessern. Deine Dateien werden dabei nie übertragen. Du kannst deine Wahl jederzeit unter „Datenschutzeinstellungen“ ändern. <a href="/Datenschutz.html#einwilligung">Mehr erfahren</a></p>
+  </div>
+  <div class="ckb__btns">
+    <button type="button" class="btn btn--ghost" data-consent="denied">Ablehnen</button>
+    <button type="button" class="btn btn--ghost" data-consent="granted">Akzeptieren</button>
+  </div>
+</div>
+<script src="/assets/site.js?v=c5027389" defer></script>
+<script src="/assets/tool.js?v=c5027389" defer></script>
 </body>
 </html>

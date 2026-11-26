@@ -28,13 +28,14 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=cf91aabe">
+  <link rel="stylesheet" href="/assets/style.css?v=c5027389">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"PDF schwärzen – PDF Libre","url":"https://pdf-libre.de/redact.html","description":"PDF schwärzen online: Namen, Adressen, IBAN, E-Mail-Adressen und Telefonnummern endgültig aus der PDF entfernen – DSGVO-konform anonymisieren. Kostenlos, ohne Anmeldung.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"PDF schwärzen","item":"https://pdf-libre.de/redact.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Kann man die Schwärzung rückgängig machen?","acceptedAnswer":{"@type":"Answer","text":"Nein. Der Text unter den schwarzen Balken wird gelöscht, nicht nur verdeckt. Bewahre deshalb dein Original auf."}},{"@type":"Question","name":"Welche Daten werden automatisch erkannt?","acceptedAnswer":{"@type":"Answer","text":"E-Mail-Adressen, Telefonnummern und IBANs. Namen, Adressen und andere Angaben gibst du selbst als Begriffe ein."}},{"@type":"Question","name":"Warum wurde nichts gefunden?","acceptedAnswer":{"@type":"Answer","text":"Wahrscheinlich ist die PDF ein Scan ohne Textebene. Mache sie zuerst mit der OCR durchsuchbar."}},{"@type":"Question","name":"Wird meine Datei gespeichert?","acceptedAnswer":{"@type":"Answer","text":"Nein. Sie wird direkt nach dem Schwärzen gelöscht."}}]}</script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
   gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
-  gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);</script>
+  gtag('set','ads_data_redaction',true);gtag('set','url_passthrough',true);
+  try{var c=JSON.parse(localStorage.getItem('pl_consent')||'null');if(c&&c.v==='granted'&&Date.now()-c.t<31536000000)gtag('consent','update',{analytics_storage:'granted'});}catch(e){}</script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-MD8R6SK1YW"></script>
   <script>gtag('js',new Date());gtag('config','G-MD8R6SK1YW');</script>
   <meta name="google-adsense-account" content="ca-pub-3689729622700252">
@@ -347,7 +348,17 @@
     <button class="btn btn--primary" value="ok">Verstanden</button>
   </form>
 </dialog>
-<script src="/assets/site.js?v=cf91aabe" defer></script>
-<script src="/assets/tool.js?v=cf91aabe" defer></script>
+<div class="ckb" data-own-consent role="dialog" aria-live="polite" aria-labelledby="ckb-title" hidden>
+  <div class="ckb__text">
+    <p id="ckb-title" class="ckb__title">Darf PDF Libre die Nutzung statistisch auswerten?</p>
+    <p>Mit Google Analytics sehen wir, welche Werkzeuge genutzt werden, und können die Seite verbessern. Deine Dateien werden dabei nie übertragen. Du kannst deine Wahl jederzeit unter „Datenschutzeinstellungen“ ändern. <a href="/Datenschutz.html#einwilligung">Mehr erfahren</a></p>
+  </div>
+  <div class="ckb__btns">
+    <button type="button" class="btn btn--ghost" data-consent="denied">Ablehnen</button>
+    <button type="button" class="btn btn--ghost" data-consent="granted">Akzeptieren</button>
+  </div>
+</div>
+<script src="/assets/site.js?v=c5027389" defer></script>
+<script src="/assets/tool.js?v=c5027389" defer></script>
 </body>
 </html>

@@ -1143,3 +1143,14 @@ html[data-theme="dark"] .langhint { background: #2a3a7a; }
 .install-dlg__list li.is-mine { border-color: var(--brand); background: var(--brand-tint); }
 .install-dlg__list span { color: var(--ink-2); }
 .install-dlg .btn { width: 100%; justify-content: center; }
+
+/* Eigener Einwilligungs-Banner (nur Analytics, solange der Google-Banner fehlt) */
+.ckb { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 1100; max-width: 760px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; padding: 16px 18px; background: var(--surface); color: var(--ink); border: 1px solid var(--line-2); border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.18); }
+.ckb[hidden] { display: none; }
+.ckb__text { flex: 1 1 380px; font-size: .92rem; }
+.ckb__text p { margin: 0; }
+.ckb__title { font-weight: 700; margin-bottom: 4px !important; }
+.ckb__btns { display: flex; gap: 10px; flex: 0 0 auto; }
+.ckb__btns .btn { min-width: 120px; justify-content: center; }
+@media (max-width: 560px) { .ckb__btns { width: 100%; } .ckb__btns .btn { flex: 1; } }
+body.has-mbar .ckb { bottom: 92px; }
