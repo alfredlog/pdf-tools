@@ -33,11 +33,11 @@ const agentApi = require("./server/agent-api");
 // Konfiguration (über Umgebungsvariablen anpassbar)
 // ---------------------------------------------------------------------------
 const PORT = Number(process.env.PORT) || 3000;
-// Größenlimits: 0 = keine Grenze (Standard im kostenlosen Modus). Später für Tarife setzbar.
-const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 0; // pro Datei
-const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 0; // Summe aller Dateien eines Auftrags
+// Größenlimits – großzügig und unsichtbar. Später pro Tarif anpassbar.
+const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 500; // pro Datei (wird auf der Website nicht angezeigt)
+const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 1024; // Summe aller Dateien eines Auftrags
 // Pro-Editor und Agent-API halten Dateien im Arbeitsspeicher – dort bleibt immer eine Grenze.
-const MEM_FILE_MB = MAX_FILE_MB || 200;
+const MEM_FILE_MB = Math.min(MAX_FILE_MB, 200);
 // Warteschlange – greift nur, wenn der Server wirklich viel zu tun hat (siehe run()).
 const SMALL_MB = Number(process.env.SMALL_MB) || 20; // bis zu dieser Größe gilt ein Auftrag als "klein"
 const MAX_SMALL = Number(process.env.MAX_SMALL) || 6; // so viele kleine Aufträge laufen gleichzeitig
