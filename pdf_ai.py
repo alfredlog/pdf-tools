@@ -108,7 +108,7 @@ def _span_deco(span, lines):
 
 
 def _style(run):
-    _t, span, u, st, rects = run
+    _t, span, u, st, rects = run[:5]
     return {"b": _is_bold(span), "i": _is_italic(span), "u": u, "s": st, "_lines": rects}
 
 
@@ -131,9 +131,16 @@ def _unit(pno, rect, runs, lines, page_rect, line_boxes, margins=None):
         sizes[round(sp["size"], 1)] = sizes.get(round(sp["size"], 1), 0) + n
         fonts[sp.get("font", "")] = fonts.get(sp.get("font", ""), 0) + n
         colors[int(sp.get("color", 0))] = colors.get(int(sp.get("color", 0)), 0) + n
+    main_color = max(colors, key=colors.get)
+    palette = {}  # abweichende Farben → c1, c2 …
     # Abweichende Stellen als Tags markieren – die KI behält sie bei
     parts = []
     for t, sp, st in styled:
+        col = int(sp.get("color", 0))
+        st["c"] = None
+        if t.strip() and col != main_color:
+            palette.setdefault(col, f"c{len(palette) + 1}")
+            st["c"] = palette[col]
         piece = html.escape(t, quote=False)
         if piece.strip():
             core = piece.strip()
@@ -141,10 +148,12 @@ def _unit(pno, rect, runs, lines, page_rect, line_boxes, margins=None):
             for k in "bius":
                 if st[k] and not dom[k]:
                     core = f"<{k}>{core}</{k}>"
+            if st["c"]:
+                core = f"<{st['c']}>{core}</{st['c']}>"
             piece = lead + core + trail  # Leerzeichen außerhalb der Tags – sonst wird der Abstand mit unterstrichen
         parts.append(piece)
     markup = re.sub(r"\s+", " ", "".join(parts)).strip()
-    for k in "bius":  # benachbarte gleiche Tags zusammenfassen: </b> <b> → Leerzeichen
+    for k in list("bius") + list(palette.values()):  # benachbarte gleiche Tags zusammenfassen: </b> <b> → Leerzeichen
         markup = re.sub(rf"</{k}>(\s*)<{k}>", r"\1", markup)
     # Linien, die wir mit dem Text verschieben (nur so breit wie der Block – Tabellenrahmen bleiben)
     decos = []
@@ -171,16 +180,17 @@ def _unit(pno, rect, runs, lines, page_rect, line_boxes, margins=None):
             align = "justify" if len(line_boxes) >= 3 and max(rights[:-1]) - min(rights[:-1]) < tol else "left"
         elif max(rights) - min(rights) < tol:
             align = "right"
-        elif max(centers) - min(centers) < tol:
+        elif max(centers) - min(centers) < tol and max(rights) - min(rights) > tol:
             align = "center"
     elif line_boxes and margins:
         # einzelne Zeile: mit den Rändern des Textbereichs der Seite vergleichen
         b = line_boxes[0]
         lm, rm = margins
         tol = max(3, size * 0.5)
-        if b[0] > lm + tol and abs(b[2] - rm) < tol:
+        narrow = (b[2] - b[0]) < (rm - lm) * 0.7  # fast volle Zeilen sind nie „zentriert“
+        if narrow and b[0] > lm + tol and abs(b[2] - rm) < tol:
             align = "right"
-        elif b[0] > lm + tol and abs((b[0] + b[2]) / 2 - (lm + rm) / 2) < tol:
+        elif narrow and b[0] > lm + tol and abs((b[0] + b[2]) / 2 - (lm + rm) / 2) < tol:
             align = "center"
     return {
         "page": pno,
@@ -188,7 +198,8 @@ def _unit(pno, rect, runs, lines, page_rect, line_boxes, margins=None):
         "text": text,
         "markup": markup,
         "size": size,
-        "color": "#%06x" % max(colors, key=colors.get),
+        "color": "#%06x" % main_color,
+        "palette": {v: "#%06x" % k for k, v in palette.items()},
         "font": max(fonts, key=fonts.get),
         "bold": dom["b"],
         "italic": dom["i"],
@@ -224,8 +235,9 @@ def _segments(line, lines_art=(), vlines=()):
             last = seg["runs"][-1] if seg["runs"] else None
             if last and last[1] is span and last[2] == bool(u) and last[3] == bool(st):
                 last[0] += c
+                last[5] = [min(last[5][0], ch["bbox"][0]), min(last[5][1], ch["bbox"][1]), max(last[5][2], ch["bbox"][2]), max(last[5][3], ch["bbox"][3])]
             else:
-                last = [c, span, bool(u), bool(st), []]
+                last = [c, span, bool(u), bool(st), [], list(ch["bbox"])]
                 seg["runs"].append(last)
             for r in (u, st):
                 if r is not None and r not in last[4]:
@@ -263,6 +275,69 @@ def _room_side(bbox, others, vlines, margins, page_rect):
     return [round(max(0, x0 - left_lim - 2), 2), round(max(0, right_lim - x1 - 2), 2)]
 
 
+BULLET = re.compile(r"^[\s›‣•▪▫■□●○◦·∙→➔➢►▶✓✔☐☑*–\-]+$")
+
+
+def _strip_bullet(lines):
+    """Führendes Aufzählungszeichen (›, •, →, – …) bleibt im Original stehen (Farbe, Position) – nur der Text dahinter wird übersetzt."""
+    first = lines[0]
+    runs = first["runs"]
+    k = 0
+    while k < len(runs) and BULLET.match(runs[k][0]):
+        k += 1
+    if k == 0 or k == len(runs):
+        return lines
+    # Ein Run kann Zeichen und Text mischen („› Large“) – dann am ersten Buchstaben teilen geht nicht ohne Zeichenboxen;
+    # solche Fälle bleiben unverändert.
+    rest = runs[k:]
+    box = [min(r[5][0] for r in rest), min(r[5][1] for r in rest), max(r[5][2] for r in rest), max(r[5][3] for r in rest)]
+    return [{"runs": rest, "bbox": box}] + lines[1:]
+
+
+def _starts_bullet(line):
+    t = "".join(r[0] for r in line["runs"]).lstrip()
+    return bool(t) and bool(BULLET.match(t[0])) and t[0] not in "-–"
+
+
+def _line_bold(line):
+    chars = [(len(r[0].strip()), _is_bold(r[1])) for r in line["runs"] if r[0].strip()]
+    total = sum(n for n, _ in chars)
+    return total and sum(n for n, b in chars if b) * 2 > total
+
+
+def _paragraphs(line_list):
+    """Zeilen eines Textblocks in Absätze teilen: Leerzeile, neues Aufzählungszeichen, oder die vorige Zeile endet
+    deutlich vor dem rechten Rand (Absatzende) – z. B. eine fette Kurzzeile über normalem Text."""
+    groups = []
+    right = max((ln["bbox"][2] for ln in line_list), default=0)
+    for ln in line_list:
+        if groups:
+            prev = groups[-1][-1]
+            size = max(r[1]["size"] for r in ln["runs"])
+            gap = ln["bbox"][1] - prev["bbox"][3]
+            short = prev["bbox"][2] < right - size * 4
+            if gap > size * 0.5 or _starts_bullet(ln) or (short and _line_bold(ln) != _line_bold(prev)) or (short and gap > size * 0.15):
+                groups.append([ln])
+                continue
+            groups[-1].append(ln)
+        else:
+            groups.append([ln])
+    return groups
+
+
+def _continues(a, b):
+    """Ist b die Fortsetzung von a (z. B. zweite Zeile eines Aufzählungspunkts, die PyMuPDF als eigenen Block liefert)?"""
+    la, lb = a[-1], b[0]
+    size = max(r[1]["size"] for r in la["runs"])
+    if abs(max(r[1]["size"] for r in lb["runs"]) - size) > 0.6 or _starts_bullet(lb):
+        return False
+    if not (0 <= lb["bbox"][1] - la["bbox"][3] < size * 0.6) or lb["bbox"][0] < a[0]["bbox"][0] - 2:
+        return False
+    ta = "".join(r[0] for r in la["runs"]).rstrip()
+    tb = "".join(r[0] for r in lb["runs"]).lstrip()
+    return ta.endswith(("-", ",")) or (tb[:1].islower())
+
+
 def cmd_blocks(in_path, out_path):
     doc = open_pdf(in_path)
     blocks = []
@@ -271,7 +346,7 @@ def cmd_blocks(in_path, out_path):
         raw = [b for b in page.get_text("rawdict", flags=pymupdf.TEXTFLAGS_TEXT)["blocks"] if b.get("type") == 0]
         all_boxes = [b["bbox"] for b in raw]
         margins = (min(b[0] for b in all_boxes), max(b[2] for b in all_boxes)) if all_boxes else None
-        page_blocks = []
+        cands = []  # (Zeilen, ist_Zelle)
         for b in raw:
             lines = [l for l in b["lines"] if abs(l.get("dir", (1, 0))[1]) <= 0.01]
             segs = [_segments(l, lines_art, vlines) for l in lines]
@@ -280,31 +355,43 @@ def cmd_blocks(in_path, out_path):
                 abs((a["bbox"][1] + a["bbox"][3]) / 2 - (c["bbox"][1] + c["bbox"][3]) / 2) < (a["bbox"][3] - a["bbox"][1]) * 0.5
                 for i, a in enumerate(lines) for c in lines[i + 1:]
             )
-            if not side_by_side and all(len(s) <= 1 for s in segs):
-                # Absatz: alle Zeilen gemeinsam übersetzen, damit der Satz zusammenhängt
-                runs = []
-                for s in segs:
-                    if s:
-                        if runs:
-                            runs.append([" ", s[0]["runs"][0][1], False, False, []])
-                        runs.extend(s[0]["runs"])
-                unit = _unit(pno, b["bbox"], runs, lines_art, page.rect, [s[0]["bbox"] for s in segs if s], margins)
-                if unit:
-                    page_blocks.append(unit)
+            if not side_by_side and all(len(sg) <= 1 for sg in segs):
+                line_list = [sg[0] for sg in segs if sg and sg[0]["runs"]]
+                for group in _paragraphs(line_list):
+                    if cands and not cands[-1][1] and _continues(cands[-1][0], group):
+                        cands[-1][0].extend(group)  # Fortsetzung aus dem nächsten PyMuPDF-Block
+                    else:
+                        cands.append((group, False))
                 continue
             # Tabelle oder Spalten: jede Zelle einzeln
             for line_segs in segs:
                 for seg in line_segs:
-                    unit = _unit(pno, seg["bbox"], seg["runs"], lines_art, page.rect, [])
-                    if unit:
-                        page_blocks.append(unit)
+                    if seg["runs"]:
+                        cands.append(([seg], True))
+        page_blocks = []
+        for group, cell in cands:
+            group = _strip_bullet(group)
+            runs = []
+            for ln in group:
+                if runs:
+                    joiner = "" if "".join(r[0] for r in runs).rstrip().endswith("-") and "".join(r[0] for r in ln["runs"])[:1].islower() else " "
+                    if joiner == "":
+                        runs[-1] = [runs[-1][0].rstrip()[:-1]] + runs[-1][1:]  # Silbentrennung „Kommunikations-|lösungen“ auflösen
+                    else:
+                        runs.append([" ", ln["runs"][0][1], False, False, [], ln["runs"][0][5]])
+                runs.extend(ln["runs"])
+            boxes = [ln["bbox"] for ln in group]
+            rect = [min(x[0] for x in boxes), min(x[1] for x in boxes), max(x[2] for x in boxes), max(x[3] for x in boxes)]
+            unit = _unit(pno, rect, runs, lines_art, page.rect, [] if cell else boxes, None if cell else margins)
+            if unit:
+                page_blocks.append(unit)
         for u in page_blocks:
             own = [pymupdf.Rect(r) for r in u["decos"]]
             rules = [list(r) for r in lines_art if not any(abs(r.y0 - o.y0) < 0.6 and abs(r.x0 - o.x0) < 0.6 for o in own)]
-            others = [o for o in all_boxes if o != u["bbox"]] + [o["bbox"] for o in page_blocks if o is not u] + rules
+            others = [o["bbox"] for o in page_blocks if o is not u] + rules
             u["room"] = round(_room_below(u["bbox"], others, u["size"], page.rect), 2)
             if u.get("single"):
-                u["side"] = _room_side(u["bbox"], [o for o in all_boxes if o != u["bbox"]] + [o["bbox"] for o in page_blocks if o is not u], vlines, margins, page.rect)
+                u["side"] = _room_side(u["bbox"], [o["bbox"] for o in page_blocks if o is not u], vlines, margins, page.rect)
         blocks.extend(page_blocks)
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump({"blocks": blocks, "pageCount": doc.page_count, "maxPages": MAX_TRANSLATE_PAGES}, fh, ensure_ascii=False)
@@ -385,10 +472,10 @@ class Fonts:
         return self.families[key]
 
 
-ALLOWED = re.compile(r"&lt;(/?)([bius])&gt;")
+ALLOWED = re.compile(r"&lt;(/?)([bius]|c\d{1,2})&gt;")
 
 
-def _html(translation):
+def _html(translation, palette=None):
     """Übersetzung sicher als HTML: alles maskieren, nur <b> <i> <u> <s> wieder erlauben – und zwar ausbalanciert:
     Ein vergessenes </u> der KI darf nicht den ganzen Rest unterstreichen, ein loses </b> wird ignoriert."""
     t = html.escape(html.unescape(translation), quote=False)
@@ -398,6 +485,8 @@ def _html(translation):
         pos = m.end()
         closing, tag = m.group(1) == "/", m.group(2)
         if not closing:
+            if tag.startswith("c") and tag not in (palette or {}):
+                continue  # unbekannte Farbe: Tag ignorieren
             if tag not in open_tags:
                 open_tags.append(tag)
                 out.append(f"<{tag}>")
@@ -409,7 +498,11 @@ def _html(translation):
             open_tags.pop(idx)
     out.append(t[pos:])
     out.append("".join(f"</{x}>" for x in reversed(open_tags)))
-    return "".join(out)
+    res = "".join(out)
+    # Farb-Tags in echte Farben umsetzen
+    for tag, col in (palette or {}).items():
+        res = res.replace(f"<{tag}>", f'<span style="color:{col}">').replace(f"</{tag}>", "</span>")
+    return res
 
 
 def cmd_apply(in_path, blocks_path, out_path):
@@ -474,7 +567,7 @@ def cmd_apply(in_path, blocks_path, out_path):
                 return out
 
             before = set(flat_lines()) if b.get("deco_color") else None
-            page.insert_htmlbox(rect, f'<div style="{style}">{_html(b["translation"])}</div>', css="\n".join(fonts.css), archive=fonts.archive)
+            page.insert_htmlbox(rect, f'<div style="{style}">{_html(b["translation"], b.get("palette"))}</div>', css="\n".join(fonts.css), archive=fonts.archive)
             if before is not None:
                 # Die neue Unterstreichung hat die Textfarbe – in der Originalfarbe exakt darüber zeichnen
                 col = tuple(int(b["deco_color"][i:i + 2], 16) / 255 for i in (1, 3, 5))

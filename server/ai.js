@@ -444,7 +444,7 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
       if (total > MAX_TRANSLATE_CHARS) throw new ApiError("Diese PDF enthält sehr viel Text. Bitte teile sie mit „PDF teilen“ in kleinere Teile auf (bis ca. 20 Seiten Fließtext).", 413);
 
       // In Paketen übersetzen; die KI gibt dieselbe Anzahl Einträge zurück
-      const system = `Übersetze jeden Eintrag der Liste ins ${LANGUAGES[target]}. Antworte nur mit JSON im Format {"items": ["…", …]} – gleiche Anzahl und Reihenfolge wie die Eingabe. Behalte Zahlen, Namen, E-Mail-Adressen und Abkürzungen bei. Übersetze natürlich und vollständig, nicht wörtlich. Ist ein Eintrag schon in der Zielsprache, gib ihn unverändert zurück. Manche Einträge enthalten die Formatierungs-Tags <b>, <i>, <u> oder <s> (fett, kursiv, unterstrichen, durchgestrichen): Behalte sie bei und setze sie um die entsprechenden übersetzten Wörter. Füge keine anderen Tags hinzu.`;
+      const system = `Übersetze jeden Eintrag der Liste ins ${LANGUAGES[target]}. Antworte nur mit JSON im Format {"items": ["…", …]} – gleiche Anzahl und Reihenfolge wie die Eingabe. Behalte Zahlen, Namen, E-Mail-Adressen und Abkürzungen bei. Übersetze natürlich und vollständig, nicht wörtlich. Ist ein Eintrag schon in der Zielsprache, gib ihn unverändert zurück. Manche Einträge enthalten die Formatierungs-Tags <b>, <i>, <u>, <s> (fett, kursiv, unterstrichen, durchgestrichen) oder Farb-Tags wie <c1>, <c2>: Behalte sie bei und setze sie um die entsprechenden übersetzten Wörter. Füge keine anderen Tags hinzu.`;
       const batches = [];
       let cur = [];
       let size = 0;
@@ -462,9 +462,9 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
 
       // Formatierungs-Tags zählen: <b>, <i>, <u>, <s> (fett, kursiv, unterstrichen, durchgestrichen)
       const tagCount = (t) => {
-        const c = { b: 0, i: 0, u: 0, s: 0 };
-        for (const m of String(t).matchAll(/<([bius])>/g)) c[m[1]]++;
-        return "bius".split("").map((k) => c[k]).join(",");
+        const c = {};
+        for (const m of String(t).matchAll(/<([bius]|c\d{1,2})>/g)) c[m[1]] = (c[m[1]] || 0) + 1;
+        return Object.keys(c).sort().map((k) => `${k}${c[k]}`).join(",");
       };
       // Hat die KI Tags vergessen oder verdoppelt, fragen wir für genau diese Einträge noch einmal nach.
       // Klappt es wieder nicht, bleibt die erste Übersetzung – der Text stimmt, nur die Hervorhebung fehlt dann.
