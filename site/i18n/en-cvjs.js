@@ -138,5 +138,12 @@ module.exports = {
  "Bearbeiten": "Edit",
  "Vorschau": "Preview",
  "Diese Angabe konnte nicht automatisch umgewandelt werden. Schreibe Monat und Jahr, z. B. „10/2025“, oder nur das Jahr, z. B. „2025“. Für eine laufende Station setze das Häkchen „bis heute“.": "This entry could not be converted automatically. Write month and year, e.g. “10/2025”, or just the year, e.g. “2025”. For an ongoing position tick “to date”.",
- "Diese Angaben konnten nicht automatisch umgewandelt werden. Schreibe Monat und Jahr, z. B. „10/2025“, oder nur das Jahr, z. B. „2025“. Für eine laufende Station setze das Häkchen „bis heute“.": "These entries could not be converted automatically. Write month and year, e.g. “10/2025”, or just the year, e.g. “2025”. For an ongoing position tick “to date”."
+ "Diese Angaben konnten nicht automatisch umgewandelt werden. Schreibe Monat und Jahr, z. B. „10/2025“, oder nur das Jahr, z. B. „2025“. Für eine laufende Station setze das Häkchen „bis heute“.": "These entries could not be converted automatically. Write month and year, e.g. “10/2025”, or just the year, e.g. “2025”. For an ongoing position tick “to date”.",
+  "Der gespeicherte Lebenslauf wird gelöscht und du beginnst mit einem leeren Formular. Fortfahren?": "The saved CV will be deleted and you start with an empty form. Continue?",
+  "„{name}“ – in diesem Browser gespeichert": "“{name}” – saved in this browser",
+  "In diesem Browser gespeichert": "Saved in this browser",
+  "Anderen Lebenslauf hochladen": "Upload a different CV",
+  "Welchen Lebenslauf möchtest du verwenden?": "Which CV would you like to use?",
+  "Die Anzeige wird gelesen …": "Reading the job ad …",
+  "Anzeige übernommen – prüfe kurz den Text.": "Job ad loaded – please check the text quickly.",
 };

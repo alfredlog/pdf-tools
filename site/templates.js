@@ -800,9 +800,10 @@ function cvWorkspace(t) {
   const file = `type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import`;
   return `<section class="tool tool--${c} cv" data-cv data-default-template="${esc((t.defaults && t.defaults.template) || "modern")}" data-start="${esc(t.ui.start || "")}" data-default-lang="${esc((t.defaults && t.defaults.lang) || LANG)}" aria-label="${esc(t.name)}">
     <div class="cv-welcome" data-welcome hidden>
-      <h2>${T("Wie möchtest du starten?")}</h2>
+      <h2 data-welcome-title>${T("Wie möchtest du starten?")}</h2>
       <div class="cv-welcome__cards">
-        <label class="cv-wcard cv-wcard--main"><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>${T("Alten Lebenslauf importieren")}</b><span>${T("PDF oder Word hochladen – die KI überträgt alles ins Formular.")}</span><input ${file}></label>
+        <button type="button" class="cv-wcard cv-wcard--main" data-use-saved hidden><span class="cv-wcard__icon" aria-hidden="true">↺</span><b>${T("Gespeicherten Lebenslauf verwenden")}</b><span data-saved-info></span></button>
+        <label class="cv-wcard cv-wcard--main" data-import-card><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>${T("Alten Lebenslauf importieren")}</b><span>${T("PDF oder Word hochladen – die KI überträgt alles ins Formular.")}</span><input ${file}></label>
         <button type="button" class="cv-wcard" data-sample><span class="cv-wcard__icon" aria-hidden="true">✎</span><b>${T("Mit Beispiel starten")}</b><span>${T("Ein fertiges Muster laden und mit deinen Angaben überschreiben.")}</span></button>
         <button type="button" class="cv-wcard" data-empty><span class="cv-wcard__icon" aria-hidden="true">＋</span><b>${T("Leer beginnen")}</b><span>${T("Schritt für Schritt selbst ausfüllen.")}</span></button>
       </div>
@@ -911,8 +912,9 @@ function cvWorkspace(t) {
     <dialog class="cv-dialog cv-dialog--wide" data-match>
       <form method="dialog">
         <h3>${T("An Stellenanzeige anpassen")}</h3>
-        <p class="cv-dialog__hint">${T("Füge den Text der Stellenanzeige ein. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.")}</p>
+        <p class="cv-dialog__hint">${T("Füge den Text der Stellenanzeige ein oder lade sie als Datei hoch. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.")}</p>
         <textarea class="cv-ad" data-ad rows="8" placeholder="${T("Stellenanzeige hier einfügen (Aufgaben und Anforderungen) …")}"></textarea>
+        <div class="cv-adrow"><label class="btn btn--ghost btn--sm cv-adfile">${T("Anzeige als Datei laden (PDF, Word, Foto)")}<input type="file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt,.jpg,.jpeg,.png" class="visually-hidden" data-ad-file="[data-ad]"></label><span class="cv-dialog__status" data-ad-file-status="[data-ad]"></span></div>
         <div class="cv-dialog__actions cv-dialog__actions--start"><button type="button" class="btn btn--primary" data-run-match>${T("Analysieren")}</button><span class="cv-dialog__status" data-match-status></span></div>
         <div data-match-result hidden>
           <div class="cv-score"><div class="cv-score__bar"><span data-score-bar></span></div><b data-score></b></div>
@@ -938,7 +940,7 @@ function cvWorkspace(t) {
               <p class="cv-letter__basetitle">${T("Grundlage für den KI-Entwurf")}</p>
               <p class="cv-letter__cv" data-letter-cv></p>
               <label class="btn btn--ghost btn--sm" data-letter-import>${T("Lebenslauf importieren (PDF/Word)")}<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
-              <div class="cv-field"><label for="cl-ad">${T("Stellenanzeige (Text einfügen)")}</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="${T("Aufgaben und Anforderungen aus der Stellenanzeige …")}"></textarea></div>
+              <div class="cv-field"><label for="cl-ad">${T("Stellenanzeige (Text einfügen oder Datei laden)")}</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="${T("Aufgaben und Anforderungen aus der Stellenanzeige …")}"></textarea><div class="cv-adrow"><label class="btn btn--ghost btn--sm cv-adfile">${T("Anzeige als Datei laden (PDF, Word, Foto)")}<input type="file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt,.jpg,.jpeg,.png" class="visually-hidden" data-ad-file="[data-letter-ad]"></label><span class="cv-dialog__status" data-ad-file-status="[data-letter-ad]"></span></div></div>
             </div>
             <div class="cv-field"><label for="cl-rec">${T("Empfänger (Firma, Ansprechpartner, Adresse)")}</label><textarea id="cl-rec" rows="4" data-l="recipient" placeholder="${T("Muster GmbH&#10;Frau Julia Schmidt&#10;Hauptstraße 1&#10;60311 Frankfurt am Main")}"></textarea></div>
             <div class="cv-field"><label for="cl-notes">${T("Notizen für die KI (optional)")}</label><textarea id="cl-notes" rows="2" data-l="notes" placeholder="${T("z. B. Warum diese Firma? Ab wann verfügbar? Wie viele Stunden?")}"></textarea></div>

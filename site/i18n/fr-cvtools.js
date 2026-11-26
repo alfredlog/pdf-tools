@@ -41,9 +41,9 @@ module.exports = {
     name: "Adapter son CV à une offre",
     short: "Taux de correspondance, mots-clés manquants et meilleures formulations avec l’IA.",
     title: "Adapter son CV à une offre d’emploi – mots-clés ATS et taux de correspondance | PDF Libre",
-    description: "Comparez votre CV à une offre d’emploi : l’IA affiche votre taux de correspondance, les mots-clés ATS manquants et propose de meilleures formulations – sans rien inventer. Puis téléchargez en PDF.",
+    description: "Comparez votre CV à une offre d’emploi – en texte, PDF, Word ou photo : l’IA affiche votre taux de correspondance, les mots-clés ATS manquants et propose de meilleures formulations – sans rien inventer. Puis téléchargez en PDF.",
     h1: "Adapter son CV à l’offre d’emploi",
-    lead: "Collez l’offre et voyez tout de suite si votre CV correspond : taux de correspondance, exigences remplies ou manquantes et propositions concrètes pour le titre, le profil et les expériences.",
+    lead: "Collez l’offre – ou importez-la en PDF, Word ou photo – et voyez tout de suite si votre CV correspond : taux de correspondance, exigences remplies ou manquantes et propositions concrètes pour le titre, le profil et les expériences.",
     steps: [
       ["Importer votre CV", "Importez votre CV actuel en PDF ou Word – ou remplissez le formulaire."],
       ["Coller l’offre d’emploi", "Copiez dans le champ le texte de l’offre avec les missions et le profil recherché."],

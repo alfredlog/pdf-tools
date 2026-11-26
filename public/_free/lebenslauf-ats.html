@@ -28,7 +28,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="preload" href="/fonts/bricolage-grotesque-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/style.css?v=ae148c35">
+  <link rel="stylesheet" href="/assets/style.css?v=01a81989">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ATS-Lebenslauf – PDF Libre","url":"https://pdf-libre.de/lebenslauf-ats.html","description":"ATS-freundlichen Lebenslauf erstellen: einspaltig, echter Text, Standard-Überschriften und ATS-Check mit Hinweisen. So kommt deine Bewerbung durch Bewerbermanagementsysteme. Kostenlos als PDF.","applicationCategory":"UtilitiesApplication","operatingSystem":"Alle (Webbrowser)","inLanguage":"de-DE","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"PDF Libre","item":"https://pdf-libre.de/"},{"@type":"ListItem","position":2,"name":"Lebenslauf erstellen","item":"https://pdf-libre.de/lebenslauf-erstellen.html"},{"@type":"ListItem","position":3,"name":"ATS-Lebenslauf","item":"https://pdf-libre.de/lebenslauf-ats.html"}]}</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Was ist ein ATS?","acceptedAnswer":{"@type":"Answer","text":"Ein Applicant Tracking System (Bewerbermanagementsystem) ist eine Software, mit der Unternehmen Bewerbungen sammeln, auslesen und sortieren – zum Beispiel Workday, SAP SuccessFactors, Personio oder Softgarden."}},{"@type":"Question","name":"Darf ein ATS-Lebenslauf ein Foto haben?","acceptedAnswer":{"@type":"Answer","text":"Ja, das Foto stört das Auslesen nicht. Es ist in Deutschland aber freiwillig."}},{"@type":"Question","name":"Ist eine PDF für ein ATS geeignet?","acceptedAnswer":{"@type":"Answer","text":"Ja, wenn sie echten Text enthält – wie die PDFs von PDF Libre. Eingescannte Lebensläufe oder Bilder als PDF kann ein ATS dagegen nicht lesen."}}]}</script>
@@ -121,9 +121,10 @@
 <div class="wrap">
   <section class="tool tool--career cv" data-cv data-default-template="modern" data-start="" data-default-lang="de" aria-label="ATS-Lebenslauf">
     <div class="cv-welcome" data-welcome hidden>
-      <h2>Wie möchtest du starten?</h2>
+      <h2 data-welcome-title>Wie möchtest du starten?</h2>
       <div class="cv-welcome__cards">
-        <label class="cv-wcard cv-wcard--main"><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>Alten Lebenslauf importieren</b><span>PDF oder Word hochladen – die KI überträgt alles ins Formular.</span><input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
+        <button type="button" class="cv-wcard cv-wcard--main" data-use-saved hidden><span class="cv-wcard__icon" aria-hidden="true">↺</span><b>Gespeicherten Lebenslauf verwenden</b><span data-saved-info></span></button>
+        <label class="cv-wcard cv-wcard--main" data-import-card><span class="cv-wcard__icon" aria-hidden="true">⬆</span><b>Alten Lebenslauf importieren</b><span>PDF oder Word hochladen – die KI überträgt alles ins Formular.</span><input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
         <button type="button" class="cv-wcard" data-sample><span class="cv-wcard__icon" aria-hidden="true">✎</span><b>Mit Beispiel starten</b><span>Ein fertiges Muster laden und mit deinen Angaben überschreiben.</span></button>
         <button type="button" class="cv-wcard" data-empty><span class="cv-wcard__icon" aria-hidden="true">＋</span><b>Leer beginnen</b><span>Schritt für Schritt selbst ausfüllen.</span></button>
       </div>
@@ -232,8 +233,9 @@
     <dialog class="cv-dialog cv-dialog--wide" data-match>
       <form method="dialog">
         <h3>An Stellenanzeige anpassen</h3>
-        <p class="cv-dialog__hint">Füge den Text der Stellenanzeige ein. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.</p>
+        <p class="cv-dialog__hint">Füge den Text der Stellenanzeige ein oder lade sie als Datei hoch. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.</p>
         <textarea class="cv-ad" data-ad rows="8" placeholder="Stellenanzeige hier einfügen (Aufgaben und Anforderungen) …"></textarea>
+        <div class="cv-adrow"><label class="btn btn--ghost btn--sm cv-adfile">Anzeige als Datei laden (PDF, Word, Foto)<input type="file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt,.jpg,.jpeg,.png" class="visually-hidden" data-ad-file="[data-ad]"></label><span class="cv-dialog__status" data-ad-file-status="[data-ad]"></span></div>
         <div class="cv-dialog__actions cv-dialog__actions--start"><button type="button" class="btn btn--primary" data-run-match>Analysieren</button><span class="cv-dialog__status" data-match-status></span></div>
         <div data-match-result hidden>
           <div class="cv-score"><div class="cv-score__bar"><span data-score-bar></span></div><b data-score></b></div>
@@ -259,7 +261,7 @@
               <p class="cv-letter__basetitle">Grundlage für den KI-Entwurf</p>
               <p class="cv-letter__cv" data-letter-cv></p>
               <label class="btn btn--ghost btn--sm" data-letter-import>Lebenslauf importieren (PDF/Word)<input type="file" accept=".json,application/json,.pdf,application/pdf,.doc,.docx,.odt,.rtf" class="visually-hidden" data-import></label>
-              <div class="cv-field"><label for="cl-ad">Stellenanzeige (Text einfügen)</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="Aufgaben und Anforderungen aus der Stellenanzeige …"></textarea></div>
+              <div class="cv-field"><label for="cl-ad">Stellenanzeige (Text einfügen oder Datei laden)</label><textarea id="cl-ad" rows="5" data-letter-ad placeholder="Aufgaben und Anforderungen aus der Stellenanzeige …"></textarea><div class="cv-adrow"><label class="btn btn--ghost btn--sm cv-adfile">Anzeige als Datei laden (PDF, Word, Foto)<input type="file" accept=".pdf,.doc,.docx,.odt,.rtf,.txt,.jpg,.jpeg,.png" class="visually-hidden" data-ad-file="[data-letter-ad]"></label><span class="cv-dialog__status" data-ad-file-status="[data-letter-ad]"></span></div></div>
             </div>
             <div class="cv-field"><label for="cl-rec">Empfänger (Firma, Ansprechpartner, Adresse)</label><textarea id="cl-rec" rows="4" data-l="recipient" placeholder="Muster GmbH&#10;Frau Julia Schmidt&#10;Hauptstraße 1&#10;60311 Frankfurt am Main"></textarea></div>
             <div class="cv-field"><label for="cl-notes">Notizen für die KI (optional)</label><textarea id="cl-notes" rows="2" data-l="notes" placeholder="z. B. Warum diese Firma? Ab wann verfügbar? Wie viele Stunden?"></textarea></div>
@@ -459,7 +461,7 @@
     <button type="button" class="btn btn--ghost" data-consent="granted">Akzeptieren</button>
   </div>
 </div>
-<script src="/assets/site.js?v=ae148c35" defer></script>
-<script src="/assets/cv.js?v=ae148c35" defer></script>
+<script src="/assets/site.js?v=01a81989" defer></script>
+<script src="/assets/cv.js?v=01a81989" defer></script>
 </body>
 </html>

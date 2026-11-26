@@ -99,4 +99,8 @@ module.exports = {
   "Entwurf mit KI schreiben": "Write draft with AI",
   "Rot = vorher, grün = korrigiert. Wähle aus, was übernommen werden soll.": "Red = before, green = corrected. Choose what to apply.",
   "Anschreiben als PDF": "Cover letter as PDF",
+  "Gespeicherten Lebenslauf verwenden": "Use saved CV",
+  "Füge den Text der Stellenanzeige ein oder lade sie als Datei hoch. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.": "Paste the text of the job ad or upload it as a file. The AI checks which requirements your CV already covers and suggests suitable wording.",
+  "Anzeige als Datei laden (PDF, Word, Foto)": "Load job ad from file (PDF, Word, photo)",
+  "Stellenanzeige (Text einfügen oder Datei laden)": "Job ad (paste text or load a file)",
 };

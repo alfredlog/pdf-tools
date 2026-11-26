@@ -99,4 +99,8 @@ module.exports = {
   "Entwurf mit KI schreiben": "Rédiger un brouillon avec l’IA",
   "Rot = vorher, grün = korrigiert. Wähle aus, was übernommen werden soll.": "Rouge = avant, vert = corrigé. Choisissez ce qu’il faut appliquer.",
   "Anschreiben als PDF": "Lettre de motivation en PDF",
+  "Gespeicherten Lebenslauf verwenden": "Utiliser le CV enregistré",
+  "Füge den Text der Stellenanzeige ein oder lade sie als Datei hoch. Die KI prüft, welche Anforderungen dein Lebenslauf schon abdeckt, und schlägt passende Formulierungen vor.": "Collez le texte de l’offre d’emploi ou importez-la sous forme de fichier. L’IA vérifie quelles exigences votre CV couvre déjà et propose des formulations adaptées.",
+  "Anzeige als Datei laden (PDF, Word, Foto)": "Charger l’offre depuis un fichier (PDF, Word, photo)",
+  "Stellenanzeige (Text einfügen oder Datei laden)": "Offre d’emploi (coller le texte ou charger un fichier)",
 };

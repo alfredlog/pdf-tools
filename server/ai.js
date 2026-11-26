@@ -547,6 +547,41 @@ module.exports = function aiRouter({ run, jobDir, PYTHON, outName, uploader, req
     }
   });
 
+  // ------------------------------------------------------------------ Stellenanzeige als Datei → Text
+  // Für „An Stellenanzeige anpassen“ und das Anschreiben: Anzeige als PDF, Word, Text oder Foto
+  // statt Kopieren & Einfügen. Ohne KI: Text auslesen, bei Scans/Fotos per Texterkennung.
+  r.post("/ad-text", jobDir, uploader("addoc"), async (req, res, next) => {
+    try {
+      const [file] = requireFiles(req);
+      const tidy = (t) => t.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim().slice(0, 20000);
+      if (/\.txt$/i.test(file.path)) return res.json({ text: tidy(await fsp.readFile(file.path, "utf8")) });
+      let pdf = file.path;
+      if (/\.(jpe?g|png)$/i.test(file.path)) {
+        pdf = path.join(req.jobDir, "foto.pdf");
+        await run(PYTHON, [moreScript, "images", pdf, file.path]);
+      } else if (!/\.pdf$/i.test(file.path)) {
+        pdf = await sofficeConvert(file.path, req.jobDir, "pdf");
+      }
+      const textFile = path.join(req.jobDir, "text.json");
+      let { pages } = await pythonJson(["text", pdf, textFile], textFile);
+      let text = tidy(pages.slice(0, 6).join("\n\n"));
+      if (text.replace(/\s/g, "").length < 80) {
+        try {
+          const ocr = path.join(req.jobDir, "ocr.pdf");
+          await run(PYTHON, [moreScript, "ocr", pdf, ocr, "deu+eng+fra"]);
+          ({ pages } = await pythonJson(["text", ocr, textFile], textFile));
+          text = tidy(pages.slice(0, 6).join("\n\n"));
+        } catch {
+          /* Texterkennung nicht möglich */
+        }
+      }
+      if (text.replace(/\s/g, "").length < 40) throw new ApiError("In dieser Datei wurde kein Text der Stellenanzeige gefunden. Kopiere den Text bitte direkt hinein.", 422);
+      res.json({ text });
+    } catch (e) {
+      next(e);
+    }
+  });
+
   // ------------------------------------------------------------------ Rechnung (PDF/Foto) → Daten für „E-Rechnung erstellen“
   // Text auslesen (gescannt/Foto → Texterkennung), KI liest die Rechnungsdaten als JSON.
   // Danach prüfen wir selbst: Summen nachrechnen, Rechnungsnummer/IBAN/Beträge im Originaltext suchen.

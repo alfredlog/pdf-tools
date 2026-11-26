@@ -41,9 +41,9 @@ module.exports = {
     name: "Tailor CV to a job ad",
     short: "Match score, missing keywords and better wording with AI.",
     title: "Tailor your CV to a job ad – ATS keywords & match score | PDF Libre",
-    description: "Compare your CV with a job ad: the AI shows your match score and missing ATS keywords and suggests better wording – without invented details. Then download as PDF.",
+    description: "Compare your CV with a job ad – as text, PDF, Word or photo: the AI shows your match score and missing ATS keywords and suggests better wording – without invented details. Then download as PDF.",
     h1: "Tailor your CV to the job ad",
-    lead: "Paste the job ad and see instantly how well your CV fits: match score, met and missing requirements and concrete suggestions for headline, profile and positions.",
+    lead: "Paste the job ad – or upload it as a PDF, Word file or photo – and see instantly how well your CV fits: match score, met and missing requirements and concrete suggestions for headline, profile and positions.",
     steps: [
       ["Import your CV", "Upload your current CV as PDF or Word – or fill in the form."],
       ["Paste the job ad", "Copy the text of the job ad with tasks and requirements into the field."],

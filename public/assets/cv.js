@@ -1153,6 +1153,11 @@
   }
   let pendingStart = root.dataset.start; // „letter“ oder „match“ auf den Seiten Anschreiben / Stellenanzeige
   function startApp() {
+    try {
+      sessionStorage.setItem(KEY + "-chosen", "1"); // in diesem Tab nicht noch einmal fragen
+    } catch {
+      /* egal */
+    }
     showWelcome(false);
     if (pendingStart) {
       const what = pendingStart;
@@ -1162,6 +1167,11 @@
     }
   }
   $("[data-empty]").addEventListener("click", () => {
+    if (hasContent()) {
+      if (!confirm(tr("Der gespeicherte Lebenslauf wird gelöscht und du beginnst mit einem leeren Formular. Fortfahren?"))) return;
+      data = { ...empty(), template: data.template, accent: data.accent, lang: data.lang };
+      changed();
+    }
     open = new Set(["person"]);
     keepOpen();
     startApp();
@@ -1183,7 +1193,51 @@
     /* egal */
   }
   setStep(savedStep);
-  if (hasContent()) startApp();
-  else showWelcome(true);
+  // Ist schon ein Lebenslauf im Browser gespeichert, entscheidet der Nutzer selbst, ob er ihn verwendet,
+  // einen anderen hochlädt oder neu beginnt – nichts wird automatisch übernommen.
+  let chosen = false;
+  try {
+    chosen = sessionStorage.getItem(KEY + "-chosen") === "1";
+  } catch {
+    /* egal */
+  }
+  if (hasContent() && chosen) startApp();
+  else {
+    const saved = hasContent();
+    const useSaved = $("[data-use-saved]");
+    useSaved.hidden = !saved;
+    if (saved) {
+      const who = (data.person.name || "").trim();
+      $("[data-saved-info]").textContent = who ? tr("„{name}“ – in diesem Browser gespeichert", { name: who }) : tr("In diesem Browser gespeichert");
+      $("[data-import-card] b").textContent = tr("Anderen Lebenslauf hochladen");
+      if (pendingStart) $("[data-welcome-title]").textContent = tr("Welchen Lebenslauf möchtest du verwenden?");
+    }
+    useSaved.addEventListener("click", startApp);
+    showWelcome(true);
+  }
+
+  // Stellenanzeige als Datei (PDF, Word, Text, Foto) → Text ins Feld
+  root.querySelectorAll("[data-ad-file]").forEach((inp) =>
+    inp.addEventListener("change", async () => {
+      const f = inp.files[0];
+      inp.value = "";
+      if (!f) return;
+      const box = $(inp.dataset.adFile);
+      const status = root.querySelector(`[data-ad-file-status="${inp.dataset.adFile}"]`);
+      status.textContent = tr("Die Anzeige wird gelesen …");
+      const fd = new FormData();
+      fd.append("file", f);
+      try {
+        const res = await fetch("/api/ai/ad-text", { method: "POST", body: fd });
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(j.error || tr("Die Datei konnte nicht gelesen werden."));
+        box.value = j.text;
+        box.dispatchEvent(new Event("input", { bubbles: true }));
+        status.textContent = tr("Anzeige übernommen – prüfe kurz den Text.");
+      } catch (e) {
+        status.textContent = e.message;
+      }
+    })
+  );
   preview();
 })();

@@ -138,5 +138,12 @@ module.exports = {
  "Bearbeiten": "Modifier",
  "Vorschau": "Aperçu",
  "Diese Angabe konnte nicht automatisch umgewandelt werden. Schreibe Monat und Jahr, z. B. „10/2025“, oder nur das Jahr, z. B. „2025“. Für eine laufende Station setze das Häkchen „bis heute“.": "Cette date n’a pas pu être convertie automatiquement. Écrivez le mois et l’année, ex. « 10/2025 », ou seulement l’année, ex. « 2025 ». Pour une expérience en cours, cochez « à ce jour ».",
- "Diese Angaben konnten nicht automatisch umgewandelt werden. Schreibe Monat und Jahr, z. B. „10/2025“, oder nur das Jahr, z. B. „2025“. Für eine laufende Station setze das Häkchen „bis heute“.": "Ces dates n’ont pas pu être converties automatiquement. Écrivez le mois et l’année, ex. « 10/2025 », ou seulement l’année, ex. « 2025 ». Pour une expérience en cours, cochez « à ce jour »."
+ "Diese Angaben konnten nicht automatisch umgewandelt werden. Schreibe Monat und Jahr, z. B. „10/2025“, oder nur das Jahr, z. B. „2025“. Für eine laufende Station setze das Häkchen „bis heute“.": "Ces dates n’ont pas pu être converties automatiquement. Écrivez le mois et l’année, ex. « 10/2025 », ou seulement l’année, ex. « 2025 ». Pour une expérience en cours, cochez « à ce jour ».",
+  "Der gespeicherte Lebenslauf wird gelöscht und du beginnst mit einem leeren Formular. Fortfahren?": "Le CV enregistré sera supprimé et vous commencerez avec un formulaire vide. Continuer ?",
+  "„{name}“ – in diesem Browser gespeichert": "« {name} » – enregistré dans ce navigateur",
+  "In diesem Browser gespeichert": "Enregistré dans ce navigateur",
+  "Anderen Lebenslauf hochladen": "Importer un autre CV",
+  "Welchen Lebenslauf möchtest du verwenden?": "Quel CV voulez-vous utiliser ?",
+  "Die Anzeige wird gelesen …": "Lecture de l’offre …",
+  "Anzeige übernommen – prüfe kurz den Text.": "Offre importée – vérifiez rapidement le texte.",
 };

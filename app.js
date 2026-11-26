@@ -251,6 +251,7 @@ const EXT = {
   photos: [".heic", ".heif", ".jpg", ".jpeg", ".png", ".webp"],
   cvdoc: [".pdf", ".doc", ".docx", ".odt", ".rtf"],
   invoicedoc: [".pdf", ".jpg", ".jpeg", ".png", ".heic"],
+  addoc: [".pdf", ".doc", ".docx", ".odt", ".rtf", ".txt", ".jpg", ".jpeg", ".png"],
 };
 
 function uploader(kind, { multiple = false } = {}) {

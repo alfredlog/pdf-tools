@@ -882,9 +882,9 @@ module.exports = [
     glyph: "target",
     title: "Lebenslauf an Stellenanzeige anpassen – ATS-Keywords & Trefferquote | PDF Libre",
     description:
-      "Lebenslauf mit der Stellenanzeige abgleichen: Die KI zeigt deine Trefferquote, fehlende ATS-Keywords und schlägt passende Formulierungen vor – ohne erfundene Angaben. Danach als PDF herunterladen.",
+      "Lebenslauf mit der Stellenanzeige abgleichen – Anzeige als Text, PDF, Word oder Foto: Die KI zeigt deine Trefferquote, fehlende ATS-Keywords und schlägt passende Formulierungen vor – ohne erfundene Angaben. Danach als PDF herunterladen.",
     h1: "Lebenslauf an die Stellenanzeige anpassen",
-    lead: "Füge die Stellenanzeige ein und sieh sofort, wie gut dein Lebenslauf passt: Trefferquote, erfüllte und fehlende Anforderungen und konkrete Vorschläge für Titel, Profil und Stationen.",
+    lead: "Füge die Stellenanzeige ein – oder lade sie als PDF, Word-Datei oder Foto hoch – und sieh sofort, wie gut dein Lebenslauf passt: Trefferquote, erfüllte und fehlende Anforderungen und konkrete Vorschläge für Titel, Profil und Stationen.",
     ui: { mode: "cv", start: "match" },
     steps: [
       ["Lebenslauf importieren", "Lade deinen bisherigen Lebenslauf als PDF oder Word hoch – oder fülle das Formular aus."],
