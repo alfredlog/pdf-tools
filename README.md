@@ -116,7 +116,7 @@ public/              fertige Website (wird vom Server ausgeliefert)
 | `AI_RATE_LIMIT` | `10` | KI-Aufträge pro Stunde und IP-Adresse (schützt deine API-Kosten) |
 | `PAYMENTS_ENABLED` | `false` | `false` = **alles kostenlos**, kein Konto nötig, keine Preisseite. `true` = PDF-Editor nur mit Pro/Tagespass (Stripe). Nach Änderung Server neu starten. |
 | `PORT` | 3000 | Port |
-| `MAX_FILE_MB` | 200 | max. Größe pro Datei |
+| `MAX_FILE_MB` | 0 | max. Größe pro Datei (0 = unbegrenzt) |
 | `RATE_LIMIT` | 60 | Anfragen pro IP in 10 Minuten |
 | `TRUST_PROXY` | – | auf `1` setzen, wenn der Server hinter nginx/Cloudflare läuft |
 | `GS_PATH`, `SOFFICE_PATH`, `PYTHON_PATH` | automatisch | Pfade, falls die Programme nicht gefunden werden |

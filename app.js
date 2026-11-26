@@ -33,8 +33,11 @@ const agentApi = require("./server/agent-api");
 // Konfiguration (über Umgebungsvariablen anpassbar)
 // ---------------------------------------------------------------------------
 const PORT = Number(process.env.PORT) || 3000;
-const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 200;
-const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 500; // Summe aller Dateien eines Auftrags
+// Größenlimits: 0 = keine Grenze (Standard im kostenlosen Modus). Später für Tarife setzbar.
+const MAX_FILE_MB = Number(process.env.MAX_FILE_MB) || 0; // pro Datei
+const MAX_TOTAL_MB = Number(process.env.MAX_TOTAL_MB) || 0; // Summe aller Dateien eines Auftrags
+// Pro-Editor und Agent-API halten Dateien im Arbeitsspeicher – dort bleibt immer eine Grenze.
+const MEM_FILE_MB = MAX_FILE_MB || 200;
 // Warteschlange – greift nur, wenn der Server wirklich viel zu tun hat (siehe run()).
 const SMALL_MB = Number(process.env.SMALL_MB) || 20; // bis zu dieser Größe gilt ein Auftrag als "klein"
 const MAX_SMALL = Number(process.env.MAX_SMALL) || 6; // so viele kleine Aufträge laufen gleichzeitig
@@ -176,8 +179,11 @@ function releaseSlot(mb) {
 async function run(cmd, args, opts = {}) {
   const mb = jobWeightMb(args);
   await acquireSlot(mb);
+  // Große Dateien brauchen länger: Grundzeit + 3 s pro MB, höchstens 45 Minuten.
+  const sized = Math.min(45 * 60 * 1000, JOB_TIMEOUT_MS + mb * 3000);
+  const timeout = Math.max(opts.timeout || JOB_TIMEOUT_MS, sized);
   try {
-    return await runNow(cmd, args, opts);
+    return await runNow(cmd, args, { ...opts, timeout });
   } finally {
     releaseSlot(mb);
   }
@@ -254,7 +260,7 @@ function uploader(kind, { multiple = false } = {}) {
       destination: (req, file, cb) => cb(null, req.jobDir),
       filename: (req, file, cb) => cb(null, `in-${crypto.randomUUID()}${path.extname(file.originalname).toLowerCase()}`),
     }),
-    limits: { fileSize: MAX_FILE_MB * 1024 * 1024, files: MAX_FILES },
+    limits: { fileSize: MAX_FILE_MB ? MAX_FILE_MB * 1024 * 1024 : Infinity, files: MAX_FILES },
     fileFilter: (req, file, cb) => {
       const ext = path.extname(file.originalname).toLowerCase();
       if (!allowed.includes(ext)) {
@@ -274,7 +280,7 @@ function uploader(kind, { multiple = false } = {}) {
       if (err) return next(err);
       const files = req.files || (req.file ? [req.file] : []);
       const total = files.reduce((n, f) => n + f.size, 0);
-      if (total > MAX_TOTAL_MB * 1024 * 1024) {
+      if (MAX_TOTAL_MB && total > MAX_TOTAL_MB * 1024 * 1024) {
         for (const f of files) fs.unlink(f.path, () => {});
         return next(new UserError(`Alle Dateien zusammen dürfen höchstens ${MAX_TOTAL_MB} MB groß sein.`, 413));
       }
@@ -1080,13 +1086,13 @@ app.get("/api/health", async (req, res) => {
 
 app.use("/api/auth", auth.router());
 app.use("/api/billing", billing.router());
-app.use("/api/pro", apiLimiter, editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_MB }));
+app.use("/api/pro", apiLimiter, editorRouter({ run, jobDir, PYTHON, outName, MAX_FILE_MB: MEM_FILE_MB }));
 app.use("/api/ai", aiRouter({ run, jobDir, PYTHON, outName, uploader, requireFiles, sendFile, sofficeConvert }));
 
 // Agenten-API (Bezahlung pro Aufruf in BSV, siehe server/agent-api.js) – nur wenn AGENT_API_ENABLED=true
 if (agentApi.enabled) {
   try {
-    app.use("/agent/v1", apiLimiter, agentApi.router({ gsCompress, gsMerge, jobDir, outName, MAX_FILE_MB }));
+    app.use("/agent/v1", apiLimiter, agentApi.router({ gsCompress, gsMerge, jobDir, outName, MAX_FILE_MB: MEM_FILE_MB }));
   } catch (e) {
     console.error("Agenten-API nicht gestartet:", e.message);
   }
